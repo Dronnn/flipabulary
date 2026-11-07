@@ -99,6 +99,29 @@ final class LibraryIntegrationTests: XCTestCase {
         XCTAssertEqual(try harness.context.fetch(FetchDescriptor<VocabularyCard>()).count, 2)
     }
 
+    func testAppUsageAccumulatesPerDay() {
+        harness.maintenance.addAppUsage(seconds: 120, at: harness.clock.now)
+        harness.maintenance.addAppUsage(seconds: 30, at: harness.clock.now)
+        let key = CalendarTools.dayKey(for: harness.clock.now, calendar: harness.calendar)
+        XCTAssertEqual(harness.maintenance.appUsageByDay()[key] ?? 0, 150, accuracy: 0.01)
+    }
+
+    func testDuplicateInLibraryFindsTheSameWordInAnotherStack() throws {
+        let first = harness.makeStack(name: "First")
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        let existing = harness.makeCard(word: "ephemeral", translation: "мимолетный", stack: first)
+        try harness.save()
+
+        var draft = CardDraft()
+        draft.word = "EPHEMERAL"
+        draft.translation = "мимолетный"
+        draft.stackID = second.id
+
+        let duplicate = try XCTUnwrap(harness.library.duplicateInLibrary(of: draft))
+        XCTAssertEqual(duplicate.id, existing.id)
+        XCTAssertEqual(duplicate.stack?.name, "First")
+    }
+
     func testInvalidDraftDoesNotPersistAnything() throws {
         let stack = harness.makeStack()
         try harness.save()

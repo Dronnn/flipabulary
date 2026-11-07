@@ -739,8 +739,11 @@ struct ReviewView: View {
 
             HStack(spacing: 10) {
                 StatCard(count: app.review.totalReviewed(session), label: "Reviewed")
+                    .accessibilityIdentifier("review.summary.reviewed")
                 StatCard(count: session.goodCount, label: "Good")
+                    .accessibilityIdentifier("review.summary.good")
                 StatCard(count: session.againCount, label: "Again")
+                    .accessibilityIdentifier("review.summary.again")
             }
             .padding(.horizontal, 20)
             .padding(.top, 24)

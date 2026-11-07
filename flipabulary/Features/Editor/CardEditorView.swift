@@ -15,6 +15,7 @@ struct CardEditorView: View {
     @State private var validation = CardValidation.valid
     @State private var generalError: String?
     @State private var duplicateCard: VocabularyCard?
+    @State private var duplicateStackName = "My words"
     @State private var showDuplicateWarning = false
     @State private var showDiscardConfirmation = false
     @State private var showDeleteConfirmation = false
@@ -26,6 +27,9 @@ struct CardEditorView: View {
     @State private var didLoad = false
     @State private var savedFeedback: String?
     @State private var stackName = "Choose a stack"
+    @State private var wordStats: WordStatistics?
+    @State private var streakValue = 0
+    @State private var statsTask: Task<Void, Never>?
 
     @FocusState private var focus: Field?
 
@@ -95,7 +99,12 @@ struct CardEditorView: View {
                     duplicateCard = nil
                 }
             } message: {
-                Text("The same word and translation already exist in this stack.")
+                Text(
+                    String(
+                        format: app.localized("The same word and translation already exist in %@."),
+                        duplicateStackName
+                    )
+                )
             }
             .confirmationDialog(
                 "Discard this draft?",
@@ -138,6 +147,9 @@ struct CardEditorView: View {
             }
             cardFields
             organization
+            if isEditing {
+                wordStatisticsSection
+            }
             moreDetails
         }
         .padding(.horizontal, 20)
@@ -163,6 +175,9 @@ struct CardEditorView: View {
                 }
                 cardFields
                 organization
+                if isEditing {
+                    wordStatisticsSection
+                }
                 moreDetails
                 if !isEditing {
                     addAnotherRow
@@ -254,6 +269,245 @@ struct CardEditorView: View {
                 }
             }
         }
+    }
+
+    private var wordStatisticsSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            SectionHeader(title: "Statistics")
+            GroupedSurface {
+                if let stats = wordStats {
+                    VStack(spacing: 0) {
+                        HStack(spacing: 10) {
+                            swipeCountTile(
+                                title: "Again",
+                                count: stats.againCount,
+                                systemImage: "arrow.left.circle.fill",
+                                tint: AppColor.danger,
+                                accessibilityIdentifier: "card.stats.again"
+                            )
+                            swipeCountTile(
+                                title: "Good",
+                                count: stats.goodCount,
+                                systemImage: "arrow.right.circle.fill",
+                                tint: AppColor.success,
+                                accessibilityIdentifier: "card.stats.good"
+                            )
+                        }
+                        .padding(14)
+
+                        SettingsDivider(inset: 16)
+                        difficultyRow(stats)
+                        SettingsDivider(inset: 16)
+                        statRow("Total reviews", "\(stats.totalGrades)", id: "card.stats.total")
+                        SettingsDivider(inset: 16)
+                        statRow("Accuracy", stats.accuracy.formatted(.percent.precision(.fractionLength(0))), id: "card.stats.accuracy")
+                        SettingsDivider(inset: 16)
+                        statRow("Total time", DurationFormatting.short(stats.totalSeconds), id: "card.stats.totalTime")
+                        SettingsDivider(inset: 16)
+                        statRow("Average time", DurationFormatting.short(stats.averageSeconds), id: "card.stats.averageTime")
+                        SettingsDivider(inset: 16)
+                        statRow(
+                            "Front / back",
+                            "\(DurationFormatting.short(stats.frontSeconds)) / \(DurationFormatting.short(stats.backSeconds))",
+                            id: "card.stats.faces"
+                        )
+                        SettingsDivider(inset: 16)
+                        statRow(
+                            "Last review",
+                            stats.lastReviewedAt.map {
+                                $0.formatted(date: .abbreviated, time: .shortened)
+                            } ?? "Never",
+                            id: "card.stats.last"
+                        )
+                        SettingsDivider(inset: 16)
+                        statRow(
+                            "Next review",
+                            stats.nextDueAt.map {
+                                $0.formatted(date: .abbreviated, time: .shortened)
+                            } ?? (stats.isFullyMastered ? app.localized("Fully learned") : "—"),
+                            id: "card.stats.next"
+                        )
+                        SettingsDivider(inset: 16)
+                        streakRow(stats)
+                        SettingsDivider(inset: 16)
+                        masteryRow(stats)
+                        if !stats.history.isEmpty {
+                            SettingsDivider(inset: 16)
+                            historySection(stats)
+                        }
+                    }
+                } else {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, minHeight: 96)
+                }
+            }
+        }
+    }
+
+    private func swipeCountTile(
+        title: String,
+        count: Int,
+        systemImage: String,
+        tint: Color,
+        accessibilityIdentifier: String
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 5) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 13, weight: .semibold))
+                Text(LocalizedStringKey(title))
+                    .font(AppFont.font(12, .semibold))
+            }
+            .foregroundStyle(tint)
+            Text("\(count)")
+                .font(AppFont.statCount())
+                .foregroundStyle(AppColor.textPrimary)
+                .monospacedDigit()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .background(tint.opacity(0.10), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(title), \(count)")
+        .accessibilityIdentifier(accessibilityIdentifier)
+    }
+
+    private func difficultyRow(_ stats: WordStatistics) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(stats.isDifficult ? AppColor.accentStrong : AppColor.textMuted)
+                .frame(width: 28)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Difficult words")
+                    .font(AppFont.fieldValue())
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(LocalizedStringKey(stats.isDifficult ? "In Difficult words" : "Not in Difficult words"))
+                    .font(AppFont.caption())
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+            Spacer(minLength: 8)
+            Button(LocalizedStringKey(stats.isDifficult ? "Remove from Difficult" : "Mark as Difficult")) {
+                setDifficult(!stats.isDifficult)
+            }
+            .font(AppFont.font(12, .semibold))
+            .foregroundStyle(AppColor.accentStrong)
+            .frame(minHeight: 44)
+            .accessibilityIdentifier("card.difficultToggle")
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 6)
+        .frame(minHeight: 56)
+    }
+
+    private func statRow(_ title: String, _ value: String, id: String) -> some View {
+        HStack(spacing: 12) {
+            Text(LocalizedStringKey(title))
+                .font(AppFont.fieldValue())
+                .foregroundStyle(AppColor.textPrimary)
+            Spacer(minLength: 8)
+            Text(value)
+                .font(AppFont.font(14, .regular))
+                .foregroundStyle(AppColor.textSecondary)
+        }
+        .padding(.horizontal, 16)
+        .frame(minHeight: 48)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(title), \(value)")
+        .accessibilityIdentifier(id)
+    }
+
+    private func streakRow(_ stats: WordStatistics) -> some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Correct streak")
+                    .font(AppFont.fieldValue())
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(String(format: app.localized("%lld of %lld"), streakValue, stats.threshold))
+                    .font(AppFont.caption())
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+            Spacer(minLength: 8)
+            StepperCapsule(
+                label: "Correct streak",
+                value: Binding(
+                    get: { streakValue },
+                    set: { updateStreak($0) }
+                ),
+                range: 0...100,
+                accessibilityIdentifier: "card.streak"
+            )
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .frame(minHeight: 60)
+    }
+
+    @ViewBuilder
+    private func masteryRow(_ stats: WordStatistics) -> some View {
+        Button {
+            setFullyLearned(!stats.isFullyMastered)
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: stats.isFullyMastered ? "checkmark.seal.fill" : "checkmark.seal")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(stats.isFullyMastered ? AppColor.success : AppColor.accentStrong)
+                    .frame(width: 28)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(LocalizedStringKey(stats.isFullyMastered ? "Fully learned" : "Mark fully learned"))
+                        .font(AppFont.fieldValue())
+                        .foregroundStyle(AppColor.textPrimary)
+                    Text(LocalizedStringKey(stats.isFullyMastered
+                        ? "Return to learning to review it again."
+                        : "Complete every learning stage as if all answers were Good."))
+                        .font(AppFont.caption())
+                        .foregroundStyle(AppColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 8)
+                if stats.isFullyMastered {
+                    Image(systemName: "arrow.counterclockwise")
+                        .foregroundStyle(AppColor.accentStrong)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .frame(minHeight: 60)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("card.markMastered")
+    }
+
+    private func historySection(_ stats: WordStatistics) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Recent answers")
+                .font(AppFont.sectionLabel())
+                .foregroundStyle(AppColor.textSecondary)
+                .padding(.horizontal, 16)
+                .padding(.top, 10)
+                .padding(.bottom, 4)
+            ForEach(stats.history.prefix(6)) { item in
+                HStack(spacing: 10) {
+                    Image(systemName: item.grade == .good ? "arrow.right.circle.fill" : "arrow.left.circle.fill")
+                        .foregroundStyle(item.grade == .good ? AppColor.success : AppColor.danger)
+                    Text(LocalizedStringKey(item.grade.title))
+                        .font(AppFont.font(12, .medium))
+                        .foregroundStyle(AppColor.textPrimary)
+                    Spacer(minLength: 6)
+                    Text(item.date.formatted(date: .abbreviated, time: .shortened))
+                        .font(AppFont.caption())
+                        .foregroundStyle(AppColor.textSecondary)
+                    Text(DurationFormatting.short(item.frontSeconds + item.backSeconds))
+                        .font(AppFont.font(11, .medium))
+                        .foregroundStyle(AppColor.textSecondary)
+                        .monospacedDigit()
+                }
+                .padding(.horizontal, 16)
+                .frame(minHeight: 34)
+            }
+        }
+        .padding(.bottom, 8)
     }
 
     private var moreDetails: some View {
@@ -507,11 +761,69 @@ struct CardEditorView: View {
             draft = CardDraft(card: card)
             initialDraft = draft
             updateStackName()
+            refreshWordStatistics()
         }
     }
 
     private func updateStackName() {
         stackName = app.library.stack(id: draft.stackID)?.name ?? "Choose a stack"
+    }
+
+    private func refreshWordStatistics() {
+        guard let cardID = existingCard?.id else {
+            wordStats = nil
+            streakValue = 0
+            return
+        }
+        statsTask?.cancel()
+        let calendar = app.maintenance.calendar
+        statsTask = Task { @MainActor in
+            let stats = await app.library.wordStatistics(
+                cardID: cardID,
+                now: Date(),
+                calendar: calendar
+            )
+            guard !Task.isCancelled else { return }
+            wordStats = stats
+            streakValue = stats?.repeatCount ?? 0
+        }
+    }
+
+    private func updateStreak(_ value: Int) {
+        guard let cardID = existingCard?.id else { return }
+        streakValue = value
+        switch app.library.setCorrectStreak(cardID: cardID, value: value) {
+        case .success:
+            generalError = nil
+            refreshWordStatistics()
+        case .failure(let error):
+            generalError = error.localizedDescription
+            refreshWordStatistics()
+        }
+    }
+
+    private func setDifficult(_ difficult: Bool) {
+        guard let cardID = existingCard?.id else { return }
+        switch app.library.setDifficult(cardID: cardID, isDifficult: difficult) {
+        case .success:
+            generalError = nil
+            app.router.showToast(difficult ? "Word marked as difficult." : "Word removed from Difficult.")
+            refreshWordStatistics()
+        case .failure(let error):
+            generalError = error.localizedDescription
+        }
+    }
+
+    private func setFullyLearned(_ mastered: Bool) {
+        guard let cardID = existingCard?.id else { return }
+        switch app.library.setFullyLearned(cardID: cardID, mastered: mastered) {
+        case .success:
+            generalError = nil
+            app.router.showToast(mastered ? "Word marked as fully learned." : "Word returned to learning.")
+            refreshWordStatistics()
+        case .failure(let error):
+            generalError = error.localizedDescription
+        }
     }
 
     private func attemptClose() {
@@ -530,8 +842,9 @@ struct CardEditorView: View {
             focusFirstInvalid()
             return
         }
-        if !addAnyway, let duplicate = app.library.duplicate(of: draft, excluding: existingCard?.id) {
+        if !addAnyway, let duplicate = app.library.duplicateInLibrary(of: draft, excluding: existingCard?.id) {
             duplicateCard = duplicate
+            duplicateStackName = duplicate.stack?.name ?? "My words"
             showDuplicateWarning = true
             return
         }
@@ -575,6 +888,7 @@ struct CardEditorView: View {
         draft = CardDraft(card: duplicate)
         initialDraft = draft
         updateStackName()
+        refreshWordStatistics()
         validation = .valid
         duplicateCard = nil
         app.router.showToast("Editing the existing word.")
@@ -588,6 +902,8 @@ struct CardEditorView: View {
         draft.tagNames = tags
         initialDraft = draft
         existingCard = nil
+        wordStats = nil
+        streakValue = 0
         validation = .valid
         duplicateCard = nil
         generalError = nil
@@ -614,8 +930,9 @@ struct CardEditorView: View {
                 focusFirstInvalid()
                 return
             }
-            if let duplicate = app.library.duplicate(of: draft, excluding: existingCard?.id) {
+            if let duplicate = app.library.duplicateInLibrary(of: draft, excluding: existingCard?.id) {
                 duplicateCard = duplicate
+                duplicateStackName = duplicate.stack?.name ?? "My words"
                 showDuplicateWarning = true
                 return
             }

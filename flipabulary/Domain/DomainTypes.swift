@@ -273,6 +273,7 @@ struct CardDisplayModel: Identifiable, Hashable, Sendable {
     var nextDueAt: Date?
     var createdAt: Date
     var recentGrades: [CardHistoryItem]
+    var difficultOverride: Bool? = nil
 
     var progress: Double {
         guard threshold > 0 else { return 0 }
@@ -280,7 +281,8 @@ struct CardDisplayModel: Identifiable, Hashable, Sendable {
     }
 
     var isDifficult: Bool {
-        recentGrades.prefix(5).filter { $0.grade == .again }.count >= 2
+        if let difficultOverride { return difficultOverride }
+        return recentGrades.prefix(5).filter { $0.grade == .again }.count >= 2
     }
 }
 

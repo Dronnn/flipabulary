@@ -18,6 +18,7 @@ final class AppEnvironment {
     let storageError: String?
 
     private(set) var didBootstrap = false
+    @ObservationIgnored private var usageStartedAt: Date?
 
     init(bootstrap: PersistenceBootstrap) {
         container = bootstrap.container
@@ -70,6 +71,7 @@ final class AppEnvironment {
     func bootstrap() async {
         guard !didBootstrap else { return }
         didBootstrap = true
+        startAppUsage()
         maintenance.refresh()
         await reminders.refreshAndReconcile()
         let stackIDs = Set(maintenance.stacks().map(\.id))
@@ -118,6 +120,7 @@ final class AppEnvironment {
     #endif
 
     func appDidBecomeActive() async {
+        startAppUsage()
         maintenance.refresh()
         if let launch = router.reviewLaunch,
            let session = review.session(id: launch.id),
@@ -131,9 +134,26 @@ final class AppEnvironment {
     }
 
     func appDidEnterBackground() {
+        stopAppUsage()
         if let session = review.latestActiveSession() {
             review.pause(session)
         }
+    }
+
+    func startAppUsage() {
+        guard usageStartedAt == nil else { return }
+        usageStartedAt = Date()
+    }
+
+    func stopAppUsage() {
+        guard let started = usageStartedAt else { return }
+        usageStartedAt = nil
+        maintenance.addAppUsage(seconds: Date().timeIntervalSince(started))
+    }
+
+    func currentAppUsageSeconds(now: Date = Date()) -> Double {
+        guard let started = usageStartedAt else { return 0 }
+        return max(0, now.timeIntervalSince(started))
     }
 
     func handle(url: URL) async {

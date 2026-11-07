@@ -76,13 +76,34 @@ struct WidgetDefaults: Codable, Equatable, Sendable {
     static let `default` = WidgetDefaults(stackID: nil, wordSetID: nil, sort: .dueFirst, showTranslations: false)
 }
 
+struct ReminderTime: Codable, Equatable, Identifiable, Sendable {
+    var id: UUID
+    var hour: Int
+    var minute: Int
+
+    init(id: UUID = UUID(), hour: Int, minute: Int) {
+        self.id = id
+        self.hour = hour
+        self.minute = minute
+    }
+
+    var timeText: String {
+        let components = DateComponents(hour: hour, minute: minute)
+        let date = Calendar.current.date(from: components) ?? Date()
+        return date.formatted(date: .omitted, time: .shortened)
+    }
+}
+
 struct ReminderPreferences: Codable, Equatable, Sendable {
+    static let legacyTimeID = UUID(uuidString: "00000000-0000-0000-0000-00000000B001")!
+
     var enabled: Bool
     var hour: Int
     var minute: Int
     var weekdays: Set<Int>
     var stackID: UUID?
     var soundEnabled: Bool
+    var times: [ReminderTime]? = nil
 
     static let `default` = ReminderPreferences(
         enabled: false,
@@ -93,10 +114,17 @@ struct ReminderPreferences: Codable, Equatable, Sendable {
         soundEnabled: true
     )
 
+    var allTimes: [ReminderTime] {
+        if let times, !times.isEmpty {
+            return times.sorted {
+                ($0.hour, $0.minute) < ($1.hour, $1.minute)
+            }
+        }
+        return [ReminderTime(id: Self.legacyTimeID, hour: hour, minute: minute)]
+    }
+
     var timeText: String {
-        let components = DateComponents(hour: hour, minute: minute)
-        let date = Calendar.current.date(from: components) ?? Date()
-        return date.formatted(date: .omitted, time: .shortened)
+        allTimes.first?.timeText ?? ""
     }
 
     var weekdayText: String {

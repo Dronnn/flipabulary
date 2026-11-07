@@ -66,6 +66,23 @@ final class ReminderSchedulerTests: XCTestCase {
         XCTAssertEqual(requests.first?.fireDate, testDate("2026-11-07T20:00:00Z"))
     }
 
+    func testMultipleTimesCreateRequestsForEachTime() {
+        var p = prefs()
+        p.times = [
+            ReminderTime(hour: 14, minute: 0),
+            ReminderTime(hour: 20, minute: 0)
+        ]
+        let requests = ReminderScheduler.desiredRequests(
+            preferences: p,
+            authorization: .authorized,
+            work: work(cards: [newCard()]),
+            now: harness.clock.now,
+            calendar: calendar
+        )
+        XCTAssertEqual(requests.count, 14)
+        XCTAssertEqual(Set(requests.map { calendar.component(.hour, from: $0.fireDate) }), [14, 20])
+    }
+
     func testPastTimeStartsNextSelectedDay() {
         let now = testDate("2026-11-07T21:00:00Z")
         let requests = ReminderScheduler.desiredRequests(

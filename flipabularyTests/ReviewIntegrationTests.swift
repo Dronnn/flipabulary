@@ -31,6 +31,61 @@ final class ReviewIntegrationTests: XCTestCase {
         )
     }
 
+    func testTimedReviewRecordsFrontAndBackSeconds() throws {
+        let stack = harness.makeStack()
+        let card = dueCard(word: "timed", stack: stack)
+        let session = try start(stack)
+
+        harness.clock.advance(by: 2)
+        XCTAssertTrue(harness.review.reveal(session))
+        harness.clock.advance(by: 3)
+        XCTAssertEqual(harness.review.grade(session, grade: .good), .completed)
+
+        let cardID = card.id
+        let events = try harness.context.fetch(
+            FetchDescriptor<ReviewEvent>(predicate: #Predicate { $0.cardID == cardID })
+        )
+        let event = try XCTUnwrap(events.first)
+        XCTAssertEqual(event.frontSeconds ?? 0, 2, accuracy: 0.01)
+        XCTAssertEqual(event.backSeconds ?? 0, 3, accuracy: 0.01)
+    }
+
+    func testManualMasteryCompletesEveryMilestoneAndCanBeUndone() throws {
+        let stack = harness.makeStack()
+        let card = dueCard(word: "mastered", stack: stack)
+
+        guard case .success = harness.library.setFullyLearned(cardID: card.id, mastered: true) else {
+            return XCTFail("Expected mastery update")
+        }
+        var state = try XCTUnwrap(card.learningState)
+        XCTAssertEqual(state.lifecycle, .learned)
+        XCTAssertEqual(state.appliedMilestones.count, LearningEngine.decayMilestones.count)
+        XCTAssertNil(state.nextDueAt)
+
+        guard case .success = harness.library.setFullyLearned(cardID: card.id, mastered: false) else {
+            return XCTFail("Expected mastery undo")
+        }
+        state = try XCTUnwrap(card.learningState)
+        XCTAssertEqual(state.lifecycle, .learning)
+        XCTAssertTrue(state.appliedMilestones.isEmpty)
+        XCTAssertNotNil(state.nextDueAt)
+    }
+
+    func testEditingStreakMovesBetweenLearningAndLearned() throws {
+        let stack = harness.makeStack()
+        let card = dueCard(word: "streak", stack: stack)
+
+        guard case .success = harness.library.setCorrectStreak(cardID: card.id, value: 5) else {
+            return XCTFail("Expected streak update")
+        }
+        XCTAssertEqual(card.learningState?.lifecycle, .learned)
+
+        guard case .success = harness.library.setCorrectStreak(cardID: card.id, value: 2) else {
+            return XCTFail("Expected streak update")
+        }
+        XCTAssertEqual(card.learningState?.lifecycle, .learning)
+    }
+
     func testStackDirectionIsCapturedBySession() throws {
         let stack = harness.makeStack(translationFirst: false)
         stack.presentationMode = .backFirst

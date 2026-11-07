@@ -86,36 +86,38 @@ enum ReminderScheduler {
 
         let todayKey = CalendarTools.dayKey(for: now, calendar: calendar)
         var requests: [ReminderRequest] = []
-        for offset in 0..<horizonDays {
-            guard let day = calendar.date(byAdding: .day, value: offset, to: now) else { continue }
-            let dayKey = CalendarTools.dayKey(for: day, calendar: calendar)
-            guard let fireDate = CalendarTools.date(
-                onDayContaining: day,
-                hour: preferences.hour,
-                minute: preferences.minute,
-                calendar: calendar
-            ), fireDate > now else { continue }
+        for time in preferences.allTimes {
+            for offset in 0..<horizonDays {
+                guard let day = calendar.date(byAdding: .day, value: offset, to: now) else { continue }
+                let dayKey = CalendarTools.dayKey(for: day, calendar: calendar)
+                guard let fireDate = CalendarTools.date(
+                    onDayContaining: day,
+                    hour: time.hour,
+                    minute: time.minute,
+                    calendar: calendar
+                ), fireDate > now else { continue }
 
-            let weekday = calendar.component(.weekday, from: fireDate)
-            guard preferences.weekdays.contains(weekday) else { continue }
-            guard hasWork(
-                scopeID: preferences.stackID,
-                at: fireDate,
-                isToday: dayKey == todayKey,
-                work: work,
-                calendar: calendar
-            ) else { continue }
-
-            requests.append(
-                ReminderRequest(
-                    identifier: "\(ReminderRequest.identifierPrefix)\(scopeKey).\(dayKey)",
-                    fireDate: fireDate,
+                let weekday = calendar.component(.weekday, from: fireDate)
+                guard preferences.weekdays.contains(weekday) else { continue }
+                guard hasWork(
                     scopeID: preferences.stackID,
-                    soundEnabled: preferences.soundEnabled
+                    at: fireDate,
+                    isToday: dayKey == todayKey,
+                    work: work,
+                    calendar: calendar
+                ) else { continue }
+
+                requests.append(
+                    ReminderRequest(
+                        identifier: "\(ReminderRequest.identifierPrefix)\(scopeKey).\(time.id.uuidString).\(dayKey)",
+                        fireDate: fireDate,
+                        scopeID: preferences.stackID,
+                        soundEnabled: preferences.soundEnabled
+                    )
                 )
-            )
+            }
         }
-        return requests
+        return requests.sorted { $0.fireDate < $1.fireDate }
     }
 
     static func hasWork(

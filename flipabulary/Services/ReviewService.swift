@@ -177,6 +177,7 @@ final class ReviewService {
             queue: queue,
             singleCardID: singleCard?.id
         )
+        resetFaceTiming(session, now: now)
         modelContext.insert(session)
         do {
             try persist()
@@ -200,8 +201,12 @@ final class ReviewService {
 
     func reveal(_ session: ReviewSession) -> Bool {
         guard session.currentPresentationID != nil else { return false }
+        if !session.showingBack {
+            accumulateFace(in: session, now: clock.now)
+            session.showingBack = true
+            session.currentFaceStartedAt = clock.now
+        }
         session.revealed = true
-        session.showingBack = true
         session.lastActiveAt = clock.now
         do {
             try persist()
@@ -215,10 +220,14 @@ final class ReviewService {
     /// Changes the visible face without creating an answer event.
     func setShowingBack(_ session: ReviewSession, showing: Bool) -> Bool {
         guard session.status == .active, session.currentPresentationID != nil else { return false }
+        if session.showingBack != showing {
+            accumulateFace(in: session, now: clock.now)
+            session.showingBack = showing
+            session.currentFaceStartedAt = clock.now
+        }
         if showing {
             session.revealed = true
         }
-        session.showingBack = showing
         session.lastActiveAt = clock.now
         do {
             try persist()
@@ -273,6 +282,7 @@ final class ReviewService {
             dailyRecord.record(card.id)
         }
 
+        accumulateFace(in: session, now: now)
         let event = ReviewEvent(
             presentationID: presentation.id,
             sessionID: session.id,
@@ -284,7 +294,9 @@ final class ReviewService {
             beforeLifecycle: transition.before.lifecycle,
             afterLifecycle: transition.after.lifecycle,
             rulesVersion: config.rules.version,
-            card: card
+            card: card,
+            frontSeconds: session.currentFrontSeconds ?? 0,
+            backSeconds: session.currentBackSeconds ?? 0
         )
         modelContext.insert(event)
         card.updatedAt = now
@@ -386,6 +398,7 @@ final class ReviewService {
             session.currentPresentationID = initial.id
             session.revealed = false
             session.showingBack = false
+            resetFaceTiming(session, now: now)
             queue.nextRetryAt = nil
             return
         }
@@ -396,6 +409,7 @@ final class ReviewService {
             session.currentPresentationID = retry.id
             session.revealed = false
             session.showingBack = false
+            resetFaceTiming(session, now: now)
             queue.nextRetryAt = nil
             return
         }
@@ -403,6 +417,9 @@ final class ReviewService {
         session.currentPresentationID = nil
         session.revealed = false
         session.showingBack = false
+        session.currentFaceStartedAt = nil
+        session.currentFrontSeconds = 0
+        session.currentBackSeconds = 0
         let futureRetries = ungraded.filter(\.isRetry).map(\.availableAt)
         queue.nextRetryAt = futureRetries.min()
         if futureRetries.isEmpty {
@@ -458,14 +475,35 @@ final class ReviewService {
     func resume(_ session: ReviewSession) {
         guard session.status == .active, session.activeReviewStartedAt == nil else { return }
         session.activeReviewStartedAt = clock.now
+        if session.currentPresentationID != nil {
+            session.currentFaceStartedAt = clock.now
+        }
         _ = saveSilently()
     }
 
     private func pauseActive(_ session: ReviewSession, now: Date) {
+        accumulateFace(in: session, now: now)
+        session.currentFaceStartedAt = nil
         if let started = session.activeReviewStartedAt {
             session.activeSeconds += max(0, now.timeIntervalSince(started))
             session.activeReviewStartedAt = nil
         }
+    }
+
+    private func accumulateFace(in session: ReviewSession, now: Date) {
+        guard let started = session.currentFaceStartedAt else { return }
+        let elapsed = max(0, now.timeIntervalSince(started))
+        if session.showingBack {
+            session.currentBackSeconds = (session.currentBackSeconds ?? 0) + elapsed
+        } else {
+            session.currentFrontSeconds = (session.currentFrontSeconds ?? 0) + elapsed
+        }
+    }
+
+    private func resetFaceTiming(_ session: ReviewSession, now: Date) {
+        session.currentFrontSeconds = 0
+        session.currentBackSeconds = 0
+        session.currentFaceStartedAt = now
     }
 
     @discardableResult

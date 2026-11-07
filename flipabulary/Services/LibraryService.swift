@@ -354,6 +354,17 @@ final class LibraryService {
         }
     }
 
+    func duplicateInLibrary(of draft: CardDraft, excluding cardID: UUID? = nil) -> VocabularyCard? {
+        let word = SearchNormalizer.normalize(draft.trimmedWord)
+        let translation = SearchNormalizer.normalize(draft.trimmedTranslation)
+        guard !word.isEmpty, !translation.isEmpty else { return nil }
+        return maintenance.cardsForList().first { card in
+            card.id != cardID
+                && SearchNormalizer.normalize(card.word) == word
+                && SearchNormalizer.normalize(card.translation) == translation
+        }
+    }
+
     // MARK: Card writes
 
     func saveCard(

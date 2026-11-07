@@ -132,6 +132,7 @@ final class VocabularyCard {
     var partOfSpeech: String?
     var createdAt: Date
     var updatedAt: Date
+    var difficultOverride: Bool?
 
     var stack: VocabularyStack?
 
@@ -283,6 +284,8 @@ final class ReviewEvent {
     var beforeLifecycleRaw: String
     var afterLifecycleRaw: String
     var rulesVersion: Int
+    var frontSeconds: Double?
+    var backSeconds: Double?
 
     var card: VocabularyCard?
 
@@ -298,7 +301,9 @@ final class ReviewEvent {
         beforeLifecycle: CardLifecycle,
         afterLifecycle: CardLifecycle,
         rulesVersion: Int,
-        card: VocabularyCard?
+        card: VocabularyCard?,
+        frontSeconds: Double? = nil,
+        backSeconds: Double? = nil
     ) {
         self.id = id
         self.presentationID = presentationID
@@ -311,6 +316,8 @@ final class ReviewEvent {
         self.beforeLifecycleRaw = beforeLifecycle.rawValue
         self.afterLifecycleRaw = afterLifecycle.rawValue
         self.rulesVersion = rulesVersion
+        self.frontSeconds = frontSeconds
+        self.backSeconds = backSeconds
         self.card = card
     }
 
@@ -348,6 +355,9 @@ final class ReviewSession {
     var showingBack: Bool
     var activeReviewStartedAt: Date?
     var singleCardID: UUID?
+    var currentFaceStartedAt: Date?
+    var currentFrontSeconds: Double?
+    var currentBackSeconds: Double?
 
     init(
         id: UUID = UUID(),
@@ -433,6 +443,21 @@ final class ReviewSession {
     }
 }
 
+// MARK: - App usage
+
+@Model
+final class AppUsageRecord {
+    @Attribute(.unique) var id: UUID
+    @Attribute(.unique) var dayKey: String
+    var seconds: Double
+
+    init(id: UUID = UUID(), dayKey: String, seconds: Double = 0) {
+        self.id = id
+        self.dayKey = dayKey
+        self.seconds = seconds
+    }
+}
+
 // MARK: - Daily admission
 
 @Model
@@ -487,7 +512,8 @@ enum FlipabularySchema {
         CardLearningState.self,
         ReviewEvent.self,
         ReviewSession.self,
-        DailyAdmissionRecord.self
+        DailyAdmissionRecord.self,
+        AppUsageRecord.self
     ]
 
     static var schema: Schema {

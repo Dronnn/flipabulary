@@ -367,6 +367,11 @@ struct StackSettingsView: View {
                                 showRulesEditor = true
                             }
                             .accessibilityIdentifier("stack.rules")
+                            SettingsDivider(inset: 16)
+                            SettingsRow(title: "Statistics", showsChevron: true) {
+                                app.router.push(.statistics(stack.id))
+                            }
+                            .accessibilityIdentifier("stack.statistics")
                         }
                     }
 

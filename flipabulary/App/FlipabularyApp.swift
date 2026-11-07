@@ -156,6 +156,8 @@ struct RootView: View {
             RemindersView()
         case .importExport:
             ImportExportView()
+        case .statistics(let stackID):
+            StatisticsView(stackID: stackID)
         }
     }
 }

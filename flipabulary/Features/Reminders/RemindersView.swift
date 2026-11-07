@@ -9,20 +9,16 @@ struct RemindersView: View {
 
     private var prefs: ReminderPreferences { app.preferences.preferences.reminders }
 
-    private var timeBinding: Binding<Date> {
+    private func timeBinding(for time: ReminderTime) -> Binding<Date> {
         Binding(
             get: {
                 var components = DateComponents()
-                components.hour = prefs.hour
-                components.minute = prefs.minute
+                components.hour = time.hour
+                components.minute = time.minute
                 return Calendar.current.date(from: components) ?? Date()
             },
             set: { date in
-                let components = Calendar.current.dateComponents([.hour, .minute], from: date)
-                var updated = prefs
-                updated.hour = components.hour ?? 20
-                updated.minute = components.minute ?? 0
-                update(updated)
+                updateTime(id: time.id, date: date)
             }
         )
     }
@@ -76,23 +72,63 @@ struct RemindersView: View {
 
                 Group {
                     GroupedSurface {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Time")
-                                    .font(AppFont.fieldValue())
-                                    .foregroundStyle(AppColor.textPrimary)
-                                Text("Local time")
-                                    .font(AppFont.caption())
-                                    .foregroundStyle(AppColor.textSecondary)
+                        VStack(spacing: 0) {
+                            ForEach(Array(prefs.allTimes.enumerated()), id: \.element.id) { index, time in
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("Time")
+                                            .font(AppFont.fieldValue())
+                                            .foregroundStyle(AppColor.textPrimary)
+                                        Text("Local time")
+                                            .font(AppFont.caption())
+                                            .foregroundStyle(AppColor.textSecondary)
+                                    }
+                                    Spacer()
+                                    DatePicker(
+                                        "Reminder time",
+                                        selection: timeBinding(for: time),
+                                        displayedComponents: .hourAndMinute
+                                    )
+                                    .labelsHidden()
+                                    .tint(AppColor.accent)
+                                    .accessibilityIdentifier("reminders.time.\(time.id.uuidString)")
+                                    if prefs.allTimes.count > 1 {
+                                        Button(role: .destructive) {
+                                            removeTime(time.id)
+                                        } label: {
+                                            Image(systemName: "trash")
+                                                .font(.system(size: 14, weight: .semibold))
+                                                .foregroundStyle(AppColor.danger)
+                                                .frame(width: 40, height: 44)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .accessibilityLabel("Delete reminder time")
+                                    }
+                                }
+                                .padding(.horizontal, 16)
+                                .frame(minHeight: 56)
+                                if index < prefs.allTimes.count - 1 {
+                                    SettingsDivider(inset: 16)
+                                }
                             }
-                            Spacer()
-                            DatePicker("Reminder time", selection: timeBinding, displayedComponents: .hourAndMinute)
-                                .labelsHidden()
-                                .tint(AppColor.accent)
-                                .accessibilityIdentifier("reminders.time")
+                            SettingsDivider(inset: 16)
+                            Button {
+                                addTime()
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "plus")
+                                    Text("Add reminder time")
+                                    Spacer()
+                                }
+                                .font(AppFont.font(14, .semibold))
+                                .foregroundStyle(AppColor.accentStrong)
+                                .padding(.horizontal, 16)
+                                .frame(height: 48)
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityIdentifier("reminders.addTime")
                         }
-                        .padding(.horizontal, 16)
-                        .frame(minHeight: 56)
 
                         SettingsDivider(inset: 16)
 
@@ -233,7 +269,7 @@ struct RemindersView: View {
         .task {
             await app.reminders.refreshAuthorization()
         }
-        .onChange(of: prefs.timeText) { _, _ in
+        .onChange(of: prefs.allTimes) { _, _ in
             Task { await app.reminders.reconcile() }
         }
         .onChange(of: prefs.weekdays) { _, _ in
@@ -259,6 +295,42 @@ struct RemindersView: View {
         } else {
             updated.weekdays.insert(weekday)
         }
+        update(updated)
+    }
+
+    private func updateTime(id: UUID, date: Date) {
+        var updated = prefs
+        var times = updated.allTimes
+        guard let index = times.firstIndex(where: { $0.id == id }) else { return }
+        let components = Calendar.current.dateComponents([.hour, .minute], from: date)
+        times[index].hour = components.hour ?? 20
+        times[index].minute = components.minute ?? 0
+        updated.times = times
+        updated.hour = times[0].hour
+        updated.minute = times[0].minute
+        update(updated)
+    }
+
+    private func addTime() {
+        var updated = prefs
+        var times = updated.allTimes
+        let last = times.last ?? ReminderTime(hour: 20, minute: 0)
+        let totalMinutes = (last.hour * 60 + last.minute + 30) % (24 * 60)
+        times.append(ReminderTime(hour: totalMinutes / 60, minute: totalMinutes % 60))
+        updated.times = times
+        updated.hour = times[0].hour
+        updated.minute = times[0].minute
+        update(updated)
+    }
+
+    private func removeTime(_ id: UUID) {
+        var updated = prefs
+        var times = updated.allTimes
+        guard times.count > 1 else { return }
+        times.removeAll { $0.id == id }
+        updated.times = times
+        updated.hour = times[0].hour
+        updated.minute = times[0].minute
         update(updated)
     }
 

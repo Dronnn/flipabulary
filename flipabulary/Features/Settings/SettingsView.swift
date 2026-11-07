@@ -117,6 +117,11 @@ struct SettingsView: View {
                         }
                         .accessibilityIdentifier("settings.stack")
                         SettingsDivider(inset: 16)
+                        SettingsRow(title: "Statistics", detail: "Time, reviews, accuracy, and progress by day and stack.") {
+                            app.router.push(.statistics(nil))
+                        }
+                        .accessibilityIdentifier("settings.statistics")
+                        SettingsDivider(inset: 16)
                         SettingsRow(title: "Widgets", detail: "Create sets and show a different one in each widget.") {
                             app.router.push(.widgets)
                         }

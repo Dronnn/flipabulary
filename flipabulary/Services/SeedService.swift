@@ -206,7 +206,9 @@ enum SeedService {
                     beforeLifecycle: before == 0 ? .new : .learning,
                     afterLifecycle: after >= 5 ? .learned : .learning,
                     rulesVersion: LearningRules.default.version,
-                    card: card
+                    card: card,
+                    frontSeconds: 2 + Double(gradeIndex),
+                    backSeconds: 3
                 )
                 context.insert(event)
             }

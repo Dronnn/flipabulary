@@ -156,6 +156,32 @@ final class MaintenanceService {
         }
     }
 
+    func appUsageRecord(dayKey: String) -> AppUsageRecord {
+        let key = dayKey
+        if let existing = try? modelContext.fetch(
+            FetchDescriptor<AppUsageRecord>(predicate: #Predicate { $0.dayKey == key })
+        ).first {
+            return existing
+        }
+        let record = AppUsageRecord(dayKey: key)
+        modelContext.insert(record)
+        return record
+    }
+
+    func addAppUsage(seconds: Double, at date: Date = Date()) {
+        guard seconds > 0 else { return }
+        let key = CalendarTools.dayKey(for: date, calendar: calendar)
+        appUsageRecord(dayKey: key).seconds += seconds
+        _ = save()
+    }
+
+    func appUsageByDay() -> [String: Double] {
+        let records = (try? modelContext.fetch(FetchDescriptor<AppUsageRecord>())) ?? []
+        return records.reduce(into: [:]) { result, record in
+            result[record.dayKey] = record.seconds
+        }
+    }
+
     func dailyRecord(stackID: UUID, now: Date? = nil) -> DailyAdmissionRecord {
         let date = now ?? clock.now
         let key = CalendarTools.dayKey(for: date, calendar: calendar)

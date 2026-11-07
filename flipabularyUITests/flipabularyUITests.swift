@@ -268,6 +268,7 @@ final class FlipabularyUITests: XCTestCase {
                 .matching(NSPredicate(format: "label CONTAINS[c] 'Reminders are local notifications'"))
                 .firstMatch.exists
         )
+        XCTAssertTrue(app.buttons["reminders.addTime"].exists)
 
         addUIInterruptionMonitor(withDescription: "Notification permission") { alert in
             for label in ["Don’t Allow", "Don't Allow", "Allow"] {
@@ -391,6 +392,140 @@ final class FlipabularyUITests: XCTestCase {
             app.swipeUp()
         }
         XCTAssertTrue(app.buttons.matching(identifier: "words.row").firstMatch.exists)
+    }
+
+    @MainActor
+    func testWordStatisticsShowsSwipeCountsAndTime() throws {
+        let app = launch()
+        XCTAssertTrue(app.staticTexts["ephemeral"].waitForExistence(timeout: 5))
+        app.staticTexts["ephemeral"].tap()
+
+        let good = app.descendants(matching: .any)["card.stats.good"]
+        let again = app.descendants(matching: .any)["card.stats.again"]
+        let totalTime = app.descendants(matching: .any)["card.stats.totalTime"]
+        XCTAssertTrue(good.waitForExistence(timeout: 5))
+        XCTAssertTrue(good.label.contains("3"))
+        XCTAssertTrue(again.label.contains("0"))
+        XCTAssertTrue(totalTime.exists)
+        XCTAssertFalse(totalTime.label.hasSuffix(", 0s"))
+        let faces = app.descendants(matching: .any)["card.stats.faces"]
+        XCTAssertTrue(faces.exists)
+        XCTAssertFalse(faces.label.contains("0s / 0s"))
+    }
+
+    @MainActor
+    func testSingleCardSwipeGoodUpdatesSummaryAndStatistics() throws {
+        let app = launch()
+        XCTAssertTrue(app.staticTexts["ephemeral"].waitForExistence(timeout: 5))
+        app.staticTexts["ephemeral"].tap()
+        XCTAssertTrue(app.buttons["card.review"].waitForExistence(timeout: 3))
+        app.buttons["card.review"].tap()
+        XCTAssertTrue(app.buttons["review.reveal"].waitForExistence(timeout: 5))
+
+        app.descendants(matching: .any)["review.card"].firstMatch.swipeRight()
+        XCTAssertTrue(app.buttons["review.done"].waitForExistence(timeout: 8))
+
+        let good = app.descendants(matching: .any)["review.summary.good"]
+        let reviewed = app.descendants(matching: .any)["review.summary.reviewed"]
+        XCTAssertTrue(good.exists)
+        XCTAssertTrue(reviewed.exists)
+        XCTAssertTrue(good.label.contains("1"))
+        XCTAssertTrue(reviewed.label.contains("1"))
+        app.buttons["review.done"].tap()
+
+        XCTAssertTrue(app.staticTexts["ephemeral"].waitForExistence(timeout: 5))
+        app.staticTexts["ephemeral"].tap()
+        let wordGood = app.descendants(matching: .any)["card.stats.good"]
+        XCTAssertTrue(wordGood.waitForExistence(timeout: 5))
+        XCTAssertTrue(wordGood.label.contains("4"))
+    }
+
+    @MainActor
+    func testRealReviewUpdatesGoodCountAndTime() throws {
+        let app = launch()
+        app.buttons["words.add"].tap()
+        XCTAssertTrue(app.textFields["card.word"].waitForExistence(timeout: 3))
+        app.textFields["card.word"].tap()
+        app.textFields["card.word"].typeText("timedword")
+        app.textFields["card.translation"].tap()
+        app.textFields["card.translation"].typeText("время")
+        app.buttons["card.save"].tap()
+        XCTAssertTrue(app.staticTexts["timedword"].waitForExistence(timeout: 5))
+        app.staticTexts["timedword"].tap()
+
+        let review = app.buttons["card.review"]
+        XCTAssertTrue(review.waitForExistence(timeout: 3))
+        review.tap()
+        XCTAssertTrue(app.buttons["review.reveal"].waitForExistence(timeout: 5))
+        app.buttons["review.reveal"].tap()
+        sleep(2)
+        app.buttons["review.good"].tap()
+
+        let summaryGood = app.descendants(matching: .any)["review.summary.good"]
+        XCTAssertTrue(summaryGood.waitForExistence(timeout: 5))
+        XCTAssertTrue(summaryGood.label.contains("1"))
+        if app.buttons["review.done"].waitForExistence(timeout: 5) {
+            app.buttons["review.done"].tap()
+        } else {
+            app.buttons["Close"].firstMatch.tap()
+        }
+        XCTAssertTrue(app.staticTexts["timedword"].waitForExistence(timeout: 5))
+        app.staticTexts["timedword"].tap()
+
+        let good = app.descendants(matching: .any)["card.stats.good"]
+        let time = app.descendants(matching: .any)["card.stats.totalTime"]
+        XCTAssertTrue(good.waitForExistence(timeout: 5))
+        XCTAssertTrue(good.label.contains("1"))
+        XCTAssertFalse(time.label.hasSuffix(", 0s"))
+    }
+
+    @MainActor
+    func testDuplicateWordAlertNamesTheExistingStack() throws {
+        let app = launch()
+        app.buttons["words.add"].tap()
+        XCTAssertTrue(app.textFields["card.word"].waitForExistence(timeout: 3))
+        app.textFields["card.word"].tap()
+        app.textFields["card.word"].typeText("ephemeral")
+        app.textFields["card.translation"].tap()
+        app.textFields["card.translation"].typeText("мимолетный")
+        app.buttons["card.save"].tap()
+
+        XCTAssertTrue(app.alerts["Word already saved"].waitForExistence(timeout: 5))
+        XCTAssertTrue(
+            app.alerts.staticTexts
+                .matching(NSPredicate(format: "label CONTAINS[c] %@", "My words"))
+                .firstMatch.exists
+        )
+    }
+
+    @MainActor
+    func testStatisticsScreenOpens() throws {
+        let app = launch()
+        app.buttons["words.more"].tap()
+        let statistics = app.buttons["Statistics"].firstMatch
+        XCTAssertTrue(statistics.waitForExistence(timeout: 3))
+        statistics.tap()
+        XCTAssertTrue(app.navigationBars["Statistics"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.descendants(matching: .any)["statistics.range"].exists)
+        XCTAssertTrue(app.staticTexts["Reviews"].exists)
+        XCTAssertTrue(app.staticTexts["Good"].exists)
+        XCTAssertTrue(app.staticTexts["Again"].exists)
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "statistics"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+    }
+
+    @MainActor
+    func testWordCanBeMarkedFullyLearnedFromEditor() throws {
+        let app = launch()
+        XCTAssertTrue(app.staticTexts["ephemeral"].waitForExistence(timeout: 5))
+        app.staticTexts["ephemeral"].tap()
+        let mastery = app.buttons["card.markMastered"]
+        XCTAssertTrue(mastery.waitForExistence(timeout: 5))
+        mastery.tap()
+        XCTAssertTrue(app.staticTexts["Fully learned"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["card.close"].exists)
     }
 
     @MainActor

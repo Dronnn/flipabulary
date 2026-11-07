@@ -247,6 +247,7 @@ struct WordsView: View {
                     app.startReview(scopeID: preferences.selectedStackID)
                 }
                 Button("Stacks") { app.router.push(.stacks) }
+                Button("Statistics") { app.router.push(.statistics(nil)) }
                 Button("Settings") { app.router.push(.settings) }
                 Button("Widgets") { app.router.push(.widgets) }
                 Button("Import & Export") { app.router.push(.importExport) }

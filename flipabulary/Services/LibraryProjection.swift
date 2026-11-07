@@ -68,7 +68,8 @@ enum LibraryProjection {
             threshold: rules.correctThreshold,
             nextDueAt: state?.nextDueAt,
             createdAt: card.createdAt,
-            recentGrades: recentGrades ?? LibraryQuery.recentGrades(from: card.reviewEvents)
+            recentGrades: recentGrades ?? LibraryQuery.recentGrades(from: card.reviewEvents),
+            difficultOverride: card.difficultOverride
         )
     }
 

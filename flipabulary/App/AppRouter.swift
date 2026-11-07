@@ -11,6 +11,7 @@ enum AppRoute: Hashable {
     case widgets
     case reminders
     case importExport
+    case statistics(UUID?)
 }
 
 enum EditorTarget: Identifiable, Hashable {
