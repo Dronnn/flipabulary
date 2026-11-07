@@ -281,26 +281,49 @@ struct RepeatBars: View {
     }
 }
 
-struct RepeatDots: View {
-    var count: Int
-    var threshold: Int
-    var currentIndex: Int?
+struct SessionProgressDots: View {
+    var total: Int
+    var current: Int
+
+    private var safeTotal: Int { max(1, total) }
+    private var safeCurrent: Int { min(max(1, current), safeTotal) }
 
     var body: some View {
-        HStack(spacing: 8) {
-            ForEach(0..<max(threshold, 1), id: \.self) { index in
-                Circle()
-                    .fill(index < count ? AppColor.accent : AppColor.divider)
-                    .frame(width: 7, height: 7)
-                    .overlay {
-                        if index == currentIndex {
-                            Circle().stroke(AppColor.accent, lineWidth: 1.5).frame(width: 13, height: 13)
-                        }
+        Group {
+            if safeTotal <= 12 {
+                HStack(spacing: 6) {
+                    ForEach(0..<safeTotal, id: \.self) { index in
+                        let isCurrent = index == safeCurrent - 1
+                        Circle()
+                            .fill(
+                                index < safeCurrent - 1
+                                    ? AppColor.accent
+                                    : (isCurrent ? AppColor.accentStrong : AppColor.divider)
+                            )
+                            .frame(width: isCurrent ? 8 : 6, height: isCurrent ? 8 : 6)
+                            .overlay {
+                                if isCurrent {
+                                    Circle()
+                                        .stroke(AppColor.accentStrong, lineWidth: 1.5)
+                                        .frame(width: 13, height: 13)
+                                }
+                            }
                     }
+                }
+            } else {
+                HStack(spacing: 8) {
+                    ProgressView(value: Double(safeCurrent), total: Double(safeTotal))
+                        .tint(AppColor.accent)
+                        .frame(maxWidth: 180)
+                    Text("\(safeCurrent) / \(safeTotal)")
+                        .font(AppFont.font(11, .medium))
+                        .foregroundStyle(AppColor.textSecondary)
+                        .monospacedDigit()
+                }
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Repeat progress")
-        .accessibilityValue("\(count) of \(threshold)")
+        .accessibilityLabel("Session progress")
+        .accessibilityValue("\(safeCurrent) of \(safeTotal)")
     }
 }

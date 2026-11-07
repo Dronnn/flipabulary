@@ -526,6 +526,10 @@ struct CardEditorView: View {
         draft.stackID = stackID
         draft.tagNames = tags
         initialDraft = draft
+        existingCard = nil
+        validation = .valid
+        duplicateCard = nil
+        generalError = nil
         savedFeedback = "Saved. Add another word."
         focus = .word
     }

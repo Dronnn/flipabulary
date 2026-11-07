@@ -2,6 +2,29 @@ import SwiftUI
 import SwiftData
 import UIKit
 
+/// Keeps a card swipe on the axis chosen when the gesture starts. Re-checking
+/// the dominant axis on every update makes the card stall at the centre when
+/// the swipe reverses direction.
+struct SwipeAxisLock {
+    enum Axis {
+        case horizontal, vertical
+    }
+
+    private(set) var axis: Axis?
+
+    mutating func tracksHorizontal(_ translation: CGSize) -> Bool {
+        if axis == nil {
+            guard translation.width != 0 || translation.height != 0 else { return false }
+            axis = abs(translation.width) > abs(translation.height) ? .horizontal : .vertical
+        }
+        return axis == .horizontal
+    }
+
+    mutating func reset() {
+        axis = nil
+    }
+}
+
 struct ReviewView: View {
     @Environment(AppEnvironment.self) private var app
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -18,6 +41,7 @@ struct ReviewView: View {
     @State private var now = Date()
     @State private var reviewStarted = false
     @State private var dragOffset: CGSize = .zero
+    @State private var swipeAxis = SwipeAxisLock()
     @State private var isThrowing = false
     @State private var didCrossSwipeThreshold = false
 
@@ -71,6 +95,7 @@ struct ReviewView: View {
         }
         .onChange(of: session?.currentPresentationID) { _, _ in
             dragOffset = .zero
+            swipeAxis.reset()
             didCrossSwipeThreshold = false
         }
         .sheet(isPresented: $showSettings) {
@@ -136,10 +161,9 @@ struct ReviewView: View {
                 ScrollView {
                     VStack(spacing: 12) {
                         reviewCard(session, card: card, config: config, expanded: false)
-                        RepeatDots(
-                            count: card.learningState?.repeatCount ?? 0,
-                            threshold: config.rules.correctThreshold,
-                            currentIndex: min(card.learningState?.repeatCount ?? 0, max(0, config.rules.correctThreshold - 1))
+                        SessionProgressDots(
+                            total: app.review.distinctCount(session),
+                            current: session.distinctPosition
                         )
                     }
                     .padding(.horizontal, 20)
@@ -168,10 +192,9 @@ struct ReviewView: View {
                     VStack(spacing: 14) {
                         elapsedHeader(session)
                         reviewCard(session, card: card, config: config, expanded: true)
-                        RepeatDots(
-                            count: card.learningState?.repeatCount ?? 0,
-                            threshold: config.rules.correctThreshold,
-                            currentIndex: min(card.learningState?.repeatCount ?? 0, max(0, config.rules.correctThreshold - 1))
+                        SessionProgressDots(
+                            total: app.review.distinctCount(session),
+                            current: session.distinctPosition
                         )
                         actionArea(session, card: card, config: config)
                     }
@@ -512,7 +535,7 @@ struct ReviewView: View {
         DragGesture(minimumDistance: 12)
             .onChanged { value in
                 guard !ratingLocked, !isThrowing else { return }
-                guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                guard swipeAxis.tracksHorizontal(value.translation) else { return }
                 dragOffset = CGSize(
                     width: value.translation.width,
                     height: value.translation.height * 0.25
@@ -526,7 +549,9 @@ struct ReviewView: View {
                 }
             }
             .onEnded { value in
-                guard !ratingLocked, !isThrowing else {
+                let trackedHorizontally = swipeAxis.axis == .horizontal
+                swipeAxis.reset()
+                guard trackedHorizontally, !ratingLocked, !isThrowing else {
                     withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                         dragOffset = .zero
                     }
