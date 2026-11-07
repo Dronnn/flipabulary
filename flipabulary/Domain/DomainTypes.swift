@@ -16,6 +16,26 @@ enum CardLifecycle: String, Codable, CaseIterable, Sendable {
     }
 }
 
+enum CardPresentationOrder: String, Codable, CaseIterable, Identifiable, Sendable {
+    case frontFirst
+    case backFirst
+    case mixed
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .frontFirst: "Front first"
+        case .backFirst: "Translation first"
+        case .mixed: "Mixed"
+        }
+    }
+
+    var translationFirst: Bool {
+        self == .backFirst
+    }
+}
+
 enum ReviewGrade: String, Codable, CaseIterable, Sendable {
     case again
     case good
@@ -47,13 +67,13 @@ enum CardFilter: String, Codable, CaseIterable, Identifiable, Sendable {
         }
     }
 
-    func matches(lifecycle: CardLifecycle, isDifficult: Bool) -> Bool {
+    func matches(lifecycle: CardLifecycle, isDifficult: @autoclosure () -> Bool) -> Bool {
         switch self {
         case .all: true
         case .learning: lifecycle == .learning
         case .learned: lifecycle == .learned
         case .new: lifecycle == .new
-        case .difficult: isDifficult
+        case .difficult: isDifficult()
         }
     }
 }
@@ -153,8 +173,21 @@ struct SessionConfig: Codable, Equatable, Sendable {
     var steps: [TimeInterval]
     var rules: LearningRules
     var seed: UInt64
+    var presentationMode: CardPresentationOrder? = nil
 
     var rulesVersion: Int { rules.version }
+
+    var effectivePresentationMode: CardPresentationOrder {
+        presentationMode ?? (translationFirst ? .backFirst : .frontFirst)
+    }
+
+    func nextShowsTranslationFirst() -> Bool {
+        switch effectivePresentationMode {
+        case .frontFirst: false
+        case .backFirst: true
+        case .mixed: Bool.random()
+        }
+    }
 
     func normalized() -> SessionConfig {
         var copy = self
@@ -175,6 +208,7 @@ struct ReviewPresentation: Codable, Hashable, Identifiable, Sendable {
     var retryNumber: Int
     var availableAt: Date
     var gradedAt: Date?
+    var translationFirst: Bool? = nil
 }
 
 struct ReviewQueueEnvelope: Codable, Equatable, Sendable {

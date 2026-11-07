@@ -88,8 +88,18 @@ enum AppFont {
         }
     }
 
+    private static let poppinsRegular = UIFont(name: Weight.regular.poppinsName, size: 17) != nil
+    private static let poppinsMedium = UIFont(name: Weight.medium.poppinsName, size: 17) != nil
+    private static let poppinsSemibold = UIFont(name: Weight.semibold.poppinsName, size: 17) != nil
+    private static let poppinsBold = UIFont(name: Weight.bold.poppinsName, size: 17) != nil
+
     static func hasPoppins(_ weight: Weight) -> Bool {
-        UIFont(name: weight.poppinsName, size: 17) != nil
+        switch weight {
+        case .regular: poppinsRegular
+        case .medium: poppinsMedium
+        case .semibold: poppinsSemibold
+        case .bold: poppinsBold
+        }
     }
 
     static func font(_ size: CGFloat, _ weight: Weight = .regular, relativeTo style: Font.TextStyle = .body) -> Font {

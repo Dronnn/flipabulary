@@ -25,6 +25,7 @@ struct CardEditorView: View {
     @State private var isSaving = false
     @State private var didLoad = false
     @State private var savedFeedback: String?
+    @State private var stackName = "Choose a stack"
 
     @FocusState private var focus: Field?
 
@@ -38,10 +39,6 @@ struct CardEditorView: View {
             return draft != initialDraft
         }
         return draft != initialDraft
-    }
-
-    private var stackName: String {
-        app.library.stack(id: draft.stackID)?.name ?? "Choose a stack"
     }
 
     private var title: String {
@@ -126,6 +123,9 @@ struct CardEditorView: View {
             .task {
                 loadIfNeeded()
             }
+            .onChange(of: draft.stackID) { _, _ in
+                updateStackName()
+            }
         }
     }
 
@@ -139,15 +139,10 @@ struct CardEditorView: View {
             cardFields
             organization
             moreDetails
-            if isEditing {
-                editingActions
-            } else {
-                addAnotherRow
-            }
         }
         .padding(.horizontal, 20)
         .padding(.top, 8)
-        .padding(.bottom, 92)
+        .padding(.bottom, 20)
     }
 
     private func expandedForm(mode: AppMetrics.LayoutMode) -> some View {
@@ -367,6 +362,14 @@ struct CardEditorView: View {
             if let generalError {
                 InlineMessage(text: generalError, kind: .error)
             }
+            if isEditing {
+                HStack(spacing: 10) {
+                    compactDeleteButton
+                    compactReviewButton
+                }
+            } else {
+                compactAddAnotherRow
+            }
             PrimaryActionButton(
                 title: isEditing ? "Save changes" : "Add card",
                 systemImage: isEditing ? "checkmark" : "plus",
@@ -381,6 +384,57 @@ struct CardEditorView: View {
         .padding(.top, 10)
         .padding(.bottom, 8)
         .background(.ultraThinMaterial)
+    }
+
+    private var compactAddAnotherRow: some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Add another word")
+                    .font(AppFont.font(13, .semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text("Keep this stack and these tags for the next card.")
+                    .font(AppFont.caption())
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+            Spacer(minLength: 8)
+            Toggle("Add another word", isOn: $addAnother)
+                .labelsHidden()
+                .toggleStyle(CompactToggleStyle())
+                .accessibilityIdentifier("card.addAnother")
+        }
+        .frame(minHeight: 44)
+    }
+
+    private var compactDeleteButton: some View {
+        Button(role: .destructive) {
+            showDeleteConfirmation = true
+        } label: {
+            Label("Delete", systemImage: "trash")
+                .font(AppFont.font(14, .semibold))
+                .foregroundStyle(AppColor.danger)
+                .frame(maxWidth: .infinity)
+                .frame(height: 44)
+                .background(AppColor.danger.opacity(0.08), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Delete word")
+        .accessibilityIdentifier("card.delete")
+    }
+
+    private var compactReviewButton: some View {
+        Button {
+            startCardReview()
+        } label: {
+            Label("Review", systemImage: "play.fill")
+                .font(AppFont.font(14, .semibold))
+                .foregroundStyle(AppColor.textPrimary)
+                .frame(maxWidth: .infinity)
+                .frame(height: 44)
+                .background(AppColor.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(AppColor.divider, lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("card.review")
     }
 
     // MARK: Field UI
@@ -443,6 +497,7 @@ struct CardEditorView: View {
             draft = CardDraft()
             draft.stackID = stackID ?? app.library.selectedStack()?.id ?? app.library.defaultStack()?.id
             initialDraft = draft
+            updateStackName()
         case .edit(let id):
             guard let card = app.library.card(id: id) else {
                 generalError = "This word is no longer available."
@@ -451,7 +506,12 @@ struct CardEditorView: View {
             existingCard = card
             draft = CardDraft(card: card)
             initialDraft = draft
+            updateStackName()
         }
+    }
+
+    private func updateStackName() {
+        stackName = app.library.stack(id: draft.stackID)?.name ?? "Choose a stack"
     }
 
     private func attemptClose() {
@@ -514,6 +574,7 @@ struct CardEditorView: View {
         existingCard = duplicate
         draft = CardDraft(card: duplicate)
         initialDraft = draft
+        updateStackName()
         validation = .valid
         duplicateCard = nil
         app.router.showToast("Editing the existing word.")
@@ -589,7 +650,8 @@ struct CardEditorView: View {
             var model = LibraryProjection.displayModel(
                 card: existingCard,
                 stack: existingCard.stack ?? app.library.defaultStack() ?? VocabularyStack(name: "My words"),
-                rules: app.preferences.preferences.rules
+                rules: app.preferences.preferences.rules,
+                recentGrades: []
             )
             model.word = draft.trimmedWord
             model.translation = draft.trimmedTranslation
@@ -633,11 +695,12 @@ struct StackPickerView: View {
     @State private var error: String?
 
     var body: some View {
-        NavigationStack {
+        let stacks = app.library.stacks()
+        return NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     GroupedSurface {
-                        ForEach(Array(app.library.stacks().enumerated()), id: \.element.id) { index, stack in
+                        ForEach(Array(stacks.enumerated()), id: \.element.id) { index, stack in
                             Button {
                                 selection = stack.id
                                 dismiss()
@@ -663,7 +726,7 @@ struct StackPickerView: View {
                                 .contentShape(Rectangle())
                             }
                             .buttonStyle(.plain)
-                            if index < app.library.stacks().count - 1 {
+                            if index < stacks.count - 1 {
                                 SettingsDivider(inset: 66)
                             }
                         }

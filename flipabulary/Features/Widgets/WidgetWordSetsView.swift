@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import Combine
 
 struct WidgetWordSetEditorView: View {
     @Environment(AppEnvironment.self) private var app
@@ -28,7 +29,8 @@ struct WidgetWordSetEditorView: View {
     }
 
     var body: some View {
-        List {
+        let rows = selectedRows
+        return List {
             Section {
                 HStack {
                     Text("Name")
@@ -43,21 +45,21 @@ struct WidgetWordSetEditorView: View {
             }
 
             Section {
-                if selectedRows.isEmpty {
+                if rows.isEmpty {
                     Text("No words in this set yet.")
                         .font(AppFont.body())
                         .foregroundStyle(AppColor.textSecondary)
                 } else {
-                    ForEach(selectedRows) { row in
+                    ForEach(rows) { row in
                         WidgetWordSetRowView(row: row)
                     }
                     .onMove { offsets, destination in
-                        var ids = selectedRows.map(\.id)
+                        var ids = rows.map(\.id)
                         ids.move(fromOffsets: offsets, toOffset: destination)
                         cardIDs = ids
                     }
                     .onDelete { offsets in
-                        var ids = selectedRows.map(\.id)
+                        var ids = rows.map(\.id)
                         ids.remove(atOffsets: offsets)
                         cardIDs = ids
                     }
@@ -119,10 +121,6 @@ struct WidgetWordSetEditorView: View {
             didLoad = true
             load()
         }
-        .onChange(of: cardIDs) { _, _ in
-            guard didLoad else { return }
-            persist()
-        }
         .onDisappear {
             guard didLoad else { return }
             persist()
@@ -166,9 +164,23 @@ struct WidgetWordSetEditorView: View {
 
 private struct WidgetWordPickerSection: Identifiable {
     let name: String
-    let cards: [VocabularyCard]
+    var cards: [VocabularyCard]
 
     var id: String { name }
+}
+
+private struct WidgetPickerEntry: Identifiable {
+    let card: VocabularyCard
+    let stackName: String
+    let wordKey: String
+    let translationKey: String
+    let stackKey: String
+
+    var id: UUID { card.id }
+
+    func matches(_ query: String) -> Bool {
+        wordKey.contains(query) || translationKey.contains(query) || stackKey.contains(query)
+    }
 }
 
 private struct WidgetWordSetRow: Identifiable {
@@ -211,35 +223,58 @@ struct WidgetWordPickerView: View {
     @Binding var selectedCardIDs: [UUID]
     @State private var searchText = ""
     @State private var editorTarget: EditorTarget?
+    @State private var entries: [WidgetPickerEntry] = []
 
     private var selected: Set<UUID> { Set(selectedCardIDs) }
 
-    private var sections: [WidgetWordPickerSection] {
-        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        let cards = app.maintenance.cards().filter { card in
-            guard !query.isEmpty else { return true }
-            return card.word.localizedCaseInsensitiveContains(query)
-                || card.translation.localizedCaseInsensitiveContains(query)
-                || (card.stack?.name.localizedCaseInsensitiveContains(query) ?? false)
+    private func makeSections() -> [WidgetWordPickerSection] {
+        let query = SearchNormalizer.normalize(searchText)
+        var result: [WidgetWordPickerSection] = []
+        var currentName: String?
+        var currentCards: [VocabularyCard] = []
+
+        func flush() {
+            guard let currentName else { return }
+            result.append(WidgetWordPickerSection(name: currentName, cards: currentCards))
         }
-        let grouped = Dictionary(grouping: cards) { card in
-            card.stack?.name ?? "My words"
+
+        for entry in entries {
+            guard query.isEmpty || entry.matches(query) else { continue }
+            if entry.stackName != currentName {
+                flush()
+                currentName = entry.stackName
+                currentCards = []
+            }
+            currentCards.append(entry.card)
         }
-        return grouped.map { name, cards in
-            WidgetWordPickerSection(
-                name: name,
-                cards: cards.sorted {
-                    $0.word.localizedStandardCompare($1.word) == .orderedAscending
+        flush()
+        return result
+    }
+
+    private func reloadEntries() {
+        entries = app.maintenance.cards()
+            .map { card in
+                let stackName = card.stack?.name ?? "My words"
+                return WidgetPickerEntry(
+                    card: card,
+                    stackName: stackName,
+                    wordKey: SearchNormalizer.normalize(card.word),
+                    translationKey: SearchNormalizer.normalize(card.translation),
+                    stackKey: SearchNormalizer.normalize(stackName)
+                )
+            }
+            .sorted { lhs, rhs in
+                if lhs.stackName != rhs.stackName {
+                    return lhs.stackName.localizedStandardCompare(rhs.stackName) == .orderedAscending
                 }
-            )
-        }
-        .sorted { lhs, rhs in
-            lhs.name.localizedStandardCompare(rhs.name) == .orderedAscending
-        }
+                return lhs.card.word.localizedStandardCompare(rhs.card.word) == .orderedAscending
+            }
     }
 
     var body: some View {
-        List {
+        let sections = makeSections()
+        let selectedIDs = selected
+        return List {
             if sections.isEmpty {
                 Section {
                     ContentUnavailableView {
@@ -277,9 +312,9 @@ struct WidgetWordPickerView: View {
                                             .lineLimit(1)
                                     }
                                     Spacer(minLength: 4)
-                                    Image(systemName: selected.contains(card.id) ? "checkmark.circle.fill" : "circle")
+                                    Image(systemName: selectedIDs.contains(card.id) ? "checkmark.circle.fill" : "circle")
                                         .font(.system(size: 21, weight: .semibold))
-                                        .foregroundStyle(selected.contains(card.id) ? AppColor.accentStrong : AppColor.textMuted)
+                                        .foregroundStyle(selectedIDs.contains(card.id) ? AppColor.accentStrong : AppColor.textMuted)
                                 }
                             }
                             .buttonStyle(.plain)
@@ -292,6 +327,10 @@ struct WidgetWordPickerView: View {
         .scrollContentBackground(.hidden)
         .background(AppColor.page)
         .searchable(text: $searchText, prompt: "Search words")
+        .task { reloadEntries() }
+        .onReceive(NotificationCenter.default.publisher(for: ModelContext.didSave)) { _ in
+            reloadEntries()
+        }
         .navigationTitle("Add words")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -315,6 +354,7 @@ struct WidgetWordPickerView: View {
                 if !selectedCardIDs.contains(card.id) {
                     selectedCardIDs.append(card.id)
                 }
+                reloadEntries()
             }
             .environment(app)
         }

@@ -9,6 +9,140 @@ enum SearchNormalizer {
     }
 }
 
+struct LibraryAggregate: Equatable, Sendable {
+    var saved = 0
+    var new = 0
+    var learning = 0
+    var learned = 0
+    var difficult = 0
+
+    init() {}
+
+    init(cards: [CardDisplayModel]) {
+        for card in cards {
+            add(card)
+        }
+    }
+
+    mutating func add(_ card: CardDisplayModel, difficult isDifficult: Bool? = nil) {
+        saved += 1
+        switch card.lifecycle {
+        case .new: new += 1
+        case .learning: learning += 1
+        case .learned: learned += 1
+        }
+        if isDifficult ?? card.isDifficult {
+            difficult += 1
+        }
+    }
+
+    func summary(due: Int) -> LibrarySummary {
+        LibrarySummary(
+            saved: saved,
+            due: due,
+            new: new,
+            learning: learning,
+            learned: learned,
+            difficult: difficult
+        )
+    }
+
+    var categories: [CategorySummary] {
+        [
+            CategorySummary(filter: .new, count: new),
+            CategorySummary(filter: .learning, count: learning),
+            CategorySummary(filter: .learned, count: learned),
+            CategorySummary(filter: .difficult, count: difficult)
+        ]
+    }
+}
+
+/// Pre-sorted card data with normalized search keys and per-stack counts.
+/// Build it once when library data changes; filtering then never re-normalizes
+/// or re-sorts the library on every render or keystroke.
+struct CardListIndex: Sendable {
+    struct Entry: Sendable {
+        var card: CardDisplayModel
+        var searchKey: Data
+
+        func matches(_ query: Data) -> Bool {
+            searchKey.range(of: query) != nil
+        }
+    }
+
+    let entries: [Entry]
+    let all: LibraryAggregate
+    let byStack: [UUID: LibraryAggregate]
+
+    init(cards: [CardDisplayModel] = []) {
+        let sorted = cards.sorted { lhs, rhs in
+            if lhs.createdAt != rhs.createdAt { return lhs.createdAt < rhs.createdAt }
+            return lhs.id.uuidString < rhs.id.uuidString
+        }
+
+        var all = LibraryAggregate()
+        var byStack: [UUID: LibraryAggregate] = [:]
+        entries = sorted.map { card in
+            let isDifficult = card.isDifficult
+            all.add(card, difficult: isDifficult)
+            byStack[card.stackID, default: LibraryAggregate()].add(card, difficult: isDifficult)
+            let searchKey = ([card.word, card.translation] + card.tagNames)
+                .map(SearchNormalizer.normalize)
+                .joined(separator: "\u{1f}")
+            return Entry(
+                card: card,
+                searchKey: Data(searchKey.utf8)
+            )
+        }
+        self.all = all
+        self.byStack = byStack
+    }
+
+    func aggregate(stackID: UUID?) -> LibraryAggregate {
+        guard let stackID else { return all }
+        return byStack[stackID] ?? LibraryAggregate()
+    }
+
+    func removing(cardID: UUID) -> CardListIndex {
+        guard entries.contains(where: { $0.card.id == cardID }) else { return self }
+        let remaining = entries.filter { $0.card.id != cardID }
+        var all = LibraryAggregate()
+        var byStack: [UUID: LibraryAggregate] = [:]
+        for entry in remaining {
+            let isDifficult = entry.card.isDifficult
+            all.add(entry.card, difficult: isDifficult)
+            byStack[entry.card.stackID, default: LibraryAggregate()].add(entry.card, difficult: isDifficult)
+        }
+        return CardListIndex(entries: remaining, all: all, byStack: byStack)
+    }
+
+    private init(entries: [Entry], all: LibraryAggregate, byStack: [UUID: LibraryAggregate]) {
+        self.entries = entries
+        self.all = all
+        self.byStack = byStack
+    }
+
+    func filter(
+        stackID: UUID?,
+        filter: CardFilter,
+        search: String,
+        limit: Int? = nil
+    ) -> [CardDisplayModel] {
+        let normalizedSearch = SearchNormalizer.normalize(search)
+        let query = normalizedSearch.isEmpty ? nil : Data(normalizedSearch.utf8)
+        var result: [CardDisplayModel] = []
+        result.reserveCapacity(min(limit ?? entries.count, entries.count))
+        for entry in entries {
+            if let stackID, entry.card.stackID != stackID { continue }
+            guard filter.matches(lifecycle: entry.card.lifecycle, isDifficult: entry.card.isDifficult) else { continue }
+            if let query, !entry.matches(query) { continue }
+            result.append(entry.card)
+            if let limit, result.count >= limit { break }
+        }
+        return result
+    }
+}
+
 enum LibraryQuery {
     static func scoped(_ cards: [CardDisplayModel], stackID: UUID?) -> [CardDisplayModel] {
         guard let stackID else { return cards }
@@ -41,25 +175,11 @@ enum LibraryQuery {
         stackID: UUID?,
         dueCount: Int
     ) -> LibrarySummary {
-        let scope = scoped(allCards, stackID: stackID)
-        return LibrarySummary(
-            saved: scope.count,
-            due: dueCount,
-            new: scope.filter { $0.lifecycle == .new }.count,
-            learning: scope.filter { $0.lifecycle == .learning }.count,
-            learned: scope.filter { $0.lifecycle == .learned }.count,
-            difficult: scope.filter(\.isDifficult).count
-        )
+        LibraryAggregate(cards: scoped(allCards, stackID: stackID)).summary(due: dueCount)
     }
 
     static func categoryCounts(allCards: [CardDisplayModel], stackID: UUID?) -> [CategorySummary] {
-        let scope = scoped(allCards, stackID: stackID)
-        return [
-            CategorySummary(filter: .new, count: scope.filter { $0.lifecycle == .new }.count),
-            CategorySummary(filter: .learning, count: scope.filter { $0.lifecycle == .learning }.count),
-            CategorySummary(filter: .learned, count: scope.filter { $0.lifecycle == .learned }.count),
-            CategorySummary(filter: .difficult, count: scope.filter(\.isDifficult).count)
-        ]
+        LibraryAggregate(cards: scoped(allCards, stackID: stackID)).categories
     }
 
     static func relativeRatio(count: Int, total: Int) -> Double {

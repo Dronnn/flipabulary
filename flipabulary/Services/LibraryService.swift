@@ -72,6 +72,11 @@ extension CardDraft {
     }
 }
 
+struct LibraryListSnapshot: Sendable {
+    var index: CardListIndex
+    var dueCount: Int
+}
+
 struct CardValidation: Equatable, Sendable {
     var wordError: String?
     var translationError: String?
@@ -157,16 +162,122 @@ final class LibraryService {
     }
 
     func displayModels() -> [CardDisplayModel] {
-        LibraryProjection.displayModels(stacks: stacks(), globalRules: preferences.preferences.rules)
+        displayModels(stacks: stacks())
+    }
+
+    func displayModels(stacks: [VocabularyStack]) -> [CardDisplayModel] {
+        LibraryProjection.displayModels(
+            cards: maintenance.cardsForList(),
+            stacks: stacks,
+            globalRules: preferences.preferences.rules,
+            recentGradesByCard: recentGradesByCard()
+        )
+    }
+
+    func buildListSnapshot(
+        scopeID: UUID?,
+        rules: LearningRules,
+        now: Date,
+        calendar: Calendar
+    ) async -> LibraryListSnapshot? {
+        let container = modelContext.container
+        return await Task.detached(priority: .userInitiated) {
+            let context = ModelContext(container)
+            let stacks = (try? context.fetch(
+                FetchDescriptor<VocabularyStack>(sortBy: [SortDescriptor(\.createdAt)])
+            )) ?? []
+            var cardDescriptor = FetchDescriptor<VocabularyCard>()
+            cardDescriptor.relationshipKeyPathsForPrefetching = [\.stack, \.learningState, \.tags]
+            let cards = (try? context.fetch(cardDescriptor)) ?? []
+            let records = (try? context.fetch(FetchDescriptor<DailyAdmissionRecord>())) ?? []
+            let events = (try? context.fetch(
+                FetchDescriptor<ReviewEvent>(sortBy: [SortDescriptor(\.timestamp, order: .reverse)])
+            )) ?? []
+
+            var recentByCard: [UUID: [CardHistoryItem]] = [:]
+            recentByCard.reserveCapacity(events.count)
+            for event in events {
+                var items = recentByCard[event.cardID, default: []]
+                guard items.count < 5 else { continue }
+                items.append(CardHistoryItem(grade: event.grade, timestamp: event.timestamp))
+                recentByCard[event.cardID] = items
+            }
+
+            let displays = LibraryProjection.displayModels(
+                cards: cards,
+                stacks: stacks,
+                globalRules: rules,
+                recentGradesByCard: recentByCard
+            )
+            let index = CardListIndex(cards: displays)
+            let dueCount = LibraryProjection.dueCount(
+                scopeID: scopeID,
+                stacks: stacks,
+                cards: cards,
+                records: records,
+                globalRules: rules,
+                now: now,
+                calendar: calendar
+            )
+            return LibraryListSnapshot(index: index, dueCount: dueCount)
+        }.value
+    }
+
+    func computeDueCount(
+        scopeID: UUID?,
+        rules: LearningRules,
+        now: Date,
+        calendar: Calendar
+    ) async -> Int {
+        let container = modelContext.container
+        return await Task.detached(priority: .utility) {
+            let context = ModelContext(container)
+            let stacks = (try? context.fetch(FetchDescriptor<VocabularyStack>())) ?? []
+            var cardDescriptor = FetchDescriptor<VocabularyCard>()
+            cardDescriptor.relationshipKeyPathsForPrefetching = [\.stack, \.learningState]
+            let cards = (try? context.fetch(cardDescriptor)) ?? []
+            let records = (try? context.fetch(FetchDescriptor<DailyAdmissionRecord>())) ?? []
+            return LibraryProjection.dueCount(
+                scopeID: scopeID,
+                stacks: stacks,
+                cards: cards,
+                records: records,
+                globalRules: rules,
+                now: now,
+                calendar: calendar
+            )
+        }.value
+    }
+
+    func recentGradesByCard(limit: Int = 5) -> [UUID: [CardHistoryItem]] {
+        let descriptor = FetchDescriptor<ReviewEvent>(
+            sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
+        )
+        guard let events = try? modelContext.fetch(descriptor), !events.isEmpty else { return [:] }
+        var result: [UUID: [CardHistoryItem]] = [:]
+        result.reserveCapacity(events.count)
+        for event in events {
+            var items = result[event.cardID, default: []]
+            guard items.count < limit else { continue }
+            items.append(CardHistoryItem(grade: event.grade, timestamp: event.timestamp))
+            result[event.cardID] = items
+        }
+        return result
     }
 
     func defaultStack() -> VocabularyStack? {
-        stacks().first(where: \.isDefault) ?? stacks().first
+        let descriptor = FetchDescriptor<VocabularyStack>(predicate: #Predicate { $0.isDefault })
+        if let stack = try? modelContext.fetch(descriptor).first {
+            return stack
+        }
+        return stacks().first
     }
 
     func stack(id: UUID?) -> VocabularyStack? {
         guard let id else { return nil }
-        return stacks().first(where: { $0.id == id })
+        let targetID = id
+        let descriptor = FetchDescriptor<VocabularyStack>(predicate: #Predicate { $0.id == targetID })
+        return try? modelContext.fetch(descriptor).first
     }
 
     func selectedStack() -> VocabularyStack? {
@@ -174,7 +285,10 @@ final class LibraryService {
     }
 
     func card(id: UUID) -> VocabularyCard? {
-        cards().first(where: { $0.id == id })
+        let targetID = id
+        var descriptor = FetchDescriptor<VocabularyCard>(predicate: #Predicate { $0.id == targetID })
+        descriptor.relationshipKeyPathsForPrefetching = [\.stack, \.learningState, \.tags]
+        return try? modelContext.fetch(descriptor).first
     }
 
     // MARK: Validation
@@ -276,7 +390,21 @@ final class LibraryService {
     }
 
     private func resolveTags(_ names: [String]) -> [VocabularyTag] {
-        names.compactMap { findOrCreateTag(named: $0) }
+        guard !names.isEmpty else { return [] }
+        var cache: [String: VocabularyTag] = [:]
+        for tag in tags() {
+            cache[SearchNormalizer.normalize(tag.name)] = tag
+        }
+        return names.compactMap { rawName in
+            let name = rawName.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !name.isEmpty, name.count <= 60 else { return nil }
+            let key = SearchNormalizer.normalize(name)
+            if let existing = cache[key] { return existing }
+            let tag = VocabularyTag(name: name, createdAt: clock.now)
+            modelContext.insert(tag)
+            cache[key] = tag
+            return tag
+        }
     }
 
     // MARK: Stack writes

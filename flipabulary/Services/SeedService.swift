@@ -41,13 +41,19 @@ enum SeedService {
             preferences.reconcile(validStackIDs: Set(stacks.map(\.id)))
 
             #if DEBUG
-            let shouldSeed = ProcessInfo.processInfo.arguments.contains("-UITestDemoData")
-                || ProcessInfo.processInfo.arguments.contains("-DemoData")
+            let arguments = ProcessInfo.processInfo.arguments
+            let shouldSeed = arguments.contains("-UITestDemoData") || arguments.contains("-DemoData")
+            let shouldSeedLargeLibrary = arguments.contains("-UITestLargeLibrary")
             #else
             let shouldSeed = false
+            let shouldSeedLargeLibrary = false
             #endif
             var didSeed = false
-            if shouldSeed && defaultStack.cards.isEmpty && stacks.allSatisfy({ $0.cards.isEmpty }) {
+            if shouldSeedLargeLibrary && defaultStack.cards.isEmpty && stacks.allSatisfy({ $0.cards.isEmpty }) {
+                defaultStack.shuffleOrder = false
+                seedLargeLibrary(context: context, stack: defaultStack, now: now)
+                didSeed = true
+            } else if shouldSeed && defaultStack.cards.isEmpty && stacks.allSatisfy({ $0.cards.isEmpty }) {
                 defaultStack.shuffleOrder = false
                 seedDemo(context: context, stack: defaultStack, now: now)
                 if !stacks.contains(where: { $0.name == "Spanish B1" }) {
@@ -62,6 +68,18 @@ enum SeedService {
         } catch {
             context.rollback()
             return PreparationResult(error: "Could not prepare the library: \(error.localizedDescription)", didSeedDemo: false)
+        }
+    }
+
+    private static func seedLargeLibrary(context: ModelContext, stack: VocabularyStack, now: Date) {
+        for index in 0..<800 {
+            let card = VocabularyCard(
+                word: "word \(index)",
+                translation: "перевод \(index)",
+                stack: stack,
+                createdAt: now.addingTimeInterval(Double(index) / 1_000)
+            )
+            context.insert(card)
         }
     }
 

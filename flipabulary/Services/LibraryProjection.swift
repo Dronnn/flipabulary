@@ -2,21 +2,55 @@ import Foundation
 import SwiftData
 
 enum LibraryProjection {
+    private struct StackStats {
+        var candidates: [LearningEngine.QueueCandidate] = []
+        var saved = 0
+        var learned = 0
+        var learning = 0
+        var new = 0
+    }
+
     static func displayModels(
         stacks: [VocabularyStack],
-        globalRules: LearningRules
+        globalRules: LearningRules,
+        recentGradesByCard: [UUID: [CardHistoryItem]]? = nil
     ) -> [CardDisplayModel] {
-        var result: [CardDisplayModel] = []
+        displayModels(
+            cards: stacks.flatMap(\.cards),
+            stacks: stacks,
+            globalRules: globalRules,
+            recentGradesByCard: recentGradesByCard
+        )
+    }
+
+    static func displayModels(
+        cards: [VocabularyCard],
+        stacks: [VocabularyStack],
+        globalRules: LearningRules,
+        recentGradesByCard: [UUID: [CardHistoryItem]]? = nil
+    ) -> [CardDisplayModel] {
+        var rulesByStack: [UUID: LearningRules] = [:]
+        rulesByStack.reserveCapacity(stacks.count)
         for stack in stacks {
-            let rules = stack.effectiveRules(global: globalRules)
-            for card in stack.cards {
-                result.append(displayModel(card: card, stack: stack, rules: rules))
-            }
+            rulesByStack[stack.id] = stack.effectiveRules(global: globalRules)
+        }
+        var result: [CardDisplayModel] = []
+        result.reserveCapacity(cards.count)
+        for card in cards {
+            guard let stack = card.stack else { continue }
+            let rules = rulesByStack[stack.id] ?? stack.effectiveRules(global: globalRules)
+            let recent = recentGradesByCard.map { $0[card.id] ?? [] }
+            result.append(displayModel(card: card, stack: stack, rules: rules, recentGrades: recent))
         }
         return result
     }
 
-    static func displayModel(card: VocabularyCard, stack: VocabularyStack, rules: LearningRules) -> CardDisplayModel {
+    static func displayModel(
+        card: VocabularyCard,
+        stack: VocabularyStack,
+        rules: LearningRules,
+        recentGrades: [CardHistoryItem]? = nil
+    ) -> CardDisplayModel {
         let state = card.learningState
         return CardDisplayModel(
             id: card.id,
@@ -34,7 +68,7 @@ enum LibraryProjection {
             threshold: rules.correctThreshold,
             nextDueAt: state?.nextDueAt,
             createdAt: card.createdAt,
-            recentGrades: LibraryQuery.recentGrades(from: card.reviewEvents)
+            recentGrades: recentGrades ?? LibraryQuery.recentGrades(from: card.reviewEvents)
         )
     }
 
@@ -44,18 +78,7 @@ enum LibraryProjection {
         now: Date,
         calendar: Calendar
     ) -> [LearningEngine.QueueCandidate] {
-        let rules = stack.effectiveRules(global: globalRules)
-        return stack.cards.map { card in
-            let state = card.learningState?.snapshot ?? .fresh
-            let reconciled = LearningEngine.reconcileDecay(state, rules: rules, at: now, calendar: calendar).after
-            return LearningEngine.QueueCandidate(
-                id: card.id,
-                lifecycle: reconciled.lifecycle,
-                nextDueAt: reconciled.nextDueAt,
-                createdAt: card.createdAt,
-                appliedMilestoneCount: reconciled.appliedMilestones.count
-            )
-        }
+        stats(stack: stack, globalRules: globalRules, now: now, calendar: calendar).candidates
     }
 
     static func dueCount(
@@ -65,9 +88,9 @@ enum LibraryProjection {
         now: Date,
         calendar: Calendar
     ) -> Int {
-        let candidates = candidates(stack: stack, globalRules: globalRules, now: now, calendar: calendar)
+        let stats = stats(stack: stack, globalRules: globalRules, now: now, calendar: calendar)
         return LearningEngine.actionableDueCount(
-            candidates: candidates,
+            candidates: stats.candidates,
             newCardsPerDay: stack.newCardsPerDay,
             consumedNewCardIDs: consumed,
             now: now
@@ -82,18 +105,45 @@ enum LibraryProjection {
         now: Date,
         calendar: Calendar
     ) -> Int {
-        stacks
-            .filter { scopeID == nil || $0.id == scopeID }
-            .reduce(0) { total, stack in
-                let record = records.first(where: { $0.stackID == stack.id && recordMatchesToday($0, now: now, calendar: calendar) })
-                return total + dueCount(
-                    stack: stack,
-                    consumed: record?.cardIDs ?? [],
-                    globalRules: globalRules,
-                    now: now,
-                    calendar: calendar
-                )
-            }
+        dueCount(
+            scopeID: scopeID,
+            stacks: stacks,
+            cards: stacks.flatMap(\.cards),
+            records: records,
+            globalRules: globalRules,
+            now: now,
+            calendar: calendar
+        )
+    }
+
+    static func dueCount(
+        scopeID: UUID?,
+        stacks: [VocabularyStack],
+        cards: [VocabularyCard],
+        records: [DailyAdmissionRecord],
+        globalRules: LearningRules,
+        now: Date,
+        calendar: Calendar
+    ) -> Int {
+        let recordsByStack = recordsByStackForToday(records, now: now, calendar: calendar)
+        let cardsByStack = cardsByStack(cards)
+        var total = 0
+        for stack in stacks where scopeID == nil || stack.id == scopeID {
+            let rules = stack.effectiveRules(global: globalRules)
+            let stats = stats(
+                cards: cardsByStack[stack.id] ?? [],
+                rules: rules,
+                now: now,
+                calendar: calendar
+            )
+            total += LearningEngine.actionableDueCount(
+                candidates: stats.candidates,
+                newCardsPerDay: stack.newCardsPerDay,
+                consumedNewCardIDs: recordsByStack[stack.id]?.cardIDs ?? [],
+                now: now
+            )
+        }
+        return total
     }
 
     static func stackDisplays(
@@ -103,21 +153,46 @@ enum LibraryProjection {
         now: Date,
         calendar: Calendar
     ) -> [StackDisplayModel] {
-        stacks.map { stack in
-            let record = records.first(where: { $0.stackID == stack.id && recordMatchesToday($0, now: now, calendar: calendar) })
-            let due = dueCount(
-                stack: stack,
-                consumed: record?.cardIDs ?? [],
-                globalRules: globalRules,
+        stackDisplays(
+            stacks: stacks,
+            cards: stacks.flatMap(\.cards),
+            records: records,
+            globalRules: globalRules,
+            now: now,
+            calendar: calendar
+        )
+    }
+
+    static func stackDisplays(
+        stacks: [VocabularyStack],
+        cards: [VocabularyCard],
+        records: [DailyAdmissionRecord],
+        globalRules: LearningRules,
+        now: Date,
+        calendar: Calendar
+    ) -> [StackDisplayModel] {
+        let recordsByStack = recordsByStackForToday(records, now: now, calendar: calendar)
+        let cardsByStack = cardsByStack(cards)
+        return stacks.map { stack in
+            let rules = stack.effectiveRules(global: globalRules)
+            let stats = stats(
+                cards: cardsByStack[stack.id] ?? [],
+                rules: rules,
                 now: now,
                 calendar: calendar
+            )
+            let due = LearningEngine.actionableDueCount(
+                candidates: stats.candidates,
+                newCardsPerDay: stack.newCardsPerDay,
+                consumedNewCardIDs: recordsByStack[stack.id]?.cardIDs ?? [],
+                now: now
             )
             return StackDisplayModel(
                 id: stack.id,
                 name: stack.name,
-                savedCount: stack.cards.count,
+                savedCount: stats.saved,
                 dueCount: due,
-                learnedCount: stack.cards.filter { $0.learningState?.lifecycle == .learned }.count
+                learnedCount: stats.learned
             )
         }
     }
@@ -133,22 +208,65 @@ enum LibraryProjection {
         now: Date,
         calendar: Calendar
     ) -> WidgetSnapshot {
+        widgetSnapshot(
+            stacks: stacks,
+            cards: stacks.flatMap(\.cards),
+            records: records,
+            preferences: preferences,
+            now: now,
+            calendar: calendar
+        )
+    }
+
+    static func widgetSnapshot(
+        stacks: [VocabularyStack],
+        cards: [VocabularyCard],
+        records: [DailyAdmissionRecord],
+        preferences: AppPreferences,
+        now: Date,
+        calendar: Calendar
+    ) -> WidgetSnapshot {
+        let recordsByStack = recordsByStackForToday(records, now: now, calendar: calendar)
+        var cardsByStack: [UUID: [VocabularyCard]] = [:]
+        cardsByStack.reserveCapacity(stacks.count)
+        for card in cards {
+            guard let stackID = card.stack?.id else { continue }
+            cardsByStack[stackID, default: []].append(card)
+        }
         let stackSnapshots = stacks.map { stack -> WidgetStackSnapshot in
             let rules = stack.effectiveRules(global: preferences.rules)
-            let record = records.first(where: { $0.stackID == stack.id && recordMatchesToday($0, now: now, calendar: calendar) })
-            let candidates = candidates(stack: stack, globalRules: preferences.rules, now: now, calendar: calendar)
-            let due = LearningEngine.actionableDueCount(
-                candidates: candidates,
-                newCardsPerDay: stack.newCardsPerDay,
-                consumedNewCardIDs: record?.cardIDs ?? [],
-                now: now
-            )
-            let cards = stack.cards
-                .sorted { $0.createdAt < $1.createdAt }
-                .map { card in
-                    let state = card.learningState?.snapshot ?? .fresh
-                    let reconciled = LearningEngine.reconcileDecay(state, rules: rules, at: now, calendar: calendar).after
-                    return WidgetCardSnapshot(
+            let sortedCards = (cardsByStack[stack.id] ?? []).sorted { $0.createdAt < $1.createdAt }
+            var candidates: [LearningEngine.QueueCandidate] = []
+            candidates.reserveCapacity(sortedCards.count)
+            var cards: [WidgetCardSnapshot] = []
+            cards.reserveCapacity(sortedCards.count)
+            var learned = 0
+            var learning = 0
+            var new = 0
+            var nextDue: Date?
+
+            for card in sortedCards {
+                let state = card.learningState?.snapshot ?? .fresh
+                let reconciled = LearningEngine.reconcileDecay(state, rules: rules, at: now, calendar: calendar).after
+                switch reconciled.lifecycle {
+                case .learned: learned += 1
+                case .learning: learning += 1
+                case .new: new += 1
+                }
+                if reconciled.lifecycle != .new, let due = reconciled.nextDueAt {
+                    nextDue = nextDue.map { min($0, due) } ?? due
+                }
+                candidates.append(
+                    LearningEngine.QueueCandidate(
+                        id: card.id,
+                        lifecycle: reconciled.lifecycle,
+                        nextDueAt: reconciled.nextDueAt,
+                        createdAt: card.createdAt,
+                        appliedMilestoneCount: reconciled.appliedMilestones.count
+                    )
+                )
+                cards.append(
+                    WidgetCardSnapshot(
                         id: card.id,
                         word: card.word,
                         translation: card.translation,
@@ -158,31 +276,23 @@ enum LibraryProjection {
                         dueAt: reconciled.nextDueAt,
                         createdAt: card.createdAt
                     )
-                }
-            let nextDue = stack.cards.compactMap { card -> Date? in
-                let state = card.learningState?.snapshot ?? .fresh
-                let reconciled = LearningEngine.reconcileDecay(state, rules: rules, at: now, calendar: calendar).after
-                guard reconciled.lifecycle != .new else { return nil }
-                return reconciled.nextDueAt
-            }.min()
+                )
+            }
+
+            let due = LearningEngine.actionableDueCount(
+                candidates: candidates,
+                newCardsPerDay: stack.newCardsPerDay,
+                consumedNewCardIDs: recordsByStack[stack.id]?.cardIDs ?? [],
+                now: now
+            )
             return WidgetStackSnapshot(
                 id: stack.id,
                 name: stack.name,
-                savedCount: stack.cards.count,
+                savedCount: sortedCards.count,
                 dueCount: due,
-                learnedCount: stack.cards.filter { card in
-                    let state = card.learningState?.snapshot ?? .fresh
-                    return LearningEngine.reconcileDecay(state, rules: rules, at: now, calendar: calendar).after.lifecycle == .learned
-                }.count,
-                learningCount: stack.cards.filter { card in
-                    let state = card.learningState?.snapshot ?? .fresh
-                    let reconciled = LearningEngine.reconcileDecay(state, rules: rules, at: now, calendar: calendar).after
-                    return reconciled.lifecycle == .learning
-                }.count,
-                newCount: stack.cards.filter { card in
-                    let state = card.learningState?.snapshot ?? .fresh
-                    return LearningEngine.reconcileDecay(state, rules: rules, at: now, calendar: calendar).after.lifecycle == .new
-                }.count,
+                learnedCount: learned,
+                learningCount: learning,
+                newCount: new,
                 cards: cards,
                 nextDueAt: nextDue
             )
@@ -227,5 +337,72 @@ enum LibraryProjection {
             wordSets: wordSetSnapshots,
             defaultWordSetID: validDefaultSet
         )
+    }
+
+    private static func stats(
+        stack: VocabularyStack,
+        globalRules: LearningRules,
+        now: Date,
+        calendar: Calendar
+    ) -> StackStats {
+        stats(
+            cards: stack.cards,
+            rules: stack.effectiveRules(global: globalRules),
+            now: now,
+            calendar: calendar
+        )
+    }
+
+    private static func stats(
+        cards: [VocabularyCard],
+        rules: LearningRules,
+        now: Date,
+        calendar: Calendar
+    ) -> StackStats {
+        var result = StackStats()
+        result.candidates.reserveCapacity(cards.count)
+        result.saved = cards.count
+        for card in cards {
+            let state = card.learningState?.snapshot ?? .fresh
+            let reconciled = LearningEngine.reconcileDecay(state, rules: rules, at: now, calendar: calendar).after
+            switch reconciled.lifecycle {
+            case .learned: result.learned += 1
+            case .learning: result.learning += 1
+            case .new: result.new += 1
+            }
+            result.candidates.append(
+                LearningEngine.QueueCandidate(
+                    id: card.id,
+                    lifecycle: reconciled.lifecycle,
+                    nextDueAt: reconciled.nextDueAt,
+                    createdAt: card.createdAt,
+                    appliedMilestoneCount: reconciled.appliedMilestones.count
+                )
+            )
+        }
+        return result
+    }
+
+    private static func cardsByStack(_ cards: [VocabularyCard]) -> [UUID: [VocabularyCard]] {
+        var result: [UUID: [VocabularyCard]] = [:]
+        for card in cards {
+            guard let stackID = card.stack?.id else { continue }
+            result[stackID, default: []].append(card)
+        }
+        return result
+    }
+
+    private static func recordsByStackForToday(
+        _ records: [DailyAdmissionRecord],
+        now: Date,
+        calendar: Calendar
+    ) -> [UUID: DailyAdmissionRecord] {
+        let todayKey = CalendarTools.dayKey(for: now, calendar: calendar)
+        var result: [UUID: DailyAdmissionRecord] = [:]
+        result.reserveCapacity(records.count)
+        for record in records where record.dayKey == todayKey {
+            result[record.stackID] = record
+        }
+        return result
     }
 }

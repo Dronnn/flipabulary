@@ -377,6 +377,38 @@ final class FlipabularyUITests: XCTestCase {
     }
 
     @MainActor
+    func testLargeLibraryOpensCardsAndScrolls() throws {
+        let app = launch(demo: false, extraArguments: ["-UITestLargeLibrary"])
+        let firstRow = app.buttons.matching(identifier: "words.row").firstMatch
+        XCTAssertTrue(firstRow.waitForExistence(timeout: 20))
+
+        firstRow.tap()
+        XCTAssertTrue(app.textFields["card.word"].waitForExistence(timeout: 5))
+        app.buttons["card.close"].tap()
+        XCTAssertTrue(firstRow.waitForExistence(timeout: 5))
+
+        for _ in 0..<5 {
+            app.swipeUp()
+        }
+        XCTAssertTrue(app.buttons.matching(identifier: "words.row").firstMatch.exists)
+    }
+
+    @MainActor
+    func testSwipeDeleteRemovesWordFromMainList() throws {
+        let app = launch()
+        let row = app.buttons
+            .matching(identifier: "words.row")
+            .matching(NSPredicate(format: "label CONTAINS[c] %@", "ephemeral"))
+            .firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 5))
+        row.swipeLeft()
+        let delete = app.buttons["Delete"].firstMatch
+        XCTAssertTrue(delete.waitForExistence(timeout: 3))
+        delete.tap()
+        XCTAssertFalse(app.staticTexts["ephemeral"].waitForExistence(timeout: 2))
+    }
+
+    @MainActor
     func testDeleteWordRequiresConfirmationAndRemovesRow() throws {
         let app = launch()
         XCTAssertTrue(app.staticTexts["ephemeral"].waitForExistence(timeout: 5))

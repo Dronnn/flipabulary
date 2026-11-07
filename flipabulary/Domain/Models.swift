@@ -14,6 +14,7 @@ final class VocabularyStack {
     var newCardsPerDay: Int
     var shuffleOrder: Bool
     var translationFirst: Bool
+    var presentationModeRaw: String?
     var stepsData: Data?
     var customRulesData: Data?
 
@@ -29,6 +30,7 @@ final class VocabularyStack {
         newCardsPerDay: Int = 10,
         shuffleOrder: Bool = true,
         translationFirst: Bool = false,
+        presentationMode: CardPresentationOrder? = nil,
         steps: [TimeInterval] = LearningRules.defaultSteps
     ) {
         self.id = id
@@ -40,6 +42,7 @@ final class VocabularyStack {
         self.newCardsPerDay = newCardsPerDay
         self.shuffleOrder = shuffleOrder
         self.translationFirst = translationFirst
+        self.presentationModeRaw = (presentationMode ?? (translationFirst ? .backFirst : .frontFirst)).rawValue
         self.stepsData = try? JSONEncoder().encode(steps)
         self.customRulesData = nil
     }
@@ -54,6 +57,17 @@ final class VocabularyStack {
         set {
             stepsData = try? JSONEncoder().encode(LearningRules.validatedSteps(newValue))
             updatedAt = Date()
+        }
+    }
+
+    var presentationMode: CardPresentationOrder {
+        get {
+            presentationModeRaw.flatMap(CardPresentationOrder.init(rawValue:))
+                ?? (translationFirst ? .backFirst : .frontFirst)
+        }
+        set {
+            presentationModeRaw = newValue.rawValue
+            translationFirst = newValue == .backFirst
         }
     }
 
@@ -81,7 +95,8 @@ final class VocabularyStack {
             translationFirst: translationFirst,
             steps: steps,
             rules: effectiveRules(global: globalRules),
-            seed: seed
+            seed: seed,
+            presentationMode: presentationMode
         ).normalized()
     }
 }

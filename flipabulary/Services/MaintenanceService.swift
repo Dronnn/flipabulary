@@ -56,15 +56,25 @@ final class MaintenanceService {
         (try? modelContext.fetch(FetchDescriptor<VocabularyCard>())) ?? []
     }
 
+    func cardsForList() -> [VocabularyCard] {
+        var descriptor = FetchDescriptor<VocabularyCard>()
+        descriptor.relationshipKeyPathsForPrefetching = [\.stack, \.learningState, \.tags]
+        return (try? modelContext.fetch(descriptor)) ?? []
+    }
+
     func refresh() {
-        reconcileDecay()
-        promoteWhereRulesRequire()
-        publishSnapshot()
+        let stacks = stacks()
+        reconcileDecay(stacks: stacks)
+        promoteWhereRulesRequire(stacks: stacks)
+        publishSnapshot(stacks: stacks)
     }
 
     func reconcileDecay() {
+        reconcileDecay(stacks: stacks())
+    }
+
+    private func reconcileDecay(stacks: [VocabularyStack]) {
         let now = clock.now
-        let stacks = stacks()
         guard !stacks.isEmpty else { return }
         var changed = false
         for stack in stacks {
@@ -90,7 +100,10 @@ final class MaintenanceService {
     }
 
     func promoteWhereRulesRequire() {
-        let stacks = stacks()
+        promoteWhereRulesRequire(stacks: stacks())
+    }
+
+    private func promoteWhereRulesRequire(stacks: [VocabularyStack]) {
         var changed = false
         for stack in stacks {
             let rules = stack.effectiveRules(global: preferences.preferences.rules)
@@ -175,8 +188,13 @@ final class MaintenanceService {
     }
 
     func publishSnapshot() {
+        publishSnapshot(stacks: stacks())
+    }
+
+    private func publishSnapshot(stacks: [VocabularyStack]) {
         let snapshot = LibraryProjection.widgetSnapshot(
-            stacks: stacks(),
+            stacks: stacks,
+            cards: cardsForList(),
             records: records(),
             preferences: preferences.preferences,
             now: clock.now,
@@ -195,21 +213,19 @@ final class MaintenanceService {
     func nextDueDate(scopeID: UUID?) -> Date? {
         let stacks = stacks().filter { scopeID == nil || $0.id == scopeID }
         let now = clock.now
-        var dates: [Date] = []
+        var earliest: Date?
         for stack in stacks {
             let rules = stack.effectiveRules(global: preferences.preferences.rules)
             for card in stack.cards {
                 let state = card.learningState?.snapshot ?? .fresh
                 let reconciled = LearningEngine.reconcileDecay(state, rules: rules, at: now, calendar: calendar).after
-                if reconciled.lifecycle == .learning, let due = reconciled.nextDueAt, due > now {
-                    dates.append(due)
-                }
-                if reconciled.lifecycle == .learned, let due = reconciled.nextDueAt, due > now {
-                    dates.append(due)
-                }
+                guard reconciled.lifecycle == .learning || reconciled.lifecycle == .learned,
+                      let due = reconciled.nextDueAt,
+                      due > now else { continue }
+                earliest = earliest.map { min($0, due) } ?? due
             }
         }
-        return dates.min()
+        return earliest
     }
 
     @discardableResult

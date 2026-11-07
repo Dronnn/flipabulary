@@ -308,12 +308,14 @@ struct ReviewView: View {
             VStack(spacing: 6) {
                 ForEach(Array(upcoming), id: \.id) { presentation in
                     if let queued = app.library.card(id: presentation.cardID) {
+                        let translationFirst = presentation.translationFirst ?? config.translationFirst
+                        let prompt = promptText(card: queued, config: config, translationFirst: translationFirst)
                         HStack(spacing: 8) {
                             RoundedRectangle(cornerRadius: 2)
                                 .fill(presentation.isRetry ? AppColor.peach : AppColor.divider)
                                 .frame(width: 3, height: 30)
                             VStack(alignment: .leading, spacing: 1) {
-                                Text(promptText(card: queued, config: config))
+                                Text(prompt)
                                     .font(AppFont.font(12, .semibold))
                                     .foregroundStyle(AppColor.textPrimary)
                                     .lineLimit(1)
@@ -326,7 +328,7 @@ struct ReviewView: View {
                         .padding(8)
                         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                         .accessibilityElement(children: .ignore)
-                        .accessibilityLabel("Upcoming \(presentation.isRetry ? "repeat" : "card"): \(promptText(card: queued, config: config))")
+                        .accessibilityLabel("Upcoming \(presentation.isRetry ? "repeat" : "card"): \(prompt)")
                     }
                 }
                 if upcoming.isEmpty {
@@ -415,8 +417,10 @@ struct ReviewView: View {
         config: SessionConfig,
         expanded: Bool
     ) -> some View {
+        let currentPresentation = session.currentPresentation()
         let state = card.learningState?.snapshot ?? .fresh
-        let isRetry = session.currentPresentation()?.isRetry ?? false
+        let isRetry = currentPresentation?.isRetry ?? false
+        let translationFirst = currentPresentation?.translationFirst ?? config.translationFirst
         let showingBack = session.showingBack
         let swipeProgress = min(1, abs(dragOffset.width) / swipeThreshold)
         let content = VStack(spacing: 0) {
@@ -438,7 +442,7 @@ struct ReviewView: View {
             Spacer(minLength: expanded ? 34 : 24)
 
             ZStack {
-                frontContent(card: card, config: config, expanded: expanded)
+                frontContent(card: card, config: config, expanded: expanded, translationFirst: translationFirst)
                     .opacity(showingBack ? 0 : 1)
                     .rotation3DEffect(
                         .degrees(showingBack ? -180 : 0),
@@ -446,7 +450,7 @@ struct ReviewView: View {
                         perspective: 0.55
                     )
                     .accessibilityHidden(true)
-                backContent(card: card, config: config, expanded: expanded)
+                backContent(card: card, config: config, expanded: expanded, translationFirst: translationFirst)
                     .opacity(showingBack ? 1 : 0)
                     .rotation3DEffect(
                         .degrees(showingBack ? 0 : 180),
@@ -476,8 +480,8 @@ struct ReviewView: View {
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
 
         let cardLabel = showingBack
-            ? backAccessibilityLabel(card: card, config: config)
-            : frontAccessibilityLabel(card: card, config: config)
+            ? backAccessibilityLabel(card: card, config: config, translationFirst: translationFirst)
+            : frontAccessibilityLabel(card: card, config: config, translationFirst: translationFirst)
 
         return content
             .overlay(alignment: .topLeading) {
@@ -588,11 +592,16 @@ struct ReviewView: View {
         }
     }
 
-    private func frontContent(card: VocabularyCard, config: SessionConfig, expanded: Bool) -> some View {
-        let prompt = config.translationFirst ? card.translation : card.word
-        let example = config.translationFirst ? card.translatedExample : card.sourceExample
+    private func frontContent(
+        card: VocabularyCard,
+        config: SessionConfig,
+        expanded: Bool,
+        translationFirst: Bool
+    ) -> some View {
+        let prompt = translationFirst ? card.translation : card.word
+        let example = translationFirst ? card.translatedExample : card.sourceExample
         return VStack(spacing: 8) {
-            if !config.translationFirst, let phonetic = card.phonetic, !phonetic.isEmpty {
+            if !translationFirst, let phonetic = card.phonetic, !phonetic.isEmpty {
                 Text(phonetic)
                     .font(AppFont.font(13, .regular))
                     .foregroundStyle(AppColor.textSecondary)
@@ -604,7 +613,7 @@ struct ReviewView: View {
                 .minimumScaleFactor(0.55)
                 .lineLimit(4)
                 .padding(.horizontal, 20)
-            if !config.translationFirst, let pos = card.partOfSpeech, expanded {
+            if !translationFirst, let pos = card.partOfSpeech, expanded {
                 partOfSpeechChips(pos)
             }
             if let example, !example.isEmpty {
@@ -618,14 +627,19 @@ struct ReviewView: View {
             }
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(accessibilityPrompt(prompt: prompt, phonetic: config.translationFirst ? nil : card.phonetic, example: example))
+        .accessibilityLabel(accessibilityPrompt(prompt: prompt, phonetic: translationFirst ? nil : card.phonetic, example: example))
     }
 
-    private func backContent(card: VocabularyCard, config: SessionConfig, expanded: Bool) -> some View {
-        let answer = config.translationFirst ? card.word : card.translation
-        let answerExample = config.translationFirst ? card.sourceExample : card.translatedExample
-        let prompt = config.translationFirst ? card.translation : card.word
-        let promptExample = config.translationFirst ? card.translatedExample : card.sourceExample
+    private func backContent(
+        card: VocabularyCard,
+        config: SessionConfig,
+        expanded: Bool,
+        translationFirst: Bool
+    ) -> some View {
+        let answer = translationFirst ? card.word : card.translation
+        let answerExample = translationFirst ? card.sourceExample : card.translatedExample
+        let prompt = translationFirst ? card.translation : card.word
+        let promptExample = translationFirst ? card.translatedExample : card.sourceExample
         return VStack(spacing: 10) {
             Text(answer)
                 .font(AppFont.backTranslation())
@@ -651,7 +665,7 @@ struct ReviewView: View {
             Text(prompt)
                 .font(AppFont.font(17, .semibold))
                 .foregroundStyle(AppColor.textPrimary)
-            if !config.translationFirst, let phonetic = card.phonetic, !phonetic.isEmpty {
+            if !translationFirst, let phonetic = card.phonetic, !phonetic.isEmpty {
                 Text(phonetic)
                     .font(AppFont.font(12, .regular))
                     .foregroundStyle(AppColor.textSecondary)
@@ -866,8 +880,8 @@ struct ReviewView: View {
         now = Date()
     }
 
-    private func promptText(card: VocabularyCard, config: SessionConfig) -> String {
-        config.translationFirst ? card.translation : card.word
+    private func promptText(card: VocabularyCard, config: SessionConfig, translationFirst: Bool) -> String {
+        translationFirst ? card.translation : card.word
     }
 
     private func accessibilityPrompt(prompt: String, phonetic: String?, example: String?) -> String {
@@ -877,21 +891,29 @@ struct ReviewView: View {
         return parts.joined(separator: ", ")
     }
 
-    private func frontAccessibilityLabel(card: VocabularyCard, config: SessionConfig) -> String {
-        let prompt = config.translationFirst ? card.translation : card.word
-        let example = config.translationFirst ? card.translatedExample : card.sourceExample
+    private func frontAccessibilityLabel(
+        card: VocabularyCard,
+        config: SessionConfig,
+        translationFirst: Bool
+    ) -> String {
+        let prompt = translationFirst ? card.translation : card.word
+        let example = translationFirst ? card.translatedExample : card.sourceExample
         return accessibilityPrompt(
             prompt: prompt,
-            phonetic: config.translationFirst ? nil : card.phonetic,
+            phonetic: translationFirst ? nil : card.phonetic,
             example: example
         )
     }
 
-    private func backAccessibilityLabel(card: VocabularyCard, config: SessionConfig) -> String {
-        let answer = config.translationFirst ? card.word : card.translation
-        let answerExample = config.translationFirst ? card.sourceExample : card.translatedExample
-        let prompt = config.translationFirst ? card.translation : card.word
-        let promptExample = config.translationFirst ? card.translatedExample : card.sourceExample
+    private func backAccessibilityLabel(
+        card: VocabularyCard,
+        config: SessionConfig,
+        translationFirst: Bool
+    ) -> String {
+        let answer = translationFirst ? card.word : card.translation
+        let answerExample = translationFirst ? card.sourceExample : card.translatedExample
+        let prompt = translationFirst ? card.translation : card.word
+        let promptExample = translationFirst ? card.translatedExample : card.sourceExample
         let primary = accessibilityPrompt(prompt: answer, phonetic: nil, example: answerExample)
         let secondary = accessibilityPrompt(prompt: prompt, phonetic: nil, example: promptExample)
         return "\(primary), \(secondary)"

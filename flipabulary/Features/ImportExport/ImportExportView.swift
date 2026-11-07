@@ -481,37 +481,99 @@ struct ImportPreviewView: View {
 
     private var preview: some View {
         VStack(alignment: .leading, spacing: 8) {
-            SectionHeader(title: "Preview")
-            ForEach(Array(plan.decks.prefix(3).enumerated()), id: \.offset) { _, deck in
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                SectionHeader(title: "Preview")
+                Text(String(format: app.localized("%lld words"), plan.totalCards))
+                    .font(AppFont.caption())
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize()
+            }
+
+            if plan.decks.isEmpty {
                 GroupedSurface {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text(deck.name)
-                                .font(AppFont.fieldValue())
-                                .foregroundStyle(AppColor.textPrimary)
-                                .lineLimit(1)
-                            Spacer()
-                            Text("\(deck.cards.count) words")
-                                .font(AppFont.caption())
-                                .foregroundStyle(AppColor.textSecondary)
-                        }
-                        ForEach(Array(deck.cards.prefix(3).enumerated()), id: \.offset) { _, card in
-                            HStack(alignment: .top, spacing: 8) {
-                                Text(card.word)
-                                    .font(AppFont.font(13, .semibold))
-                                    .foregroundStyle(AppColor.textPrimary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text(card.translation)
-                                    .font(AppFont.font(13, .regular))
-                                    .foregroundStyle(AppColor.textSecondary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
+                    EmptyStateView(
+                        title: "No words here",
+                        message: "No valid cards were found. Check the file and column layout."
+                    )
+                }
+            } else {
+                GroupedSurface {
+                    LazyVStack(alignment: .leading, spacing: 0) {
+                        ForEach(Array(plan.decks.enumerated()), id: \.offset) { deckIndex, deck in
+                            deckPreviewHeader(deck)
+                            ForEach(Array(deck.cards.enumerated()), id: \.offset) { cardIndex, card in
+                                wordPairRow(card)
+                                if cardIndex < deck.cards.count - 1 {
+                                    SettingsDivider(inset: 16)
+                                }
+                            }
+                            if deckIndex < plan.decks.count - 1 {
+                                SettingsDivider(inset: 0)
                             }
                         }
                     }
-                    .padding(16)
                 }
             }
         }
+    }
+
+    private func deckPreviewHeader(_ deck: ImportedDeck) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "square.stack.3d.up.fill")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(AppColor.accentStrong)
+            Text(deck.name)
+                .font(AppFont.font(13, .semibold))
+                .foregroundStyle(AppColor.textPrimary)
+                .lineLimit(2)
+            Spacer(minLength: 8)
+            Text(String(format: app.localized("%lld words"), deck.cards.count))
+                .font(AppFont.caption())
+                .foregroundStyle(AppColor.textSecondary)
+                .fixedSize()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(AppColor.accentSoft)
+    }
+
+    private func wordPairRow(_ card: ImportedCard) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(card.word)
+                    .font(AppFont.font(15, .semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let example = card.example, !example.isEmpty {
+                    Text(example)
+                        .font(AppFont.caption())
+                        .foregroundStyle(AppColor.textSecondary)
+                        .lineLimit(2)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            Image(systemName: "arrow.right")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(AppColor.textMuted)
+                .padding(.top, 4)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(card.translation)
+                    .font(AppFont.font(15, .regular))
+                    .foregroundStyle(AppColor.textPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let example = card.translatedExample, !example.isEmpty {
+                    Text(example)
+                        .font(AppFont.caption())
+                        .foregroundStyle(AppColor.textSecondary)
+                        .lineLimit(2)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
     }
 
     private func importPlan() {

@@ -244,18 +244,35 @@ final class ReminderService {
         let now = clock.now
         let key = CalendarTools.dayKey(for: now, calendar: calendar)
         let records = maintenance.records()
+        var recordsByStack: [UUID: DailyAdmissionRecord] = [:]
+        for record in records where record.dayKey == key {
+            recordsByStack[record.stackID] = record
+        }
+        var cardsByStack: [UUID: [VocabularyCard]] = [:]
+        for card in maintenance.cardsForList() {
+            guard let stackID = card.stack?.id else { continue }
+            cardsByStack[stackID, default: []].append(card)
+        }
         let stacks = maintenance.stacks().map { stack -> ReminderStackWork in
             let rules = stack.effectiveRules(global: preferences.preferences.rules)
-            let consumed = records.first(where: { $0.stackID == stack.id && $0.dayKey == key })?.cardIDs ?? []
-            let cards = stack.cards.map { card -> ReminderCardWork in
+            let consumed = recordsByStack[stack.id]?.cardIDs ?? []
+            var newCount = 0
+            var earliestLearning: Date?
+            var earliestLearned: Date?
+            for card in cardsByStack[stack.id] ?? [] {
                 let state = card.learningState?.snapshot ?? .fresh
-                return ReminderCardWork(
-                    lifecycle: state.lifecycle,
-                    repeatCount: state.repeatCount,
-                    nextDueAt: state.nextDueAt,
-                    learnedAnchor: state.learnedAnchor,
-                    appliedMilestones: state.appliedMilestones
-                )
+                switch state.lifecycle {
+                case .new:
+                    newCount += 1
+                case .learning:
+                    if let due = state.nextDueAt {
+                        earliestLearning = earliestLearning.map { min($0, due) } ?? due
+                    }
+                case .learned:
+                    guard state.appliedMilestones.count < LearningEngine.decayMilestones.count,
+                          let due = state.nextDueAt else { continue }
+                    earliestLearned = earliestLearned.map { min($0, due) } ?? due
+                }
             }
             return ReminderStackWork(
                 id: stack.id,
@@ -263,7 +280,10 @@ final class ReminderService {
                 newPerDay: stack.newCardsPerDay,
                 consumedToday: consumed,
                 rules: rules,
-                cards: cards
+                cards: [],
+                newCount: newCount,
+                earliestLearningDue: earliestLearning,
+                earliestLearnedDue: earliestLearned
             )
         }
         return ReminderWorkSnapshot(stacks: stacks)

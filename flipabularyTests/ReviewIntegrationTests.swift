@@ -31,6 +31,30 @@ final class ReviewIntegrationTests: XCTestCase {
         )
     }
 
+    func testStackDirectionIsCapturedBySession() throws {
+        let stack = harness.makeStack(translationFirst: false)
+        stack.presentationMode = .backFirst
+        try harness.save()
+        _ = dueCard(word: "direction", stack: stack)
+
+        let session = try start(stack)
+        XCTAssertEqual(session.config?.effectivePresentationMode, .backFirst)
+        let presentation = try XCTUnwrap(session.currentPresentation())
+        XCTAssertEqual(presentation.translationFirst, true)
+    }
+
+    func testMixedDirectionCapturesAConcreteSidePerPresentation() throws {
+        let stack = harness.makeStack(translationFirst: false)
+        stack.presentationMode = .mixed
+        try harness.save()
+        _ = dueCard(word: "mixed", stack: stack)
+
+        let session = try start(stack)
+        XCTAssertEqual(session.config?.effectivePresentationMode, .mixed)
+        let presentation = try XCTUnwrap(session.currentPresentation())
+        XCTAssertNotNil(presentation.translationFirst)
+    }
+
     private func start(_ stack: VocabularyStack) throws -> ReviewSession {
         switch harness.review.requestReview(scopeID: stack.id) {
         case .started(let id):

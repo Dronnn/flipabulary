@@ -160,7 +160,8 @@ final class ReviewService {
                 isRetry: false,
                 retryNumber: 0,
                 availableAt: now,
-                gradedAt: nil
+                gradedAt: nil,
+                translationFirst: config.nextShowsTranslationFirst()
             )
         }
         let queue = ReviewQueueEnvelope(
@@ -303,7 +304,8 @@ final class ReviewService {
                         isRetry: true,
                         retryNumber: retries + 1,
                         availableAt: LearningEngine.retryDueAt(now: now, rules: config.rules),
-                        gradedAt: nil
+                        gradedAt: nil,
+                        translationFirst: config.nextShowsTranslationFirst()
                     )
                 )
             }

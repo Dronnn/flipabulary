@@ -12,23 +12,20 @@ struct StacksView: View {
     @State private var error: String?
     private let allStacksTileID = UUID(uuidString: "00000000-0000-0000-0000-0000000000A1")!
 
-    private var stacks: [VocabularyStack] { app.library.stacks() }
-
-    private var displays: [StackDisplayModel] {
-        LibraryProjection.stackDisplays(
+    var body: some View {
+        let stacks = app.library.stacks()
+        let displays = LibraryProjection.stackDisplays(
             stacks: stacks,
+            cards: app.maintenance.cardsForList(),
             records: app.maintenance.records(),
             globalRules: app.preferences.preferences.rules,
             now: app.maintenance.clock.now,
             calendar: app.maintenance.calendar
         )
-    }
-
-    private var allSaved: Int { displays.reduce(0) { $0 + $1.savedCount } }
-    private var allDue: Int { displays.reduce(0) { $0 + $1.dueCount } }
-
-    var body: some View {
-        ScrollView {
+        let displaysByID = Dictionary(displays.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        let allSaved = displays.reduce(0) { $0 + $1.savedCount }
+        let allDue = displays.reduce(0) { $0 + $1.dueCount }
+        return ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Stacks keep words and their practice settings together.")
                     .font(AppFont.body())
@@ -55,8 +52,8 @@ struct StacksView: View {
                             } label: {
                                 stackRow(
                                     name: stack.name,
-                                    saved: stack.cards.count,
-                                    due: displays.first(where: { $0.id == stack.id })?.dueCount ?? 0,
+                                    saved: displaysByID[stack.id]?.savedCount ?? 0,
+                                    due: displaysByID[stack.id]?.dueCount ?? 0,
                                     isSelected: app.preferences.preferences.selectedStackID == stack.id,
                                     isDefault: stack.isDefault,
                                     tileID: stack.id
@@ -292,7 +289,6 @@ struct StackSettingsView: View {
         .onChange(of: stack?.cardsPerSession) { _, _ in persist(stack) }
         .onChange(of: stack?.newCardsPerDay) { _, _ in persist(stack) }
         .onChange(of: stack?.shuffleOrder) { _, _ in persist(stack) }
-        .onChange(of: stack?.translationFirst) { _, _ in persist(stack) }
     }
 
     private func content(_ stack: VocabularyStack) -> some View {
@@ -328,12 +324,7 @@ struct StackSettingsView: View {
                                 accessibilityIdentifier: "stack.shuffle"
                             )
                             SettingsDivider(inset: 16)
-                            SettingsToggleRow(
-                                title: "Translation first",
-                                detail: "Show the translation before the source word.",
-                                isOn: $stack.translationFirst,
-                                accessibilityIdentifier: "stack.translationFirst"
-                            )
+                            directionRow(stack)
                         }
                     }
 
@@ -435,6 +426,51 @@ struct StackSettingsView: View {
         }
         .padding(18)
         .raisedSurface()
+    }
+
+    private func directionRow(_ stack: VocabularyStack) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Card direction")
+                .font(AppFont.fieldValue())
+                .foregroundStyle(AppColor.textPrimary)
+            Text("Choose which side appears first.")
+                .font(AppFont.caption())
+                .foregroundStyle(AppColor.textSecondary)
+            HStack(spacing: 4) {
+                ForEach(CardPresentationOrder.allCases) { mode in
+                    Button {
+                        stack.presentationMode = mode
+                        persist(stack)
+                    } label: {
+                        Text(LocalizedStringKey(mode.title))
+                            .font(AppFont.font(12, .semibold))
+                            .foregroundStyle(stack.presentationMode == mode ? AppColor.onAccent : AppColor.textSecondary)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 40)
+                            .background(
+                                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                                    .fill(stack.presentationMode == mode ? AppColor.accentStrong : .clear)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(stack.presentationMode == mode ? .isSelected : [])
+                    .accessibilityIdentifier(
+                        mode == .backFirst ? "stack.translationFirst" : "stack.direction.\(mode.rawValue)"
+                    )
+                }
+            }
+            .padding(4)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(AppColor.surface)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(AppColor.divider, lineWidth: 1)
+            )
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
     }
 
     private func settingRow(

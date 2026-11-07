@@ -14,6 +14,7 @@ struct WidgetSettingsView: View {
         prefs.widgetDefaults = defaults
         return LibraryProjection.widgetSnapshot(
             stacks: app.maintenance.stacks(),
+            cards: app.maintenance.cardsForList(),
             records: app.maintenance.records(),
             preferences: prefs,
             now: app.maintenance.clock.now,
@@ -78,7 +79,8 @@ struct WidgetSettingsView: View {
     }
 
     private var settingsColumn: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        let stacks = app.library.stacks()
+        return VStack(alignment: .leading, spacing: 16) {
             GroupedSurface {
                 Menu {
                     Button("All stacks") {
@@ -87,7 +89,7 @@ struct WidgetSettingsView: View {
                             $0.wordSetID = nil
                         }
                     }
-                    ForEach(app.library.stacks()) { stack in
+                    ForEach(stacks) { stack in
                         Button(stack.name) {
                             update {
                                 $0.stackID = stack.id
