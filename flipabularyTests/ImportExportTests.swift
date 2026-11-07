@@ -119,6 +119,7 @@ final class ImportExportTests: XCTestCase {
         let stack = try XCTUnwrap(harness.library.stacks().first(where: { $0.name == "Spanish" }))
         XCTAssertEqual(stack.cards.count, 2)
         XCTAssertEqual(stack.cards.first(where: { $0.word == "hola" })?.tags.map(\.name), ["greeting"])
+        XCTAssertEqual(stack.cards.first?.learningState?.lifecycle, .new)
 
         let second = harness.library.importPlan(plan, destinationStackID: nil)
         guard case .success(let secondSummary) = second else {
@@ -127,6 +128,29 @@ final class ImportExportTests: XCTestCase {
         XCTAssertEqual(secondSummary.imported, 0)
         XCTAssertEqual(secondSummary.skipped, 2)
         XCTAssertEqual(stack.cards.count, 2)
+    }
+
+    @MainActor
+    func testDeckWithNoValidCardsDoesNotLeaveAnEmptyStack() throws {
+        let harness = try TestHarness()
+        defer { harness.finish() }
+        let plan = ImportPlan(
+            format: .anki,
+            sourceName: "empty.apkg",
+            decks: [
+                ImportedDeck(name: "Empty deck", cards: [
+                    ImportedCard(word: "", translation: "", example: nil, translatedExample: nil, phonetic: nil, partOfSpeech: nil, tags: [])
+                ])
+            ],
+            skippedRows: 0,
+            usesDeckNames: true
+        )
+
+        let result = harness.library.importPlan(plan, destinationStackID: nil)
+        guard case .success(let summary) = result else { return XCTFail("Expected import success") }
+        XCTAssertEqual(summary.imported, 0)
+        XCTAssertEqual(summary.skipped, 1)
+        XCTAssertNil(harness.library.stacks().first(where: { $0.name == "Empty deck" }))
     }
 
     @MainActor

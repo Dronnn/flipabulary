@@ -120,7 +120,7 @@ extension LibraryService {
             }
         }
 
-        for stack in newStacks where stack.cards.isEmpty {
+        for stack in newStacks where !usedStacks.contains(stack.name) {
             modelContext.delete(stack)
         }
 
