@@ -77,6 +77,12 @@ struct LibraryListSnapshot: Sendable {
     var dueCount: Int
 }
 
+struct StackCardStats: Sendable {
+    var total: Int
+    var learned: Int
+    var due: Int
+}
+
 struct CardValidation: Equatable, Sendable {
     var wordError: String?
     var translationError: String?
@@ -220,6 +226,45 @@ final class LibraryService {
                 calendar: calendar
             )
             return LibraryListSnapshot(index: index, dueCount: dueCount)
+        }.value
+    }
+
+    func computeStackStats(
+        stackID: UUID,
+        rules: LearningRules,
+        now: Date,
+        calendar: Calendar
+    ) async -> StackCardStats? {
+        let container = modelContext.container
+        return await Task.detached(priority: .userInitiated) {
+            let context = ModelContext(container)
+            let targetID = stackID
+            guard let stack = try? context.fetch(
+                FetchDescriptor<VocabularyStack>(predicate: #Predicate { $0.id == targetID })
+            ).first else { return nil }
+
+            var cardDescriptor = FetchDescriptor<VocabularyCard>()
+            cardDescriptor.relationshipKeyPathsForPrefetching = [\.stack, \.learningState]
+            let cards = ((try? context.fetch(cardDescriptor)) ?? [])
+                .filter { $0.stack?.id == stackID }
+            let learned = cards.reduce(0) { total, card in
+                total + (card.learningState?.lifecycle == .learned ? 1 : 0)
+            }
+
+            let dayKey = CalendarTools.dayKey(for: now, calendar: calendar)
+            let scopeKey = "\(stackID.uuidString)|\(dayKey)"
+            let record = try? context.fetch(
+                FetchDescriptor<DailyAdmissionRecord>(predicate: #Predicate { $0.scopeKey == scopeKey })
+            ).first
+            let due = LibraryProjection.dueCount(
+                cards: cards,
+                rules: stack.effectiveRules(global: rules),
+                newCardsPerDay: stack.newCardsPerDay,
+                consumed: record?.cardIDs ?? [],
+                now: now,
+                calendar: calendar
+            )
+            return StackCardStats(total: cards.count, learned: learned, due: due)
         }.value
     }
 

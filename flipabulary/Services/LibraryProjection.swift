@@ -82,6 +82,23 @@ enum LibraryProjection {
     }
 
     static func dueCount(
+        cards: [VocabularyCard],
+        rules: LearningRules,
+        newCardsPerDay: Int,
+        consumed: Set<UUID>,
+        now: Date,
+        calendar: Calendar
+    ) -> Int {
+        let stats = stats(cards: cards, rules: rules, now: now, calendar: calendar)
+        return LearningEngine.actionableDueCount(
+            candidates: stats.candidates,
+            newCardsPerDay: newCardsPerDay,
+            consumedNewCardIDs: consumed,
+            now: now
+        )
+    }
+
+    static func dueCount(
         stack: VocabularyStack,
         consumed: Set<UUID>,
         globalRules: LearningRules,

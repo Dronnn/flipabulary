@@ -239,23 +239,16 @@ struct StackSettingsView: View {
     @State private var showStepsEditor = false
     @State private var showRulesEditor = false
     @State private var error: String?
+    @State private var totalCountCache = 0
+    @State private var learnedCountCache = 0
+    @State private var dueCountCache = 0
+    @State private var statsTask: Task<Void, Never>?
 
     private var stack: VocabularyStack? { app.library.stack(id: stackID) }
 
-    private var dueCount: Int {
-        guard let stack else { return 0 }
-        let consumed = app.maintenance.consumedNewCardIDs(stackID: stack.id)
-        return LibraryProjection.dueCount(
-            stack: stack,
-            consumed: consumed,
-            globalRules: app.preferences.preferences.rules,
-            now: app.maintenance.clock.now,
-            calendar: app.maintenance.calendar
-        )
-    }
-
     var body: some View {
-        Group {
+        let stack = self.stack
+        return Group {
             if let stack {
                 content(stack)
             } else {
@@ -286,9 +279,34 @@ struct StackSettingsView: View {
                 }
             }
         }
+        .task(id: stackID) {
+            reloadCardStats()
+        }
         .onChange(of: stack?.cardsPerSession) { _, _ in persist(stack) }
-        .onChange(of: stack?.newCardsPerDay) { _, _ in persist(stack) }
+        .onChange(of: stack?.newCardsPerDay) { _, _ in
+            persist(stack)
+            reloadCardStats()
+        }
         .onChange(of: stack?.shuffleOrder) { _, _ in persist(stack) }
+    }
+
+    private func reloadCardStats() {
+        guard let stack else { return }
+        statsTask?.cancel()
+        let rules = app.preferences.preferences.rules
+        let now = app.maintenance.clock.now
+        let calendar = app.maintenance.calendar
+        statsTask = Task { @MainActor in
+            guard let stats = await app.library.computeStackStats(
+                stackID: stack.id,
+                rules: rules,
+                now: now,
+                calendar: calendar
+            ), !Task.isCancelled else { return }
+            totalCountCache = stats.total
+            learnedCountCache = stats.learned
+            dueCountCache = stats.due
+        }
     }
 
     private func content(_ stack: VocabularyStack) -> some View {
@@ -380,15 +398,15 @@ struct StackSettingsView: View {
     }
 
     private func hero(_ stack: VocabularyStack, mode: AppMetrics.LayoutMode) -> some View {
-        let learned = stack.cards.filter { $0.learningState?.lifecycle == .learned }.count
-        let total = stack.cards.count
+        let learned = learnedCountCache
+        let total = totalCountCache
         return HStack(alignment: .top, spacing: 18) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(stack.name)
                     .font(AppFont.screenTitle())
                     .foregroundStyle(AppColor.textPrimary)
                     .accessibilityAddTraits(.isHeader)
-                Text("\(total) saved · \(dueCount) due today")
+                Text("\(total) saved · \(dueCountCache) due today")
                     .font(AppFont.body())
                     .foregroundStyle(AppColor.textSecondary)
                 Spacer(minLength: 0)
@@ -403,7 +421,7 @@ struct StackSettingsView: View {
                         .background(Capsule().fill(AppColor.accentStrong))
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Review \(dueCount) due cards in \(stack.name)")
+                .accessibilityLabel("Review \(dueCountCache) due cards in \(stack.name)")
             }
             Spacer(minLength: 0)
             ZStack {
@@ -414,7 +432,7 @@ struct StackSettingsView: View {
                     label: "\(learned) of \(total) learned"
                 )
                 VStack(spacing: 0) {
-                    Text("\(dueCount)")
+                    Text("\(dueCountCache)")
                         .font(AppFont.font(mode == .compact ? 20 : 30, .semibold))
                         .foregroundStyle(AppColor.textPrimary)
                         .monospacedDigit()

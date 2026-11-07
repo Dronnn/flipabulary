@@ -33,6 +33,38 @@ final class LibraryScaleTests: XCTestCase {
     }
 
     @MainActor
+    func testStackStatsForLargeLibrary() async throws {
+        let harness = try TestHarness()
+        defer { harness.finish() }
+        let stack = harness.makeStack()
+        for index in 0..<800 {
+            harness.makeCard(
+                word: "word \(index)",
+                translation: "translation \(index)",
+                stack: stack
+            )
+        }
+        try harness.save()
+
+        let stats = await harness.library.computeStackStats(
+            stackID: stack.id,
+            rules: .default,
+            now: harness.clock.now,
+            calendar: harness.calendar
+        )
+        XCTAssertEqual(stats?.total, 800)
+        XCTAssertEqual(stats?.learned, 0)
+        let expectedDue = LibraryProjection.dueCount(
+            stack: stack,
+            consumed: [],
+            globalRules: .default,
+            now: harness.clock.now,
+            calendar: harness.calendar
+        )
+        XCTAssertEqual(stats?.due, expectedDue)
+    }
+
+    @MainActor
     func testWidgetPublicationForLargeLibrary() throws {
         let harness = try TestHarness()
         defer { harness.finish() }
