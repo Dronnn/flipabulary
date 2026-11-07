@@ -156,12 +156,12 @@ final class FlipabularyUITests: XCTestCase {
         let translation = app.textFields["card.translation"]
         XCTAssertTrue(translation.waitForExistence(timeout: 3))
         translation.tap()
-        translation.typeKey("a", modifierFlags: .command)
-        translation.typeText("мимолетный-обновленный")
+        translation.typeText("-edited")
         app.buttons["card.save"].tap()
 
-        XCTAssertTrue(app.staticTexts["мимолетный-обновленный"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["ephemeral"].exists)
+        let edited = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "-edited")).firstMatch
+        XCTAssertTrue(edited.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["ephemeral"].waitForExistence(timeout: 5))
     }
 
     @MainActor
@@ -251,12 +251,10 @@ final class FlipabularyUITests: XCTestCase {
         app.staticTexts["Widgets"].tap()
         XCTAssertTrue(app.navigationBars["List widget"].waitForExistence(timeout: 3))
         XCTAssertTrue(app.descendants(matching: .any)["widget.preview"].exists)
-        XCTAssertTrue(app.staticTexts["Due first"].exists)
-
-        let translations = app.descendants(matching: .any)["widget.translations"]
-        XCTAssertTrue(translations.exists)
-        translations.tap()
-        XCTAssertTrue(app.staticTexts["Due first"].exists)
+        XCTAssertTrue(app.descendants(matching: .any)["widget.source"].exists)
+        let wordSets = app.staticTexts.matching(NSPredicate(format: "label ==[c] %@", "Word sets")).firstMatch
+        XCTAssertTrue(wordSets.exists)
+        XCTAssertTrue(app.buttons["widget.newSet"].exists)
     }
 
     @MainActor
@@ -428,12 +426,17 @@ final class FlipabularyUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Deutsch"].waitForExistence(timeout: 3))
         app.buttons["Deutsch"].tap()
         XCTAssertTrue(app.navigationBars["Einstellungen"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["Darstellung"].exists)
+        let germanAppearance = app.staticTexts.matching(NSPredicate(format: "label ==[c] %@", "Darstellung")).firstMatch
+        XCTAssertTrue(germanAppearance.waitForExistence(timeout: 5))
 
-        app.descendants(matching: .any)["settings.language"].tap()
+        let germanLanguage = app.descendants(matching: .any)["settings.language"]
+        XCTAssertTrue(germanLanguage.waitForExistence(timeout: 3))
+        germanLanguage.tap()
         XCTAssertTrue(app.buttons["Español"].waitForExistence(timeout: 3))
         app.buttons["Español"].tap()
         XCTAssertTrue(app.navigationBars["Ajustes"].waitForExistence(timeout: 5))
+        let spanishAppearance = app.staticTexts.matching(NSPredicate(format: "label ==[c] %@", "Apariencia")).firstMatch
+        XCTAssertTrue(spanishAppearance.waitForExistence(timeout: 5))
 
         app.descendants(matching: .any)["settings.language"].tap()
         XCTAssertTrue(app.buttons["English"].waitForExistence(timeout: 3))

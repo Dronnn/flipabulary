@@ -174,7 +174,7 @@ struct SettingsView: View {
             .frame(maxWidth: .infinity)
         }
         .pageBackground()
-        .navigationTitle("Settings")
+        .navigationTitle(app.localized("Settings"))
         .navigationBarTitleDisplayMode(.large)
     }
 }
