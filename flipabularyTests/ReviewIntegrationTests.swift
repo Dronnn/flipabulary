@@ -97,6 +97,20 @@ final class ReviewIntegrationTests: XCTestCase {
         XCTAssertEqual(try harness.context.fetch(FetchDescriptor<ReviewEvent>()).count, 0)
     }
 
+    func testSwipeRatingFromFrontDoesNotRequireReveal() throws {
+        let stack = harness.makeStack(newCardsPerDay: 0)
+        let card = dueCard(word: "front", stack: stack)
+        try harness.save()
+        let session = try start(stack)
+
+        XCTAssertFalse(session.revealed)
+        XCTAssertFalse(session.showingBack)
+        XCTAssertEqual(harness.review.grade(session, grade: .good, allowUnrevealed: true), .completed)
+        XCTAssertEqual(card.learningState?.repeatCount, 2)
+        XCTAssertEqual(session.goodCount, 1)
+        XCTAssertEqual(try harness.context.fetch(FetchDescriptor<ReviewEvent>()).count, 1)
+    }
+
     func testPersistenceFailureLeavesAnswerUnapplied() throws {
         let stack = harness.makeStack(newCardsPerDay: 0)
         let card = dueCard(word: "first", stack: stack)

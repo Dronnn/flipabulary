@@ -511,7 +511,7 @@ struct ReviewView: View {
     private func cardDragGesture(_ session: ReviewSession) -> some Gesture {
         DragGesture(minimumDistance: 12)
             .onChanged { value in
-                guard session.showingBack, !ratingLocked, !isThrowing else { return }
+                guard !ratingLocked, !isThrowing else { return }
                 guard abs(value.translation.width) > abs(value.translation.height) else { return }
                 dragOffset = CGSize(
                     width: value.translation.width,
@@ -526,7 +526,7 @@ struct ReviewView: View {
                 }
             }
             .onEnded { value in
-                guard session.showingBack, !ratingLocked, !isThrowing else {
+                guard !ratingLocked, !isThrowing else {
                     withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                         dragOffset = .zero
                     }
@@ -557,7 +557,7 @@ struct ReviewView: View {
         }
         Task { @MainActor in
             try? await Task.sleep(for: .milliseconds(260))
-            rate(session, grade: grade)
+            rate(session, grade: grade, allowUnrevealed: true)
             dragOffset = .zero
             isThrowing = false
         }
@@ -811,10 +811,10 @@ struct ReviewView: View {
         }
     }
 
-    private func rate(_ session: ReviewSession, grade: ReviewGrade) {
+    private func rate(_ session: ReviewSession, grade: ReviewGrade, allowUnrevealed: Bool = false) {
         guard !ratingLocked else { return }
         ratingLocked = true
-        let result = app.review.grade(session, grade: grade)
+        let result = app.review.grade(session, grade: grade, allowUnrevealed: allowUnrevealed)
         switch result {
         case .advanced:
             card = app.review.currentCard(for: session)

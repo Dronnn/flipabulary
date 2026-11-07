@@ -230,10 +230,10 @@ final class ReviewService {
 
     // MARK: Grading
 
-    func grade(_ session: ReviewSession, grade: ReviewGrade) -> ReviewGradeResult {
+    func grade(_ session: ReviewSession, grade: ReviewGrade, allowUnrevealed: Bool = false) -> ReviewGradeResult {
         let now = clock.now
         guard session.status == .active else { return .completed }
-        guard session.revealed, session.showingBack else { return .failure("Show the answer before rating this card.") }
+        guard (session.revealed && session.showingBack) || allowUnrevealed else { return .failure("Show the answer before rating this card.") }
         guard let presentation = session.currentPresentation() else { return .completed }
         if session.committedPresentationIDs.contains(presentation.id) {
             return .duplicate
