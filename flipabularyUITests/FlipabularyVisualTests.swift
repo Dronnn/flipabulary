@@ -106,6 +106,19 @@ final class FlipabularyVisualTests: XCTestCase {
     }
 
     @MainActor
+    func testCaptureLaunchOverlay() throws {
+        let app = XCUIApplication()
+        app.launchArguments = [
+            "-UITestInMemory", "-UITestDemoData", "-UITestResetPreferences",
+            "-DebugShowLaunchOverlay", "-DebugHoldLaunchOverlay",
+            "-AppleLanguages", "(en)", "-AppleLocale", "en_US"
+        ]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["Flipabulary"].waitForExistence(timeout: 8))
+        attach("launch", app)
+    }
+
+    @MainActor
     func testCaptureAppScreens() throws {
         let app = launch()
         XCTAssertTrue(app.staticTexts["Words"].waitForExistence(timeout: 5))
