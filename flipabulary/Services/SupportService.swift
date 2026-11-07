@@ -2,57 +2,58 @@ import Foundation
 import Observation
 import StoreKit
 
-enum SupportFrequency: String, CaseIterable, Identifiable, Sendable {
-    case oneTime
-    case monthly
-
-    var id: String { rawValue }
-    var title: String { self == .oneTime ? "One-time" : "Monthly" }
-}
-
 struct SupportSlot: Identifiable, Hashable, Sendable {
     var amount: Int
     var title: String
     var subtitle: String
-    var oneTimeProductID: String
-    var monthlyProductID: String
+    var productID: String
 
     var id: Int { amount }
 
     static let all: [SupportSlot] = [
         SupportSlot(
-            amount: 2,
+            amount: 3,
             title: "Coffee",
             subtitle: "A small thank-you",
-            oneTimeProductID: "com.mrmaier.flipabulary.support.coffee",
-            monthlyProductID: "com.mrmaier.flipabulary.support.coffee.monthly"
+            productID: "com.mrmaier.flipabulary.support.coffee"
         ),
         SupportSlot(
             amount: 5,
             title: "Lunch",
             subtitle: "Keeps the words coming",
-            oneTimeProductID: "com.mrmaier.flipabulary.support.lunch",
-            monthlyProductID: "com.mrmaier.flipabulary.support.lunch.monthly"
+            productID: "com.mrmaier.flipabulary.support.lunch"
         ),
         SupportSlot(
-            amount: 10,
+            amount: 8,
             title: "Big fan",
             subtitle: "A generous boost",
-            oneTimeProductID: "com.mrmaier.flipabulary.support.bigfan",
-            monthlyProductID: "com.mrmaier.flipabulary.support.bigfan.monthly"
+            productID: "com.mrmaier.flipabulary.support.bigfan"
+        ),
+        SupportSlot(
+            amount: 20,
+            title: "Patron",
+            subtitle: "For serious supporters",
+            productID: "com.mrmaier.flipabulary.support.patron"
+        ),
+        SupportSlot(
+            amount: 50,
+            title: "Champion",
+            subtitle: "A major boost",
+            productID: "com.mrmaier.flipabulary.support.champion"
+        ),
+        SupportSlot(
+            amount: 100,
+            title: "Legend",
+            subtitle: "The ultimate thank-you",
+            productID: "com.mrmaier.flipabulary.support.legend"
         )
     ]
-
-    func productID(for frequency: SupportFrequency) -> String {
-        frequency == .oneTime ? oneTimeProductID : monthlyProductID
-    }
 }
 
 struct SupportProduct: Identifiable, Hashable, Sendable {
     var id: String
     var displayName: String
     var displayPrice: String
-    var frequency: SupportFrequency
     var amount: Int
 }
 
@@ -62,11 +63,6 @@ enum SupportPurchaseOutcome: Sendable {
     case duplicate
     case pending
     case cancelled
-}
-
-enum SupportRestoreOutcome: Sendable {
-    case restored(Int)
-    case nothingToRestore
 }
 
 enum SupportPurchaseError: Error, LocalizedError {
@@ -90,7 +86,6 @@ enum SupportPurchaseError: Error, LocalizedError {
 protocol SupportPurchasing: AnyObject {
     func loadProducts() async throws -> [SupportProduct]
     func purchase(productID: String) async throws -> SupportPurchaseOutcome
-    func restore() async throws -> SupportRestoreOutcome
 }
 
 @MainActor
@@ -104,27 +99,19 @@ final class StoreKitSupportService: SupportPurchasing {
     }
 
     func loadProducts() async throws -> [SupportProduct] {
-        let ids = SupportSlot.all.flatMap { [$0.oneTimeProductID, $0.monthlyProductID] }
+        let ids = SupportSlot.all.map(\.productID)
         let products = try await Product.products(for: ids)
         loadedProducts = Dictionary(uniqueKeysWithValues: products.map { ($0.id, $0) })
 
-        var result: [SupportProduct] = []
-        for slot in SupportSlot.all {
-            for frequency in SupportFrequency.allCases {
-                let id = slot.productID(for: frequency)
-                guard let product = loadedProducts[id] else { continue }
-                result.append(
-                    SupportProduct(
-                        id: id,
-                        displayName: slot.title,
-                        displayPrice: product.displayPrice,
-                        frequency: frequency,
-                        amount: slot.amount
-                    )
-                )
-            }
+        return SupportSlot.all.compactMap { slot in
+            guard let product = loadedProducts[slot.productID] else { return nil }
+            return SupportProduct(
+                id: slot.productID,
+                displayName: slot.title,
+                displayPrice: product.displayPrice,
+                amount: slot.amount
+            )
         }
-        return result
     }
 
     func purchase(productID: String) async throws -> SupportPurchaseOutcome {
@@ -163,23 +150,6 @@ final class StoreKitSupportService: SupportPurchasing {
             throw SupportPurchaseError.failed("The App Store returned an unknown result.")
         }
     }
-
-    func restore() async throws -> SupportRestoreOutcome {
-        do {
-            try await AppStore.sync()
-        } catch {
-            throw SupportPurchaseError.failed(error.localizedDescription)
-        }
-        var restored = Set<String>()
-        for await result in Transaction.currentEntitlements {
-            if case .verified(let transaction) = result {
-                if transaction.productType == .autoRenewable {
-                    restored.insert(transaction.productID)
-                }
-            }
-        }
-        return restored.isEmpty ? .nothingToRestore : .restored(restored.count)
-    }
 }
 
 @MainActor
@@ -201,11 +171,8 @@ final class SupportViewModel {
 
     var catalogState: CatalogState = .loading
     var products: [SupportProduct] = []
-    var frequency: SupportFrequency = .oneTime
     var selectedAmount = 5
-    var customAmountText = ""
     var isPurchasing = false
-    var isRestoring = false
     var message: Message?
 
     init(purchasing: SupportPurchasing) {
@@ -219,7 +186,7 @@ final class SupportViewModel {
     }
 
     func product(for slot: SupportSlot) -> SupportProduct? {
-        products.first(where: { $0.id == slot.productID(for: frequency) })
+        products.first(where: { $0.id == slot.productID })
     }
 
     var selectedProduct: SupportProduct? {
@@ -230,12 +197,6 @@ final class SupportViewModel {
     var canPurchase: Bool {
         catalogState == .available && selectedProduct != nil && !isPurchasing
     }
-
-    var monthlyAvailable: Bool {
-        products.contains(where: { $0.frequency == .monthly })
-    }
-
-    var amountOptions: [Int] { slots.map(\.amount) }
 
     func displayPrice(for slot: SupportSlot) -> String {
         product(for: slot)?.displayPrice ?? "Unavailable"
@@ -248,6 +209,15 @@ final class SupportViewModel {
             catalogState = products.isEmpty
                 ? .unavailable("Support options aren't available right now.")
                 : .available
+            #if DEBUG
+            let arguments = ProcessInfo.processInfo.arguments
+            if let index = arguments.firstIndex(of: "-DebugSupportAmount"),
+               arguments.indices.contains(index + 1),
+               let amount = Int(arguments[index + 1]),
+               slots.contains(where: { $0.amount == amount }) {
+                selectedAmount = amount
+            }
+            #endif
         } catch {
             products = []
             catalogState = .unavailable("The App Store catalog couldn't be loaded. \(error.localizedDescription)")
@@ -255,19 +225,7 @@ final class SupportViewModel {
     }
 
     func select(amount: Int) {
-        guard amountOptions.contains(amount) else { return }
-        selectedAmount = amount
-        customAmountText = ""
-        message = nil
-    }
-
-    func applyCustomAmount() {
-        let digits = customAmountText.filter(\.isNumber)
-        guard let amount = Int(digits), amountOptions.contains(amount) else {
-            selectedAmount = 0
-            message = .info("Choose one of the available support amounts: $2, $5, or $10.")
-            return
-        }
+        guard slots.contains(where: { $0.amount == amount }) else { return }
         selectedAmount = amount
         message = nil
     }
@@ -294,23 +252,6 @@ final class SupportViewModel {
             message = .failure(error.localizedDescription)
         }
     }
-
-    func restore() async {
-        guard !isRestoring else { return }
-        isRestoring = true
-        message = nil
-        defer { isRestoring = false }
-        do {
-            switch try await purchasing.restore() {
-            case .restored(let count):
-                message = .success(count == 1 ? "Monthly support restored." : "\(count) purchases restored.")
-            case .nothingToRestore:
-                message = .info("Nothing to restore. One-time tips aren't restorable.")
-            }
-        } catch {
-            message = .failure(error.localizedDescription)
-        }
-    }
 }
 
 @MainActor
@@ -318,19 +259,15 @@ final class PreviewSupportService: SupportPurchasing {
     var outcome: SupportPurchaseOutcome = .verified
 
     func loadProducts() async throws -> [SupportProduct] {
-        SupportSlot.all.flatMap { slot in
-            SupportFrequency.allCases.map { frequency in
-                SupportProduct(
-                    id: slot.productID(for: frequency),
-                    displayName: slot.title,
-                    displayPrice: frequency == .oneTime ? "$\(slot.amount).00" : "$\(slot.amount).00/mo",
-                    frequency: frequency,
-                    amount: slot.amount
-                )
-            }
+        SupportSlot.all.map { slot in
+            SupportProduct(
+                id: slot.productID,
+                displayName: slot.title,
+                displayPrice: String(format: "$%.2f", Double(slot.amount) - 0.01),
+                amount: slot.amount
+            )
         }
     }
 
     func purchase(productID: String) async throws -> SupportPurchaseOutcome { outcome }
-    func restore() async throws -> SupportRestoreOutcome { .nothingToRestore }
 }

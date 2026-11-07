@@ -95,66 +95,13 @@ struct SupportView: View {
             case .unavailable(let message):
                 InlineMessage(text: message, kind: .info)
             case .available:
-                HStack(spacing: 4) {
-                    ForEach(SupportFrequency.allCases) { frequency in
-                        Button {
-                            model.frequency = frequency
-                            model.message = nil
-                        } label: {
-                            Text(LocalizedStringKey(frequency.title))
-                                .font(AppFont.font(13, .semibold))
-                                .foregroundStyle(model.frequency == frequency ? AppColor.onAccent : AppColor.textSecondary)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 34)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                        .fill(model.frequency == frequency ? AppColor.accentStrong : .clear)
-                                )
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(frequency == .monthly && !model.monthlyAvailable)
-                        .accessibilityIdentifier("support.frequency.\(frequency.rawValue)")
-                    }
-                }
-                .padding(4)
-                .background(AppColor.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(AppColor.divider, lineWidth: 1))
-
-                HStack(spacing: 10) {
+                LazyVGrid(
+                    columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 3),
+                    spacing: 10
+                ) {
                     ForEach(model.slots) { slot in
                         amountTile(slot)
                     }
-                }
-
-                GroupedSurface {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Custom amount")
-                            .font(AppFont.font(13, .semibold))
-                            .foregroundStyle(AppColor.textPrimary)
-                        HStack(spacing: 8) {
-                            Text("$")
-                                .font(AppFont.font(17, .semibold))
-                                .foregroundStyle(AppColor.textSecondary)
-                            TextField(
-                                "",
-                                text: $model.customAmountText,
-                                prompt: Text("2, 5, or 10").foregroundStyle(AppColor.textMuted)
-                            )
-                                .keyboardType(.numberPad)
-                                .font(AppFont.font(17, .semibold))
-                                .accessibilityIdentifier("support.custom")
-                            Button("Apply") {
-                                model.applyCustomAmount()
-                            }
-                            .font(AppFont.font(13, .semibold))
-                            .foregroundStyle(AppColor.accentStrong)
-                            .frame(minHeight: 44)
-                        }
-                        Text("Custom amounts select an available App Store product. Nothing is charged outside the configured catalog.")
-                            .font(AppFont.caption())
-                            .foregroundStyle(AppColor.textSecondary)
-                    }
-                    .padding(16)
                 }
 
                 if let message = model.message {
@@ -175,22 +122,6 @@ struct SupportView: View {
                 }
                 .accessibilityIdentifier("support.donate")
 
-                Button {
-                    Task { await model.restore() }
-                } label: {
-                    HStack {
-                        if model.isRestoring { ProgressView().tint(AppColor.accent) }
-                        Text(LocalizedStringKey(model.isRestoring ? "Restoring…" : "Restore purchase"))
-                    }
-                    .font(AppFont.font(14, .semibold))
-                    .foregroundStyle(AppColor.accentStrong)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 44)
-                }
-                .buttonStyle(.plain)
-                .disabled(model.isRestoring)
-                .accessibilityIdentifier("support.restore")
-
                 if dynamicTypeSize.isAccessibilitySize || UIDevice.current.userInterfaceIdiom == .phone {
                     finePrint
                 }
@@ -208,7 +139,7 @@ struct SupportView: View {
                 Text(LocalizedStringKey(slot.title))
                     .font(AppFont.font(14, .semibold))
                     .foregroundStyle(selected ? AppColor.onAccent : AppColor.textPrimary)
-                Text(LocalizedStringKey(product?.displayPrice ?? "Unavailable"))
+                Text(product?.displayPrice ?? "Unavailable")
                     .font(AppFont.font(12, .regular))
                     .foregroundStyle(selected ? AppColor.onAccent : AppColor.textSecondary)
             }
@@ -239,7 +170,7 @@ struct SupportView: View {
 
     private var finePrint: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Purchases are handled by the App Store. Tips are voluntary and unlock no features. Monthly support renews until cancelled in App Store settings. One-time tips are not restorable.")
+            Text("Purchases are handled by the App Store. Tips are voluntary, repeatable, and unlock no features. One-time tips are not restorable.")
                 .font(AppFont.caption())
                 .foregroundStyle(AppColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)

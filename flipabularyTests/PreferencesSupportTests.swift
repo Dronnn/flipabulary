@@ -103,17 +103,16 @@ final class PreferencesAndRoutingTests: XCTestCase {
 
 @MainActor
 final class SupportViewModelTests: XCTestCase {
+    private let displayPrices = ["$2.99", "$4.99", "$7.99", "$19.99", "$49.99", "$99.99"]
+
     private func products() -> [SupportProduct] {
-        SupportSlot.all.flatMap { slot in
-            SupportFrequency.allCases.map { frequency in
-                SupportProduct(
-                    id: slot.productID(for: frequency),
-                    displayName: slot.title,
-                    displayPrice: "$\(slot.amount).00",
-                    frequency: frequency,
-                    amount: slot.amount
-                )
-            }
+        zip(SupportSlot.all, displayPrices).map { slot, price in
+            SupportProduct(
+                id: slot.productID,
+                displayName: slot.title,
+                displayPrice: price,
+                amount: slot.amount
+            )
         }
     }
 
@@ -124,14 +123,18 @@ final class SupportViewModelTests: XCTestCase {
         await model.load()
         XCTAssertEqual(model.catalogState, .available)
         XCTAssertEqual(model.products.count, 6)
+        XCTAssertEqual(model.slots.count, 6)
         XCTAssertTrue(model.canPurchase)
+        XCTAssertEqual(model.selectedAmount, 5)
         XCTAssertEqual(model.selectedProduct?.id, "com.mrmaier.flipabulary.support.lunch")
 
-        model.frequency = .monthly
-        XCTAssertEqual(model.selectedProduct?.id, "com.mrmaier.flipabulary.support.lunch.monthly")
-        model.select(amount: 10)
-        XCTAssertEqual(model.selectedAmount, 10)
-        XCTAssertEqual(model.selectedProduct?.id, "com.mrmaier.flipabulary.support.bigfan.monthly")
+        model.select(amount: 100)
+        XCTAssertEqual(model.selectedAmount, 100)
+        XCTAssertEqual(model.selectedProduct?.id, "com.mrmaier.flipabulary.support.legend")
+        XCTAssertEqual(model.selectedProduct?.displayPrice, "$99.99")
+
+        model.select(amount: 7)
+        XCTAssertEqual(model.selectedAmount, 100)
     }
 
     func testCatalogUnavailableAndLoadFailure() async {
@@ -150,28 +153,6 @@ final class SupportViewModelTests: XCTestCase {
         } else {
             XCTFail("Expected unavailable")
         }
-    }
-
-    func testCustomAmountOnlySelectsConfiguredAmounts() async {
-        let fake = FakeSupportPurchasing()
-        fake.products = products()
-        let model = SupportViewModel(purchasing: fake)
-        await model.load()
-
-        model.customAmountText = "5"
-        model.applyCustomAmount()
-        XCTAssertEqual(model.selectedAmount, 5)
-        XCTAssertNil(model.message)
-
-        model.customAmountText = "3"
-        model.applyCustomAmount()
-        XCTAssertEqual(model.selectedAmount, 0)
-        if case .info(let message) = model.message {
-            XCTAssertTrue(message.contains("$2, $5, or $10"))
-        } else {
-            XCTFail("Expected info")
-        }
-        XCTAssertFalse(model.canPurchase)
     }
 
     func testPurchaseOutcomes() async {
@@ -206,31 +187,9 @@ final class SupportViewModelTests: XCTestCase {
         if case .failure(let message) = model.message { XCTAssertTrue(message.contains("declined")) } else { XCTFail("Expected failure") }
     }
 
-    func testRestoreStates() async {
-        let fake = FakeSupportPurchasing()
-        fake.products = products()
-        let model = SupportViewModel(purchasing: fake)
-        await model.load()
-
-        fake.restoreOutcome = .restored(1)
-        await model.restore()
-        if case .success(let message) = model.message { XCTAssertTrue(message.contains("Monthly support restored")) } else { XCTFail("Expected success") }
-
-        fake.restoreOutcome = .nothingToRestore
-        await model.restore()
-        if case .info(let message) = model.message { XCTAssertTrue(message.contains("Nothing to restore")) } else { XCTFail("Expected info") }
-
-        fake.restoreError = SupportPurchaseError.failed("sync failed")
-        await model.restore()
-        if case .failure(let message) = model.message { XCTAssertTrue(message.contains("sync failed")) } else { XCTFail("Expected failure") }
-    }
-
-    func testMonthlyUnavailableDisablesFrequency() async {
-        let fake = FakeSupportPurchasing()
-        fake.products = products().filter { $0.frequency == .oneTime }
-        let model = SupportViewModel(purchasing: fake)
-        await model.load()
-        XCTAssertFalse(model.monthlyAvailable)
-        XCTAssertTrue(model.canPurchase)
+    func testAllSlotsAreOneTimeAndRepeatable() {
+        XCTAssertEqual(SupportSlot.all.map(\.amount), [3, 5, 8, 20, 50, 100])
+        XCTAssertEqual(Set(SupportSlot.all.map(\.productID)).count, 6)
+        XCTAssertFalse(SupportSlot.all.contains(where: { $0.productID.contains("monthly") }))
     }
 }

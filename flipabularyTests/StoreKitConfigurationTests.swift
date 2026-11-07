@@ -18,11 +18,10 @@ final class StoreKitConfigurationTests: XCTestCase {
         XCTAssertTrue(ids.contains("com.mrmaier.flipabulary.support.coffee"))
         XCTAssertTrue(ids.contains("com.mrmaier.flipabulary.support.lunch"))
         XCTAssertTrue(ids.contains("com.mrmaier.flipabulary.support.bigfan"))
-        XCTAssertTrue(ids.contains("com.mrmaier.flipabulary.support.coffee.monthly"))
-        XCTAssertTrue(ids.contains("com.mrmaier.flipabulary.support.lunch.monthly"))
-        XCTAssertTrue(ids.contains("com.mrmaier.flipabulary.support.bigfan.monthly"))
-        XCTAssertEqual(products.filter { $0.frequency == .monthly }.count, 3)
-        XCTAssertEqual(products.filter { $0.frequency == .oneTime }.count, 3)
+        XCTAssertTrue(ids.contains("com.mrmaier.flipabulary.support.patron"))
+        XCTAssertTrue(ids.contains("com.mrmaier.flipabulary.support.champion"))
+        XCTAssertTrue(ids.contains("com.mrmaier.flipabulary.support.legend"))
+        XCTAssertEqual(products.map(\.displayPrice), ["$2.99", "$4.99", "$7.99", "$19.99", "$49.99", "$99.99"])
     }
 
     func testLocalConfigurationCanCreateAndVerifyATransaction() async throws {
@@ -36,10 +35,10 @@ final class StoreKitConfigurationTests: XCTestCase {
         XCTAssertEqual(transaction.productType, .consumable)
         await transaction.finish()
 
-        let subscription = try await session.buyProduct(identifier: "com.mrmaier.flipabulary.support.lunch.monthly")
-        XCTAssertEqual(subscription.productID, "com.mrmaier.flipabulary.support.lunch.monthly")
-        XCTAssertEqual(subscription.productType, .autoRenewable)
-        await subscription.finish()
+        let repeatPurchase = try await session.buyProduct(identifier: "com.mrmaier.flipabulary.support.coffee")
+        XCTAssertEqual(repeatPurchase.productID, "com.mrmaier.flipabulary.support.coffee")
+        XCTAssertEqual(repeatPurchase.productType, .consumable)
+        await repeatPurchase.finish()
 
         var active: Set<String> = []
         for await result in Transaction.currentEntitlements {
@@ -47,7 +46,6 @@ final class StoreKitConfigurationTests: XCTestCase {
                 active.insert(item.productID)
             }
         }
-        XCTAssertTrue(active.contains("com.mrmaier.flipabulary.support.lunch.monthly"))
         XCTAssertFalse(active.contains("com.mrmaier.flipabulary.support.coffee"), "Consumables are not restorable entitlements")
     }
 }

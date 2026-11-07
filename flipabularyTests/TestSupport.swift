@@ -58,10 +58,8 @@ final class FakeNotificationAdapter: NotificationCenterAdapter {
 final class FakeSupportPurchasing: SupportPurchasing {
     var products: [SupportProduct] = []
     var purchaseOutcome: SupportPurchaseOutcome = .verified
-    var restoreOutcome: SupportRestoreOutcome = .nothingToRestore
     var loadError: Error?
     var purchaseError: Error?
-    var restoreError: Error?
     var purchaseCalls: [String] = []
 
     func loadProducts() async throws -> [SupportProduct] {
@@ -73,11 +71,6 @@ final class FakeSupportPurchasing: SupportPurchasing {
         purchaseCalls.append(productID)
         if let purchaseError { throw purchaseError }
         return purchaseOutcome
-    }
-
-    func restore() async throws -> SupportRestoreOutcome {
-        if let restoreError { throw restoreError }
-        return restoreOutcome
     }
 }
 
