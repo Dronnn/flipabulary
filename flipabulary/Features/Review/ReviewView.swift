@@ -11,11 +11,16 @@ struct SwipeAxisLock {
     }
 
     private(set) var axis: Axis?
+    private let activationDistance: CGFloat = 8
 
     mutating func tracksHorizontal(_ translation: CGSize) -> Bool {
         if axis == nil {
-            guard translation.width != 0 || translation.height != 0 else { return false }
-            axis = abs(translation.width) > abs(translation.height) ? .horizontal : .vertical
+            let horizontal = abs(translation.width)
+            let vertical = abs(translation.height)
+            guard horizontal >= activationDistance || vertical >= activationDistance else {
+                return false
+            }
+            axis = horizontal > vertical ? .horizontal : .vertical
         }
         return axis == .horizontal
     }
@@ -562,7 +567,9 @@ struct ReviewView: View {
                     didCrossSwipeThreshold = false
                     return
                 }
-                let horizontal = value.translation.width
+                let actual = value.translation.width
+                let predicted = value.predictedEndTranslation.width
+                let horizontal = abs(predicted) > abs(actual) ? predicted : actual
                 guard abs(horizontal) >= swipeThreshold,
                       abs(horizontal) > abs(value.translation.height) else {
                     withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {

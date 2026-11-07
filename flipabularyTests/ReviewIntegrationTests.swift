@@ -31,6 +31,23 @@ final class ReviewIntegrationTests: XCTestCase {
         )
     }
 
+    func testSingleCardReviewIgnoresDailyNewQuota() throws {
+        let stack = harness.makeStack(newCardsPerDay: 0)
+        let card = harness.makeCard(word: "single", stack: stack)
+        try harness.save()
+
+        guard case .started(let id) = harness.review.requestReview(scopeID: nil, singleCardID: card.id) else {
+            return XCTFail("Expected a single-card review")
+        }
+        let session = try XCTUnwrap(harness.review.session(id: id))
+        XCTAssertTrue(harness.review.reveal(session))
+        XCTAssertEqual(harness.review.grade(session, grade: .good), .completed)
+        XCTAssertEqual(session.goodCount, 1)
+        XCTAssertEqual(harness.review.totalReviewed(session), 1)
+        XCTAssertEqual(try harness.context.fetch(FetchDescriptor<ReviewEvent>()).count, 1)
+        XCTAssertEqual(card.learningState?.repeatCount, 1)
+    }
+
     func testTimedReviewRecordsFrontAndBackSeconds() throws {
         let stack = harness.makeStack()
         let card = dueCard(word: "timed", stack: stack)

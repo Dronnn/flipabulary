@@ -261,7 +261,8 @@ final class ReviewService {
 
         let before = card.snapshot
         let dailyRecord = maintenance.dailyRecord(stackID: session.stackID, now: now)
-        if before.lifecycle == .new,
+        if session.singleCardID == nil,
+           before.lifecycle == .new,
            !dailyRecord.cardIDs.contains(card.id),
            dailyRecord.cardIDs.count >= stack.newCardsPerDay {
             return skipCurrent(session, reason: "Today's new-card limit is reached. The remaining new cards stay in your library.")

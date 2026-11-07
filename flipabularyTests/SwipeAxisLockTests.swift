@@ -25,6 +25,14 @@ final class SwipeAxisLockTests: XCTestCase {
         XCTAssertTrue(lock.tracksHorizontal(CGSize(width: 20, height: 4)))
     }
 
+    func testInitialFingerJitterDoesNotLockTheWrongAxis() {
+        var lock = SwipeAxisLock()
+        XCTAssertFalse(lock.tracksHorizontal(CGSize(width: 2, height: 5)))
+        XCTAssertNil(lock.axis)
+        XCTAssertTrue(lock.tracksHorizontal(CGSize(width: 60, height: 10)))
+        XCTAssertEqual(lock.axis, .horizontal)
+    }
+
     func testZeroTranslationDoesNotLockTheAxis() {
         var lock = SwipeAxisLock()
         XCTAssertFalse(lock.tracksHorizontal(.zero))

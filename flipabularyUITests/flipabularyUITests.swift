@@ -441,6 +441,49 @@ final class FlipabularyUITests: XCTestCase {
     }
 
     @MainActor
+    func testRevealedSingleCardSwipeGoodUpdatesSummary() throws {
+        let app = launch()
+        XCTAssertTrue(app.staticTexts["ephemeral"].waitForExistence(timeout: 5))
+        app.staticTexts["ephemeral"].tap()
+        XCTAssertTrue(app.buttons["card.review"].waitForExistence(timeout: 3))
+        app.buttons["card.review"].tap()
+        XCTAssertTrue(app.buttons["review.reveal"].waitForExistence(timeout: 5))
+        app.buttons["review.reveal"].tap()
+        XCTAssertTrue(app.buttons["review.good"].waitForExistence(timeout: 3))
+
+        let card = app.descendants(matching: .any)["review.card"].firstMatch
+        let start = card.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        start.press(forDuration: 0.15, thenDragTo: start.withOffset(CGVector(dx: 220, dy: 8)))
+        XCTAssertTrue(app.buttons["review.done"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.descendants(matching: .any)["review.summary.good"].label.contains("1"))
+        XCTAssertTrue(app.descendants(matching: .any)["review.summary.reviewed"].label.contains("1"))
+    }
+
+    @MainActor
+    func testNewWordSingleCardSwipeGoodUpdatesSummary() throws {
+        let app = launch()
+        app.buttons["words.add"].tap()
+        XCTAssertTrue(app.textFields["card.word"].waitForExistence(timeout: 3))
+        app.textFields["card.word"].tap()
+        app.textFields["card.word"].typeText("swipeword")
+        app.textFields["card.translation"].tap()
+        app.textFields["card.translation"].typeText("свайп")
+        app.buttons["card.save"].tap()
+        XCTAssertTrue(app.staticTexts["swipeword"].waitForExistence(timeout: 5))
+        app.staticTexts["swipeword"].tap()
+        XCTAssertTrue(app.buttons["card.review"].waitForExistence(timeout: 3))
+        app.buttons["card.review"].tap()
+        XCTAssertTrue(app.buttons["review.reveal"].waitForExistence(timeout: 5))
+
+        let card = app.descendants(matching: .any)["review.card"].firstMatch
+        let start = card.coordinate(withNormalizedOffset: CGVector(dx: 0.45, dy: 0.5))
+        start.press(forDuration: 0.2, thenDragTo: start.withOffset(CGVector(dx: 180, dy: 20)))
+        XCTAssertTrue(app.buttons["review.done"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.descendants(matching: .any)["review.summary.good"].label.contains("1"))
+        XCTAssertTrue(app.descendants(matching: .any)["review.summary.reviewed"].label.contains("1"))
+    }
+
+    @MainActor
     func testRealReviewUpdatesGoodCountAndTime() throws {
         let app = launch()
         app.buttons["words.add"].tap()
