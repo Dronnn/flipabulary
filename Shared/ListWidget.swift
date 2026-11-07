@@ -6,8 +6,6 @@ struct ListProvider: AppIntentTimelineProvider {
         WidgetData.makeEntry(
             date: Date(),
             snapshot: .galleryPlaceholder,
-            useAppDefaults: true,
-            requestedStack: nil,
             isPlaceholder: true
         )
     }
@@ -17,8 +15,7 @@ struct ListProvider: AppIntentTimelineProvider {
         return WidgetData.makeEntry(
             date: Date(),
             snapshot: snapshot,
-            useAppDefaults: configuration.useAppDefaults,
-            requestedStack: configuration.stack,
+            source: configuration.source,
             sortOverride: configuration.sort.model,
             translationsOverride: configuration.showTranslations,
             isPlaceholder: context.isPreview
@@ -32,8 +29,7 @@ struct ListProvider: AppIntentTimelineProvider {
             WidgetData.makeEntry(
                 date: date,
                 snapshot: snapshot,
-                useAppDefaults: configuration.useAppDefaults,
-                requestedStack: configuration.stack,
+                source: configuration.source,
                 sortOverride: configuration.sort.model,
                 translationsOverride: configuration.showTranslations,
                 isPlaceholder: context.isPreview
@@ -238,7 +234,11 @@ struct ListWidgetView: View {
                     .foregroundStyle(AppColor.textSecondary)
                     .monospacedDigit()
             }
-            if entry.missingConfiguredStack {
+            if entry.missingConfiguredWordSet {
+                Text("Configured word set unavailable. Showing \(entry.scopeName).")
+                    .font(AppFont.font(8.5, .medium))
+                    .foregroundStyle(AppColor.textSecondary)
+            } else if entry.missingConfiguredStack {
                 Text("Configured stack unavailable. Showing \(entry.scopeName).")
                     .font(AppFont.font(8.5, .medium))
                     .foregroundStyle(AppColor.textSecondary)

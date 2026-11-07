@@ -15,55 +15,13 @@
             "value" : ""
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ""
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : ""
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ""
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ""
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ""
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ""
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ""
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ""
-          }
-        },
-        "vi" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : ""
@@ -75,7 +33,37 @@
             "value" : ""
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
         "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "ru" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : ""
@@ -87,7 +75,19 @@
             "value" : ""
           }
         },
-        "id" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : ""
@@ -111,55 +111,13 @@
             "value" : "%@"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@"
-          }
-        },
-        "vi" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@"
@@ -171,7 +129,37 @@
             "value" : "%@"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        },
         "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        },
+        "ru" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@"
@@ -183,7 +171,19 @@
             "value" : "%@"
           }
         },
-        "id" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@"
@@ -383,25 +383,19 @@
       "comment" : "A unique accessibility identifier for each support amount button.",
       "isCommentAutoGenerated" : true,
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@, %2$@"
-          }
-        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %@"
           }
         },
-        "es" : {
+        "en" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %@"
+            "state" : "new",
+            "value" : "%1$@, %2$@"
           }
         },
-        "pt-BR" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %@"
@@ -413,43 +407,7 @@
             "value" : "%@, %@"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %@"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %@"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %@"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %@"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %@"
-          }
-        },
-        "vi" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %@"
@@ -461,7 +419,37 @@
             "value" : "%@, %@"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %@"
+          }
+        },
         "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %@"
+          }
+        },
+        "ru" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %@"
@@ -473,7 +461,19 @@
             "value" : "%@, %@"
           }
         },
-        "id" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %@"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %@"
@@ -485,25 +485,19 @@
       "comment" : "A11y label combining the `label` and `count`.",
       "isCommentAutoGenerated" : true,
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@, %2$lld"
-          }
-        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld"
           }
         },
-        "es" : {
+        "en" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld"
+            "state" : "new",
+            "value" : "%1$@, %2$lld"
           }
         },
-        "pt-BR" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld"
@@ -515,43 +509,7 @@
             "value" : "%@, %lld"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld"
-          }
-        },
-        "vi" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld"
@@ -563,7 +521,37 @@
             "value" : "%@, %lld"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld"
+          }
+        },
         "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld"
+          }
+        },
+        "ru" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld"
@@ -575,7 +563,19 @@
             "value" : "%@, %lld"
           }
         },
-        "id" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld"
@@ -587,16 +587,16 @@
       "comment" : "A string combining the scope name with the number of due and saved words.",
       "isCommentAutoGenerated" : true,
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@, %2$lld due, %3$lld saved"
-          }
-        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld fällig, %lld gespeichert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@, %2$lld due, %3$lld saved"
           }
         },
         "es" : {
@@ -605,58 +605,16 @@
             "value" : "%@, %lld pendientes, %lld guardadas"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld pendentes, %lld salvas"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld à réviser, %lld enregistrées"
           }
         },
-        "ru" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, %lld к повторению, %lld сохранено"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld do powtórki, %lld zapisanych"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld до повторення, %lld збережено"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@，待复习 %lld，已保存 %lld"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, 복습 예정 %lld개, 저장됨 %lld개"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@、復習予定 %lld、保存済み %lld"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld cần ôn, %lld đã lưu"
+            "value" : "%@, %lld perlu diulang, %lld tersimpan"
           }
         },
         "it" : {
@@ -665,10 +623,40 @@
             "value" : "%@, %lld in scadenza, %lld salvate"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@、復習予定 %lld、保存済み %lld"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, 복습 예정 %lld개, 저장됨 %lld개"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld te herhalen, %lld opgeslagen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld do powtórki, %lld zapisanych"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld pendentes, %lld salvas"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld к повторению, %lld сохранено"
           }
         },
         "tr" : {
@@ -677,10 +665,22 @@
             "value" : "%@, %lld tekrar, %lld kayıtlı"
           }
         },
-        "id" : {
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, %lld perlu diulang, %lld tersimpan"
+            "value" : "%@, %lld до повторення, %lld збережено"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld cần ôn, %lld đã lưu"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@，待复习 %lld，已保存 %lld"
           }
         }
       }
@@ -689,25 +689,19 @@
       "comment" : "Accessibility label for the accessibilityElement The argument is the string “Small”, the string “Medium”, the string “Large”, or the string “Extra Large”.",
       "isCommentAutoGenerated" : true,
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@, %2$lld entries"
-          }
-        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld Einträge"
           }
         },
-        "es" : {
+        "en" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld entradas"
+            "state" : "new",
+            "value" : "%1$@, %2$lld entries"
           }
         },
-        "pt-BR" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld entradas"
@@ -719,46 +713,10 @@
             "value" : "%@, %lld entrées"
           }
         },
-        "ru" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, %lld записей"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld wpisów"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld записів"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@，%lld 个条目"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, 항목 %lld개"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@、%lld件の項目"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld mục"
+            "value" : "%@, %lld entri"
           }
         },
         "it" : {
@@ -767,10 +725,40 @@
             "value" : "%@, %lld voci"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@、%lld件の項目"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, 항목 %lld개"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld items"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld wpisów"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld entradas"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld записей"
           }
         },
         "tr" : {
@@ -779,10 +767,22 @@
             "value" : "%@, %lld kayıt"
           }
         },
-        "id" : {
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, %lld entri"
+            "value" : "%@, %lld записів"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld mục"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@，%lld 个条目"
           }
         }
       }
@@ -791,25 +791,19 @@
       "comment" : "A string combining the category name and the count of items in the category.",
       "isCommentAutoGenerated" : true,
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@, %2$lld of %3$lld"
-          }
-        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld von %lld"
           }
         },
-        "es" : {
+        "en" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld de %lld"
+            "state" : "new",
+            "value" : "%1$@, %2$lld of %3$lld"
           }
         },
-        "pt-BR" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld de %lld"
@@ -821,46 +815,10 @@
             "value" : "%@, %lld sur %lld"
           }
         },
-        "ru" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, %lld из %lld"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld z %lld"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld з %lld"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@，%lld / %lld"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld / %lld"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@、%lld / %lld"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld / %lld"
+            "value" : "%@, %lld dari %lld"
           }
         },
         "it" : {
@@ -869,10 +827,40 @@
             "value" : "%@, %lld di %lld"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@、%lld / %lld"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld / %lld"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld van %lld"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld z %lld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld de %lld"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld из %lld"
           }
         },
         "tr" : {
@@ -881,10 +869,22 @@
             "value" : "%@, %lld / %lld"
           }
         },
-        "id" : {
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, %lld dari %lld"
+            "value" : "%@, %lld з %lld"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld / %lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@，%lld / %lld"
           }
         }
       }
@@ -893,16 +893,16 @@
       "comment" : "A label that describes the accessibility of the view.",
       "isCommentAutoGenerated" : true,
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@, %2$lld saved, %3$lld due"
-          }
-        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld gespeichert, %lld fällig"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@, %2$lld saved, %3$lld due"
           }
         },
         "es" : {
@@ -911,58 +911,16 @@
             "value" : "%@, %lld guardadas, %lld pendientes"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld salvas, %lld pendentes"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld enregistrées, %lld à réviser"
           }
         },
-        "ru" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, %lld сохранено, %lld к повторению"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld zapisanych, %lld do powtórki"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld збережено, %lld до повторення"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@，已保存 %lld，待复习 %lld"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, 저장됨 %lld개, 복습 예정 %lld개"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@、保存済み %lld、復習予定 %lld"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld đã lưu, %lld cần ôn"
+            "value" : "%@, %lld tersimpan, %lld perlu diulang"
           }
         },
         "it" : {
@@ -971,10 +929,40 @@
             "value" : "%@, %lld salvate, %lld in scadenza"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@、保存済み %lld、復習予定 %lld"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, 저장됨 %lld개, 복습 예정 %lld개"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld opgeslagen, %lld te herhalen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld zapisanych, %lld do powtórki"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld salvas, %lld pendentes"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld сохранено, %lld к повторению"
           }
         },
         "tr" : {
@@ -983,10 +971,22 @@
             "value" : "%@, %lld kayıtlı, %lld tekrar"
           }
         },
-        "id" : {
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, %lld tersimpan, %lld perlu diulang"
+            "value" : "%@, %lld збережено, %lld до повторення"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld đã lưu, %lld cần ôn"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@，已保存 %lld，待复习 %lld"
           }
         }
       }
@@ -995,16 +995,16 @@
       "comment" : "A11y label for the widget.",
       "isCommentAutoGenerated" : true,
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@, %2$lld words shown, %3$lld due"
-          }
-        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld Wörter angezeigt, %lld fällig"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@, %2$lld words shown, %3$lld due"
           }
         },
         "es" : {
@@ -1013,58 +1013,16 @@
             "value" : "%@, %lld palabras mostradas, %lld pendientes"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld palavras exibidas, %lld pendentes"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld mots affichés, %lld à réviser"
           }
         },
-        "ru" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, %lld слов показано, %lld к повторению"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld pokazanych słów, %lld do powtórki"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld слів показано, %lld до повторення"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@，已显示 %lld 个单词，待复习 %lld"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, 표시된 단어 %lld개, 복습 예정 %lld개"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@、表示単語 %lld、復習予定 %lld"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, %lld từ đã hiện, %lld cần ôn"
+            "value" : "%@, %lld kata ditampilkan, %lld perlu diulang"
           }
         },
         "it" : {
@@ -1073,10 +1031,40 @@
             "value" : "%@, %lld parole mostrate, %lld in scadenza"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@、表示単語 %lld、復習予定 %lld"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, 표시된 단어 %lld개, 복습 예정 %lld개"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, %lld woorden getoond, %lld te herhalen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld pokazanych słów, %lld do powtórki"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld palavras exibidas, %lld pendentes"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld слов показано, %lld к повторению"
           }
         },
         "tr" : {
@@ -1085,10 +1073,22 @@
             "value" : "%@, %lld kelime gösterildi, %lld tekrar"
           }
         },
-        "id" : {
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, %lld kata ditampilkan, %lld perlu diulang"
+            "value" : "%@, %lld слів показано, %lld до повторення"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %lld từ đã hiện, %lld cần ôn"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@，已显示 %lld 个单词，待复习 %lld"
           }
         }
       }
@@ -1109,55 +1109,13 @@
             "value" : "%lld"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "vi" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld"
@@ -1169,7 +1127,37 @@
             "value" : "%lld"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        },
         "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        },
+        "ru" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld"
@@ -1181,7 +1169,19 @@
             "value" : "%lld"
           }
         },
-        "id" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld"
@@ -1663,16 +1663,16 @@
       "comment" : "A description of the number of words that are due to be reviewed, as well as the number of words that have been saved and learned.",
       "isCommentAutoGenerated" : true,
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lld due, %2$lld saved, %3$lld learned"
-          }
-        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld fällig, %lld gespeichert, %lld gelernt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld due, %2$lld saved, %3$lld learned"
           }
         },
         "es" : {
@@ -1681,58 +1681,16 @@
             "value" : "%lld pendientes, %lld guardadas, %lld aprendidas"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld pendentes, %lld salvas, %lld aprendidas"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld à réviser, %lld enregistrées, %lld apprises"
           }
         },
-        "ru" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld к повторению, %lld сохранено, %lld выучено"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld do powtórki, %lld zapisanych, %lld opanowanych"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld до повторення, %lld збережено, %lld вивчено"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "待复习 %lld，已保存 %lld，已学会 %lld"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "복습 예정 %lld개, 저장됨 %lld개, 학습됨 %lld개"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "復習予定 %lld、保存済み %lld、学習済み %lld"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld cần ôn, %lld đã lưu, %lld đã học"
+            "value" : "%lld perlu diulang, %lld tersimpan, %lld dipelajari"
           }
         },
         "it" : {
@@ -1741,10 +1699,40 @@
             "value" : "%lld in scadenza, %lld salvate, %lld apprese"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "復習予定 %lld、保存済み %lld、学習済み %lld"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복습 예정 %lld개, 저장됨 %lld개, 학습됨 %lld개"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld te herhalen, %lld opgeslagen, %lld geleerd"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld do powtórki, %lld zapisanych, %lld opanowanych"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld pendentes, %lld salvas, %lld aprendidas"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld к повторению, %lld сохранено, %lld выучено"
           }
         },
         "tr" : {
@@ -1753,10 +1741,22 @@
             "value" : "%lld tekrar, %lld kayıtlı, %lld öğrenildi"
           }
         },
-        "id" : {
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld perlu diulang, %lld tersimpan, %lld dipelajari"
+            "value" : "%lld до повторення, %lld збережено, %lld вивчено"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld cần ôn, %lld đã lưu, %lld đã học"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "待复习 %lld，已保存 %lld，已学会 %lld"
           }
         }
       }
@@ -2047,16 +2047,16 @@
       "comment" : "A label that describes the number of repeats out of a threshold. The first argument is the count of repeats. The second argument is the threshold.",
       "isCommentAutoGenerated" : true,
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lld of %2$lld repeats"
-          }
-        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld von %lld Wiederholungen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld of %2$lld repeats"
           }
         },
         "es" : {
@@ -2065,58 +2065,16 @@
             "value" : "%lld de %lld repeticiones"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld de %lld repetições"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld sur %lld répétitions"
           }
         },
-        "ru" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld из %lld повторов"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld z %lld powtórek"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld з %lld повторів"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld / %lld 次重复"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "반복 %lld / %lld"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "繰り返し %lld / %lld"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld / %lld lần lặp"
+            "value" : "%lld dari %lld ulangan"
           }
         },
         "it" : {
@@ -2125,10 +2083,40 @@
             "value" : "%lld di %lld ripetizioni"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "繰り返し %lld / %lld"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "반복 %lld / %lld"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld van %lld herhalingen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld z %lld powtórek"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld de %lld repetições"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld из %lld повторов"
           }
         },
         "tr" : {
@@ -2137,10 +2125,22 @@
             "value" : "%lld / %lld tekrar"
           }
         },
-        "id" : {
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld dari %lld ulangan"
+            "value" : "%lld з %lld повторів"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld / %lld lần lặp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld / %lld 次重复"
           }
         }
       }
@@ -2711,6 +2711,7 @@
     },
     "−1" : {
       "comment" : "A description of the number of repeats a milestone earns.",
+      "extractionState" : "stale",
       "isCommentAutoGenerated" : true,
       "localizations" : {
         "de" : {
@@ -2725,55 +2726,13 @@
             "value" : "−1"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "−1"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "−1"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "−1"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "−1"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "−1"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "−1"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "−1"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "−1"
-          }
-        },
-        "vi" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "−1"
@@ -2785,7 +2744,37 @@
             "value" : "−1"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "−1"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "−1"
+          }
+        },
         "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "−1"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "−1"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "−1"
+          }
+        },
+        "ru" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "−1"
@@ -2797,7 +2786,19 @@
             "value" : "−1"
           }
         },
-        "id" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "−1"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "−1"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "−1"
@@ -2807,6 +2808,7 @@
     },
     "$" : {
       "comment" : "The dollar sign.",
+      "extractionState" : "stale",
       "isCommentAutoGenerated" : true,
       "localizations" : {
         "de" : {
@@ -2821,55 +2823,13 @@
             "value" : "$"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "$"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "$"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "$"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "$"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "$"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "$"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "$"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "$"
-          }
-        },
-        "vi" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "$"
@@ -2881,7 +2841,37 @@
             "value" : "$"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "$"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "$"
+          }
+        },
         "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "$"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "$"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "$"
+          }
+        },
+        "ru" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "$"
@@ -2893,7 +2883,19 @@
             "value" : "$"
           }
         },
-        "id" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "$"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "$"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "$"
@@ -3377,6 +3379,7 @@
       }
     },
     "2, 5, or 10" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4041,6 +4044,7 @@
       }
     },
     "A Learned word returns to Learning when fewer than %lld repeats remain." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4130,6 +4134,101 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已学会的单词在剩余重复次数少于 %lld 时回到学习中。"
+          }
+        }
+      }
+    },
+    "A major boost" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein großer Schub"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un gran impulso"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un grand coup de pouce"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dorongan besar"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una spinta importante"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "大きな後押し"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "큰 힘이 됩니다"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een grote steun"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duży zastrzyk energii"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um grande impulso"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Большой импульс"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Büyük bir destek"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Великий поштовх"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Một cú hích lớn"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一次巨大的推动"
           }
         }
       }
@@ -5173,6 +5272,102 @@
         }
       }
     },
+    "Add words" : {
+      "comment" : "A button that adds words to a word set.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wörter hinzufügen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir palabras"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter des mots"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tambah kata"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aggiungi parole"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "単語を追加"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단어 추가"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Woorden toevoegen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodaj słowa"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar palavras"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить слова"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kelime ekle"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Додати слова"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thêm từ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加单词"
+          }
+        }
+      }
+    },
     "Add words in Flipabulary." : {
       "extractionState" : "stale",
       "localizations" : {
@@ -5363,6 +5558,102 @@
         }
       }
     },
+    "After the final review, the word is fully learned and will not appear again." : {
+      "comment" : "A description of a word that is no longer reviewed.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nach der letzten Wiederholung ist das Wort vollständig gelernt und erscheint nicht mehr."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tras la última revisión, la palabra queda totalmente aprendida y no volverá a aparecer."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Après la dernière révision, le mot est pleinement appris et n'apparaît plus."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setelah tinjauan terakhir, kata sepenuhnya dikuasai dan tidak akan muncul lagi."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dopo l'ultima revisione, la parola è completamente appresa e non compare più."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最後の復習を終えると、単語は完全に学習済みとなり、再び表示されません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마지막 복습을 마치면 단어는 완전히 학습 완료되어 다시 나타나지 않습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Na de laatste herhaling is het woord volledig geleerd en verschijnt het niet meer."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Po ostatniej powtórce słowo jest w pełni opanowane i nie pojawi się ponownie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Após a última revisão, a palavra fica totalmente aprendida e não aparece mais."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "После последнего повторения слово считается полностью выученным и больше не появится."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Son tekrarın ardından kelime tamamen öğrenilmiş olur ve bir daha görünmez."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Після останнього повторення слово вважається повністю вивченим і більше не з’явиться."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sau lần ôn tập cuối, từ được coi là đã học hoàn toàn và sẽ không xuất hiện lại."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最后一次复习后，单词即完全学会，不再出现。"
+          }
+        }
+      }
+    },
     "Again" : {
       "localizations" : {
         "de" : {
@@ -5548,6 +5839,102 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重来"
+          }
+        }
+      }
+    },
+    "Again returns a Learned word to Learning and schedules the first learning step. Changing these rules never rewrites answer history, and an active session finishes with the rules it started with." : {
+      "comment" : "A description of how a word is returned to the learning stage after the user changes the rules.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nochmal setzt ein gelerntes Wort in den Zustand Lernen zurück und plant den ersten Lernschritt. Änderungen an diesen Regeln schreiben die Antworthistorie nie um, und eine laufende Sitzung endet mit den Regeln, mit denen sie begonnen hat."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otra vez devuelve una palabra Aprendida al estado Aprendiendo y programa el primer paso de aprendizaje. Cambiar estas reglas nunca reescribe el historial de respuestas, y una sesión activa termina con las reglas con las que empezó."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encore renvoie un mot appris à l'état En cours et programme la première étape d'apprentissage. Modifier ces règles ne réécrit jamais l'historique des réponses, et une session active se termine avec les règles avec lesquelles elle a commencé."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ulangi mengembalikan kata yang dikuasai ke Dipelajari dan menjadwalkan langkah belajar pertama. Mengubah aturan ini tidak akan menulis ulang riwayat jawaban, dan sesi yang aktif selesai dengan aturan saat dimulai."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Di nuovo riporta una parola Imparata In apprendimento e pianifica il primo passaggio di apprendimento. Modificare queste regole non riscrive mai la cronologia delle risposte e una sessione attiva termina con le regole con cui è iniziata."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「もう一度」を押すと、学習済みの単語が学習中に戻り、最初の学習ステップが予定されます。これらのルールを変更しても回答履歴は書き換えられず、進行中のセッションは開始時のルールで終了します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "'다시'를 누르면 학습 완료 단어가 학습 중으로 돌아가고 첫 학습 단계가 예약됩니다. 이 규칙을 바꿔도 답변 기록은 변경되지 않으며, 진행 중인 세션은 시작할 때의 규칙으로 끝납니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opnieuw zet een Geleerd woord terug naar Leren en plant de eerste leerstap. Het wijzigen van deze regels herschrijft nooit de antwoordgeschiedenis, en een actieve sessie eindigt met de regels waarmee deze begon."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jeszcze raz przywraca opanowane słowo do nauki i planuje pierwszy etap nauki. Zmiana tych zasad nie przepisuje historii odpowiedzi, a aktywna sesja kończy się na zasadach, z którymi ją rozpoczęto."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De novo devolve uma palavra Aprendida ao estado Em aprendizado e agenda a primeira etapa de aprendizado. Alterar estas regras nunca reescreve o histórico de respostas, e uma sessão ativa termina com as regras com que começou."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Заново» возвращает выученное слово в изучение и ставит первый шаг изучения. Изменение этих правил никогда не переписывает историю ответов, а активный сеанс завершается с теми правилами, с которыми начался."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tekrar, Öğrenildi durumundaki bir kelimeyi Öğreniliyor'a döndürür ve ilk öğrenme adımını planlar. Bu kuralları değiştirmek cevap geçmişini asla yeniden yazmaz ve etkin bir oturum başladığı kurallarla biter."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Знову» повертає вивчене слово до вивчення й ставить перший крок вивчення. Зміна цих правил ніколи не переписує історію відповідей, а активний сеанс завершується з тими правилами, з якими почався."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lại đưa từ Đã học trở về Đang học và lên lịch bước học đầu tiên. Thay đổi các quy tắc này không bao giờ ghi đè lịch sử trả lời, và một phiên đang chạy sẽ kết thúc với quy tắc mà nó bắt đầu."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“重来”会将已学会的单词退回学习中，并安排第一个学习步骤。更改这些规则不会重写答题历史，进行中的学习会按开始时的规则完成。"
           }
         }
       }
@@ -5743,6 +6130,7 @@
       }
     },
     "Again schedules the first step immediately. Changing these rules never rewrites answer history, and an active session finishes with the rules it started with." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -6783,6 +7171,7 @@
       }
     },
     "Apply" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -7634,6 +8023,101 @@
         }
       }
     },
+    "Champion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Champion"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campeón"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Champion"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Juara"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "チャンピオン"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "챔피언"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kampioen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mistrz"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campeão"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чемпион"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Şampiyon"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чемпіон"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nhà vô địch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "冠军"
+          }
+        }
+      }
+    },
     "Changes apply to the next session." : {
       "localizations" : {
         "de" : {
@@ -8198,6 +8682,100 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择用于词汇摘要的单词本。"
+          }
+        }
+      }
+    },
+    "Choose a stack or a custom word set, then pick the order." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle einen Stapel oder ein eigenes Wortset und dann die Reihenfolge."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige una pila o un conjunto de palabras personalizado y luego el orden."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez une pile ou un ensemble de mots personnalisé, puis l’ordre."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pilih tumpukan atau rangkaian kata khusus, lalu pilih urutannya."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scegli uno stack o un set di parole personalizzato, poi l’ordine."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スタックまたはカスタム単語セットを選択し、順序を選びます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "스택 또는 사용자 설정 단어 세트를 선택한 다음 순서를 선택하십시오."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kies een stapel of een eigen woordset en daarna de volgorde."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wybierz stos lub własny zestaw słów, a następnie kolejność."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolha uma pilha ou um conjunto de palavras personalizado e depois a ordem."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выберите стек или собственный набор слов, а затем порядок."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir yığın veya özel bir kelime seti seçin, ardından sırayı belirleyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Виберіть стек або власний набір слів, а потім порядок."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chọn một chồng hoặc một bộ từ tùy chỉnh, sau đó chọn thứ tự."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择一个堆叠或自定单词集，然后选择顺序。"
           }
         }
       }
@@ -8864,7 +9442,102 @@
         }
       }
     },
+    "Choose the default source for new List widgets. Each widget can still choose its own source, sort, translations, and word set in Edit Widget." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle die Standardquelle für neue Listen-Widgets. Jedes Widget kann unter „Widget bearbeiten“ weiterhin eigene Quelle, Sortierung, Übersetzungen und Wortset wählen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige la fuente predeterminada para los nuevos widgets de lista. Cada widget puede seguir eligiendo su propia fuente, orden, traducciones y conjunto de palabras en Editar widget."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez la source par défaut des nouveaux widgets Liste. Chaque widget peut toujours choisir sa propre source, son tri, ses traductions et son ensemble de mots dans « Modifier le widget »."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pilih sumber default untuk widget Daftar baru. Setiap widget tetap dapat memilih sumber, urutan, terjemahan, dan rangkaian katanya sendiri di Edit Widget."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scegli la fonte predefinita per i nuovi widget Elenco. Ogni widget può comunque scegliere la propria fonte, l’ordinamento, le traduzioni e il set di parole in Modifica widget."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新規のリストウィジェットのデフォルトのソースを選択します。各ウィジェットでは、「ウィジェットを編集」でソース、並べ替え、翻訳、単語セットを個別に選択できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "새 목록 위젯의 기본 소스를 선택하십시오. 각 위젯에서는 '위젯 편집'에서 소스, 정렬, 번역 및 단어 세트를 개별적으로 선택할 수 있습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kies de standaardbron voor nieuwe lijstwidgets. Elk widget kan in ‘Wijzig widget’ nog steeds zijn eigen bron, sortering, vertalingen en woordset kiezen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wybierz domyślne źródło dla nowych widżetów listy. Każdy widżet może nadal wybrać własne źródło, sortowanie, tłumaczenia i zestaw słów w opcji Edytuj widżet."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolha a fonte padrão para novos widgets de lista. Cada widget ainda pode escolher sua própria fonte, ordenação, traduções e conjunto de palavras em Editar widget."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выберите источник по умолчанию для новых виджетов «Список». В каждом виджете по-прежнему можно выбрать свой источник, сортировку, переводы и набор слов в разделе «Изменить виджет»."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeni Liste widget’ları için varsayılan kaynağı seçin. Her widget, Widget’ı Düzenle bölümünde kendi kaynağını, sıralamasını, çevirilerini ve kelime setini seçmeye devam edebilir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Виберіть джерело за замовчуванням для нових віджетів «Список». Кожен віджет і далі може вибрати власне джерело, сортування, переклади та набір слів у розділі «Редагувати віджет»."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chọn nguồn mặc định cho tiện ích Danh sách mới. Mỗi tiện ích vẫn có thể chọn nguồn, cách sắp xếp, bản dịch và bộ từ riêng trong Chỉnh sửa tiện ích."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择新列表小组件的默认来源。每个小组件仍可在“编辑小组件”中选择自己的来源、排序、翻译和单词集。"
+          }
+        }
+      }
+    },
     "Choose what the word list shows." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -9711,6 +10384,102 @@
         }
       }
     },
+    "Configured word set unavailable. Showing %@." : {
+      "comment" : "A message that appears when the configured word set is unavailable.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das konfigurierte Wörterset ist nicht verfügbar. %@ wird angezeigt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El conjunto de palabras configurado no está disponible. Se muestra %@."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'ensemble de mots configuré n'est pas disponible. Affichage de %@."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set kata yang dikonfigurasi tidak tersedia. Menampilkan %@."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il set di parole configurato non è disponibile. Visualizzazione di %@."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定された単語セットを利用できません。%@を表示しています。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정된 단어 세트를 사용할 수 없습니다. %@을(를) 표시합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De ingestelde woordenset is niet beschikbaar. %@ wordt getoond."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skonfigurowany zbiór słów jest niedostępny. Wyświetlany jest %@."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O conjunto de palavras configurado não está disponível. Exibindo %@."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Настроенная подборка слов недоступна. Показан %@."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yapılandırılmış kelime seti kullanılamıyor. %@ gösteriliyor."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Налаштована добірка слів недоступна. Показано %@."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bộ từ đã chọn không khả dụng. Đang hiện %@."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配置的单词集不可用。正在显示 %@。"
+          }
+        }
+      }
+    },
     "Continue learning" : {
       "localizations" : {
         "de" : {
@@ -10185,6 +10954,7 @@
       }
     },
     "Custom amount" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -10279,6 +11049,7 @@
       }
     },
     "Custom amounts select an available App Store product. Nothing is charged outside the configured catalog." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -10752,6 +11523,7 @@
       }
     },
     "Decay milestones are cumulative from the latest learned or reinforced date. Month-end and daylight-saving changes use your local calendar." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -10861,58 +11633,16 @@
             "value" : "Reducir %@"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diminuir %@"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Diminuer %@"
           }
         },
-        "ru" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Уменьшить %@"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zmniejsz %@"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Зменшити %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "减少 %@"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 줄이기"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@を減らす"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Giảm %@"
+            "value" : "Kurangi %@"
           }
         },
         "it" : {
@@ -10921,10 +11651,40 @@
             "value" : "Riduci %@"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@を減らす"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 줄이기"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ verlagen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zmniejsz %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diminuir %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уменьшить %@"
           }
         },
         "tr" : {
@@ -10933,10 +11693,22 @@
             "value" : "%@ azalt"
           }
         },
-        "id" : {
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kurangi %@"
+            "value" : "Зменшити %@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Giảm %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "减少 %@"
           }
         }
       }
@@ -11145,58 +11917,16 @@
             "value" : "¿Eliminar %@?"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Excluir %@?"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Supprimer %@ ?"
           }
         },
-        "ru" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Удалить %@?"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Usunąć %@?"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Видалити %@?"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "删除 %@？"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 삭제할까요?"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@を削除しますか？"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Xóa %@?"
+            "value" : "Hapus %@?"
           }
         },
         "it" : {
@@ -11205,10 +11935,40 @@
             "value" : "Eliminare %@?"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@を削除しますか？"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 삭제할까요?"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ verwijderen?"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usunąć %@?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excluir %@?"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить %@?"
           }
         },
         "tr" : {
@@ -11217,10 +11977,22 @@
             "value" : "%@ silinsin mi?"
           }
         },
-        "id" : {
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hapus %@?"
+            "value" : "Видалити %@?"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xóa %@?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除 %@？"
           }
         }
       }
@@ -11409,6 +12181,198 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "删除单词"
+          }
+        }
+      }
+    },
+    "Delete word set" : {
+      "comment" : "The label of a button that deletes a word set.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wörterset löschen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar conjunto de palabras"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer l'ensemble de mots"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hapus set kata"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elimina set di parole"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "単語セットを削除"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단어 세트 삭제"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Woordenset verwijderen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usuń zbiór słów"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excluir conjunto de palavras"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить подборку слов"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kelime setini sil"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видалити добірку слів"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xóa bộ từ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除单词集"
+          }
+        }
+      }
+    },
+    "Delete word set?" : {
+      "comment" : "A confirmation dialog asking the user to delete a word set.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wörterset löschen?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Eliminar conjunto de palabras?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer l'ensemble de mots ?"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hapus set kata?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminare set di parole?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "単語セットを削除しますか?"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단어 세트를 삭제할까요?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Woordenset verwijderen?"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usunąć zbiór słów?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excluir conjunto de palavras?"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить подборку слов?"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kelime seti silinsin mi?"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видалити добірку слів?"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xóa bộ từ?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除单词集？"
           }
         }
       }
@@ -12451,6 +13415,102 @@
         }
       }
     },
+    "Drag words to reorder. Each widget can use a different set." : {
+      "comment" : "A description of the drag-and-drop functionality for a word set.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ziehe Wörter, um sie neu anzuordnen. Jedes Widget kann ein anderes Wörterset verwenden."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrastra las palabras para reordenarlas. Cada widget puede usar un conjunto distinto."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Faites glisser les mots pour les réordonner. Chaque widget peut utiliser un ensemble différent."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seret kata untuk mengubah urutan. Setiap widget dapat memakai set kata berbeda."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trascina le parole per riordinarle. Ogni widget può usare un set diverso."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "単語をドラッグして並べ替えられます。ウィジェットごとに異なるセットを使用できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단어를 드래그해 순서를 바꾸세요. 위젯마다 다른 세트를 사용할 수 있습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sleep woorden om ze opnieuw te ordenen. Elke widget kan een andere woordenset gebruiken."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przeciągaj słowa, aby zmienić kolejność. Każdy widżet może używać innego zbioru."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arraste as palavras para reordená-las. Cada widget pode usar um conjunto diferente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перетаскивайте слова, чтобы изменить порядок. Каждый виджет может использовать свою подборку."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sıralamak için kelimeleri sürükleyin. Her araç takımı farklı bir set kullanabilir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перетягуйте слова, щоб змінити порядок. Кожен віджет може використовувати свою добірку."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kéo từ để sắp xếp lại. Mỗi tiện ích có thể dùng một bộ từ riêng."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拖动单词以调整顺序。每个小组件可以使用不同的单词集。"
+          }
+        }
+      }
+    },
     "due" : {
       "localizations" : {
         "de" : {
@@ -12730,6 +13790,100 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "例如 adj、n、vt"
+          }
+        }
+      }
+    },
+    "Each List widget can choose its own set in Edit Widget. Sets can mix words from any stack." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jedes Listen-Widget kann in „Widget bearbeiten“ ein eigenes Wörterset wählen. Wörtersets können Wörter aus jedem Stapel mischen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada widget de lista puede elegir su propio conjunto en «Editar widget». Los conjuntos pueden mezclar palabras de cualquier mazo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chaque widget de liste peut choisir son propre ensemble dans « Modifier le widget ». Les ensembles peuvent mélanger des mots de n'importe quel paquet."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setiap widget Daftar dapat memilih set kata sendiri di Edit Widget. Set kata dapat mencampur kata dari tumpukan mana pun."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ogni widget elenco può scegliere il proprio set in «Modifica widget». I set possono mescolare parole di qualsiasi mazzo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "各リストウィジェットは「ウィジェットを編集」で独自のセットを選択できます。セットにはどのスタックの単語も混ぜられます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "각 목록 위젯은 '위젯 편집'에서 자체 세트를 선택할 수 있습니다. 세트에는 모든 스택의 단어를 섞을 수 있습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elke lijstwidget kan in ‘Widget bewerken’ een eigen set kiezen. Woordensets kunnen woorden uit elke stapel combineren."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Każdy widżet listy może wybrać własny zbiór w menu Edytuj widżet. Zbiory mogą łączyć słowa z dowolnego zestawu."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada widget de lista pode escolher seu próprio conjunto em “Editar widget”. Os conjuntos podem misturar palavras de qualquer baralho."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Каждый виджет-список может выбрать свою подборку в меню «Изменить виджет». В подборках можно смешивать слова из любых наборов."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Her liste araç takımı, Araç Takımını Düzenle bölümünde kendi setini seçebilir. Setler farklı destelerden kelimeleri karıştırabilir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кожен віджет-список може вибрати власну добірку в меню «Змінити віджет». У добірках можна змішувати слова з будь-яких наборів."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mỗi tiện ích Danh sách có thể chọn bộ từ riêng trong mục Chỉnh sửa tiện ích. Bộ từ có thể trộn từ của bất kỳ bộ thẻ nào."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每个列表小组件可在“编辑小组件”中选择自己的单词集。单词集可以混合任意单词本中的单词。"
           }
         }
       }
@@ -14721,6 +15875,101 @@
         }
       }
     },
+    "For serious supporters" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für ernsthafte Unterstützer"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para quienes apoyan de verdad"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour les soutiens sérieux"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Untuk pendukung serius"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per chi sostiene sul serio"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本気のサポーターへ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "진심으로 후원하는 분께"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voor serieuze supporters"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dla poważnych supporterów"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para quem apoia de verdade"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Для серьёзных сторонников"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ciddi destekçiler için"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Для серйозних прихильників"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dành cho người ủng hộ nghiêm túc"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "献给认真的支持者"
+          }
+        }
+      }
+    },
     "Fri" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -15289,7 +16538,104 @@
         }
       }
     },
+    "Good moves through the learning steps: %@." : {
+      "comment" : "A sentence that describes the steps a word goes through in the learning process.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gut führt durch die Lernschritte: %@."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bien avanza por los pasos de aprendizaje: %@."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bien fait avancer dans les étapes d'apprentissage : %@."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bagus memajukan langkah belajar: %@."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bene fa avanzare nei passaggi di apprendimento: %@."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「良い」で学習ステップ%@を進みます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "좋아요는 학습 단계 %@를 진행합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Goed doorloopt de leerstappen: %@."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dobrze przechodzi przez etapy nauki: %@."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bom avança pelas etapas de aprendizado: %@."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Хорошо» продвигает по этапам изучения: %@."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İyi, öğrenme adımlarından geçirir: %@."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Добре» просуває етапами вивчення: %@."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tốt sẽ đi qua các bước học: %@."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“良好”会依次推进学习步骤：%@。"
+          }
+        }
+      }
+    },
     "Good moves through the learning steps: %@. A card becomes Learned at the threshold, then decay removes repeats at the schedule above." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -15683,58 +17029,16 @@
             "value" : "Aumentar %@"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aumentar %@"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Augmenter %@"
           }
         },
-        "ru" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Увеличить %@"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zwiększ %@"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Збільшити %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "增加 %@"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 늘리기"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@を増やす"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tăng %@"
+            "value" : "Tambah %@"
           }
         },
         "it" : {
@@ -15743,10 +17047,40 @@
             "value" : "Aumenta %@"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@を増やす"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 늘리기"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ verhogen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zwiększ %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aumentar %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Увеличить %@"
           }
         },
         "tr" : {
@@ -15755,10 +17089,22 @@
             "value" : "%@ artır"
           }
         },
-        "id" : {
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tambah %@"
+            "value" : "Збільшити %@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tăng %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "增加 %@"
           }
         }
       }
@@ -16520,6 +17866,197 @@
         }
       }
     },
+    "Learned reviews" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wiederholungen für gelernte Wörter"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repasos de palabras aprendidas"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Révisions des mots appris"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tinjauan kata yang dikuasai"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ripassi delle parole imparate"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "学習済み単語の復習"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "학습 완료 단어 복습"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herhalingen van geleerde woorden"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Powtórki opanowanych słów"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revisões de palavras aprendidas"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Повторение выученных слов"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öğrenilen kelimelerin tekrarı"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Повторення вивчених слів"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ôn tập từ đã học"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已学会单词复习"
+          }
+        }
+      }
+    },
+    "Learned words return for review after each interval above. A Good answer moves the card to the next interval." : {
+      "comment" : "A description of how a word is reviewed after a user answers it.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gelernte Wörter kommen nach jedem oben angegebenen Intervall zur Wiederholung zurück. Gut verschiebt die Karte zum nächsten Intervall."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las palabras aprendidas vuelven a repasarse tras cada intervalo indicado arriba. Bien pasa la tarjeta al siguiente intervalo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mots appris reviennent en révision après chaque intervalle ci-dessus. Bien fait passer la carte à l'intervalle suivant."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kata yang dikuasai kembali untuk ditinjau setelah setiap interval di atas. Jawaban Bagus memindahkan kartu ke interval berikutnya."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le parole imparate tornano da ripassare dopo ogni intervallo indicato sopra. Bene passa la carta all'intervallo successivo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "学習済みの単語は、上記の各間隔の経過後に復習に戻ります。「良い」で答えると、カードは次の間隔に進みます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "학습 완료 단어는 위의 각 간격이 지나면 복습으로 돌아옵니다. 좋아요로 답하면 카드가 다음 간격으로 이동합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geleerde woorden komen na elk hierboven genoemd interval terug voor herhaling. Goed verplaatst de kaart naar het volgende interval."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opanowane słowa wracają do powtórki po każdym z powyższych interwałów. Odpowiedź Dobrze przenosi kartę do następnego interwału."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As palavras aprendidas voltam para revisão após cada intervalo acima. Bom leva o cartão ao próximo intervalo."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выученные слова возвращаются на повторение после каждого интервала выше. Ответ «Хорошо» переводит карточку на следующий интервал."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öğrenilen kelimeler yukarıdaki her aralıktan sonra tekrar için geri döner. İyi yanıtı vermek kartı bir sonraki aralığa taşır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вивчені слова повертаються на повторення після кожного інтервалу вище. Відповідь «Добре» переводить картку на наступний інтервал."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Từ đã học sẽ quay lại ôn tập sau mỗi khoảng thời gian ở trên. Trả lời Tốt sẽ đưa thẻ sang khoảng thời gian tiếp theo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已学会的单词会在上述每个间隔后回来复习。“良好”会将卡片移到下一个间隔。"
+          }
+        }
+      }
+    },
     "Learning" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -16990,6 +18527,101 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "学习、小组件和提醒无需任何购买即可使用。"
+          }
+        }
+      }
+    },
+    "Legend" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legende"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leyenda"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Légende"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legenda"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leggenda"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "伝説"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "전설"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legende"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legenda"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lenda"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Легенда"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Efsane"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Легенда"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Huyền thoại"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "传奇"
           }
         }
       }
@@ -17750,6 +19382,102 @@
         }
       }
     },
+    "Manual" : {
+      "comment" : "Display name for the \"Manual\" sort option.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manuell"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manual"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manuel"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manual"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manuale"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수동"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Handmatig"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ręcznie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manual"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вручную"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manuel"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вручну"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thủ công"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手动"
+          }
+        }
+      }
+    },
     "Medium" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -18031,6 +19759,102 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "周一"
+          }
+        }
+      }
+    },
+    "Month-end and daylight-saving changes use your local calendar." : {
+      "comment" : "A description of how the app handles month-end and daylight-saving changes.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monatsenden und Zeitumstellungen folgen deinem lokalen Kalender."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los cambios de fin de mes y de horario de verano usan tu calendario local."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les changements de fin de mois et d'heure d'été suivent votre calendrier local."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perubahan akhir bulan dan waktu musim panas mengikuti kalender lokal Anda."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fine mese e cambi di ora legale usano il tuo calendario locale."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "月末や夏時間の変更は現地のカレンダーに従います。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "월말과 서머타임 변경은 현지 캘린더를 따릅니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maandeinden en zomertijd worden volgens je lokale kalender berekend."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przejścia na koniec miesiąca i zmiany czasu letniego są liczone według lokalnego kalendarza."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mudanças de fim de mês e horário de verão seguem seu calendário local."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Конец месяца и переход на летнее время учитываются по вашему местному календарю."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ay sonu ve yaz saati değişiklikleri yerel takvimini kullanır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кінець місяця й перехід на літній час враховуються за вашим місцевим календарем."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuối tháng và thay đổi giờ mùa hè dùng lịch địa phương của bạn."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "月末和夏令时变化按本地日历处理。"
           }
         }
       }
@@ -18503,6 +20327,102 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "将单词移至 My words"
+          }
+        }
+      }
+    },
+    "Name" : {
+      "comment" : "A label for the name of a widget word set.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nombre"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nama"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nome"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名前"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이름"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Naam"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nazwa"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nome"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Название"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ad"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Назва"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tên"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名称"
           }
         }
       }
@@ -18981,6 +20901,100 @@
         }
       }
     },
+    "New word set" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neues Wörterset"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nuevo conjunto de palabras"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouvel ensemble de mots"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set kata baru"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nuovo set di parole"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しい単語セット"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "새 단어 세트"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieuwe woordenset"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nowy zbiór słów"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Novo conjunto de palavras"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новая подборка слов"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeni kelime seti"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нова добірка слів"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bộ từ mới"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新建单词集"
+          }
+        }
+      }
+    },
     "next" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -19186,58 +21200,16 @@
             "value" : "Próximo repaso en %@"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Próxima revisão em %@"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Prochaine révision dans %@"
           }
         },
-        "ru" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Следующее повторение через %@"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Następna powtórka za %@"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Наступне повторення через %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@后复习"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "다음 복습까지 %@"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "次回の復習まで %@"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ôn lại sau %@"
+            "value" : "Ulasan berikutnya dalam %@"
           }
         },
         "it" : {
@@ -19246,10 +21218,40 @@
             "value" : "Prossimo ripasso tra %@"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次回の復習まで %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다음 복습까지 %@"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Volgende herhaling over %@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Następna powtórka za %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Próxima revisão em %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Следующее повторение через %@"
           }
         },
         "tr" : {
@@ -19258,10 +21260,22 @@
             "value" : "%@ sonra tekrar"
           }
         },
-        "id" : {
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ulasan berikutnya dalam %@"
+            "value" : "Наступне повторення через %@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ôn lại sau %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@后复习"
           }
         }
       }
@@ -19361,6 +21375,7 @@
       }
     },
     "No cards due today" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -19924,6 +21939,102 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这里没有单词"
+          }
+        }
+      }
+    },
+    "No words in this set yet." : {
+      "comment" : "A message displayed when a widget word set has no words.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch keine Wörter in diesem Wörterset."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay palabras en este conjunto."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun mot dans cet ensemble pour l'instant."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Belum ada kata di set ini."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessuna parola in questo set per ora."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このセットにはまだ単語がありません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 세트에는 아직 단어가 없습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nog geen woorden in deze set."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "W tym zbiorze nie ma jeszcze słów."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ainda não há palavras neste conjunto."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В этой подборке пока нет слов."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu sette henüz kelime yok."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У цій добірці ще немає слів."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bộ từ này chưa có từ nào."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此单词集中还没有单词。"
           }
         }
       }
@@ -22293,6 +24404,101 @@
         }
       }
     },
+    "Patron" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Patron"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Patrocinador"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mécène"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Patron"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sostenitore"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "パトロン"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "후원자"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mecenas"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mecenas"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Patrono"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Патрон"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Patron"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Патрон"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nhà tài trợ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "赞助人"
+          }
+        }
+      }
+    },
     "Phonetic" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -22674,6 +24880,7 @@
       }
     },
     "Purchases are handled by the App Store. Tips are voluntary and unlock no features. Monthly support renews until cancelled in App Store settings. One-time tips are not restorable." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -22763,6 +24970,102 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "购买由 App Store 处理。打赏完全自愿，且不会解锁任何功能。每月支持会自动续订，直到在 App Store 设置中取消。一次性打赏无法恢复。"
+          }
+        }
+      }
+    },
+    "Purchases are handled by the App Store. Tips are voluntary, repeatable, and unlock no features. One-time tips are not restorable." : {
+      "comment" : "A description of how tips are processed and their limitations.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käufe werden über den App Store abgewickelt. Trinkgelder sind freiwillig, wiederholbar und schalten keine Funktionen frei. Einmalige Trinkgelder sind nicht wiederherstellbar."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las compras las gestiona el App Store. Las propinas son voluntarias, repetibles y no desbloquean ninguna función. Las propinas únicas no se pueden restaurar."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As compras são processadas pela App Store. As gorjetas são voluntárias, repetíveis e não desbloqueiam nenhum recurso. Gorjetas únicas não podem ser restauradas."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les achats sont gérés par l'App Store. Les pourboires sont volontaires, renouvelables et ne débloquent aucune fonctionnalité. Les pourboires ponctuels ne sont pas restaurables."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Покупки обрабатывает App Store. Чаевые добровольны, их можно повторять, и они не открывают функций. Разовые чаевые не восстанавливаются."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zakupy obsługuje App Store. Napiwki są dobrowolne, można je powtarzać i nie odblokowują żadnych funkcji. Jednorazowych napiwków nie można przywrócić."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Покупки обробляє App Store. Чаєві добровільні, їх можна повторювати, і вони не відкривають функцій. Одноразові чаєві не відновлюються."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "购买由 App Store 处理。打赏完全自愿、可重复，且不会解锁任何功能。一次性打赏无法恢复。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "구매는 App Store에서 처리됩니다. 팁은 자발적이며 반복할 수 있고 어떤 기능도 잠금 해제하지 않습니다. 일회성 팁은 복원할 수 없습니다."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購入は App Store によって処理されます。チップは任意で、繰り返し可能で、機能のロックを解除するものではありません。1回のみのチップは復元できません。"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Giao dịch mua được xử lý bởi App Store. Tiền boa là tự nguyện, có thể lặp lại và không mở khóa tính năng nào. Tiền boa một lần không thể khôi phục."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli acquisti sono gestiti dall'App Store. Le mance sono volontarie, ripetibili e non sbloccano alcuna funzione. Le mance una tantum non sono ripristinabili."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aankopen worden verwerkt door de App Store. Fooien zijn vrijwillig, herhaalbaar en ontgrendelen geen functies. Eenmalige fooien zijn niet te herstellen."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satın alımlar App Store tarafından işlenir. Bahşişler isteğe bağlıdır, tekrarlanabilir ve hiçbir özelliğin kilidini açmaz. Tek seferlik bahşişler geri yüklenemez."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pembelian ditangani oleh App Store. Tip bersifat sukarela, dapat diulang, dan tidak membuka fitur apa pun. Tip satu kali tidak dapat dipulihkan."
           }
         }
       }
@@ -23728,58 +26031,16 @@
             "value" : "Eliminar paso %lld"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Remover etapa %lld"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Supprimer l'étape %lld"
           }
         },
-        "ru" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Удалить шаг %lld"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Usuń krok %lld"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Видалити крок %lld"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "删除步骤 %lld"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld단계 제거"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ステップ %lld を削除"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Xóa bước %lld"
+            "value" : "Hapus langkah %lld"
           }
         },
         "it" : {
@@ -23788,10 +26049,40 @@
             "value" : "Rimuovi passaggio %lld"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ステップ %lld を削除"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld단계 제거"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stap %lld verwijderen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usuń krok %lld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover etapa %lld"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить шаг %lld"
           }
         },
         "tr" : {
@@ -23800,10 +26091,22 @@
             "value" : "%lld. adımı kaldır"
           }
         },
-        "id" : {
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hapus langkah %lld"
+            "value" : "Видалити крок %lld"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xóa bước %lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除步骤 %lld"
           }
         }
       }
@@ -25514,16 +27817,16 @@
       "comment" : "A label for the button that triggers a review of due cards in a vocabulary stack. The first argument is the number of due cards. The second argument is the name of the vocabulary stack.",
       "isCommentAutoGenerated" : true,
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Review %1$lld due cards in %2$@"
-          }
-        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld fällige Karten in %@ wiederholen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Review %1$lld due cards in %2$@"
           }
         },
         "es" : {
@@ -25532,58 +27835,16 @@
             "value" : "Repasar %lld tarjetas pendientes en %@"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Revisar %lld cartões pendentes em %@"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Réviser %lld cartes à réviser dans %@"
           }
         },
-        "ru" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Повторить %lld карточек в %@"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Powtórz %lld kart w %@"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Повторити %lld карток у %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "复习 %@ 中的 %lld 张待复习卡片"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@의 복습 예정 카드 %lld개 복습"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@で%lld枚のカードを復習"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ôn %lld thẻ đến hạn trong %@"
+            "value" : "Ulas %lld kartu yang perlu diulang di %@"
           }
         },
         "it" : {
@@ -25592,10 +27853,40 @@
             "value" : "Ripassa %lld carte in scadenza in %@"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@で%lld枚のカードを復習"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@의 복습 예정 카드 %lld개 복습"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Herhaal %lld openstaande kaarten in %@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Powtórz %lld kart w %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revisar %lld cartões pendentes em %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Повторить %lld карточек в %@"
           }
         },
         "tr" : {
@@ -25604,10 +27895,22 @@
             "value" : "%@ içindeki %lld kartı tekrar et"
           }
         },
-        "id" : {
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ulas %lld kartu yang perlu diulang di %@"
+            "value" : "Повторити %lld карток у %@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ôn %lld thẻ đến hạn trong %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "复习 %@ 中的 %lld 张待复习卡片"
           }
         }
       }
@@ -26938,7 +29241,6 @@
       }
     },
     "Search words" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -27991,58 +30293,16 @@
             "value" : "Ajustes de %@"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ajustes de %@"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Réglages pour %@"
           }
         },
-        "ru" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Настройки для %@"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ustawienia dla %@"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Налаштування для %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 的设置"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 설정"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@の設定"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cài đặt cho %@"
+            "value" : "Pengaturan untuk %@"
           }
         },
         "it" : {
@@ -28051,10 +30311,40 @@
             "value" : "Impostazioni per %@"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@の設定"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 설정"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Instellingen voor %@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ustawienia dla %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes de %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Настройки для %@"
           }
         },
         "tr" : {
@@ -28063,10 +30353,22 @@
             "value" : "%@ ayarları"
           }
         },
-        "id" : {
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pengaturan untuk %@"
+            "value" : "Налаштування для %@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cài đặt cho %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 的设置"
           }
         }
       }
@@ -29298,6 +31600,100 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "音效"
+          }
+        }
+      }
+    },
+    "Source" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quelle"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Origen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Source"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sumber"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Origine"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ソース"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "소스"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bron"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Źródło"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Origem"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Источник"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaynak"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Джерело"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nguồn"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "来源"
           }
         }
       }
@@ -33276,6 +35672,101 @@
         }
       }
     },
+    "The ultimate thank-you" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das ultimative Dankeschön"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El agradecimiento definitivo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le remerciement ultime"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terima kasih terbaik"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il ringraziamento definitivo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最高の感謝を込めて"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최고의 감사"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een ultiem dankjewel"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Największe podziękowanie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O agradecimento definitivo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Высшая благодарность"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En büyük teşekkür"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Найвища подяка"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lời cảm ơn trọn vẹn nhất"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最诚挚的感谢"
+          }
+        }
+      }
+    },
     "The word, its examples, and its learning history will be removed from all surfaces." : {
       "localizations" : {
         "de" : {
@@ -33370,7 +35861,105 @@
         }
       }
     },
+    "These defaults shape new List widgets. Existing widgets can keep their own source, sort, translations, and word set." : {
+      "comment" : "A description of the widget settings.",
+      "extractionState" : "stale",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Standards gelten für neue Listen-Widgets. Bestehende Widgets können ihre eigenen Einstellungen für Quelle, Sortierung, Übersetzung und Wörterset behalten."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estos valores predeterminados rigen para los nuevos widgets de lista. Los widgets existentes pueden mantener su propio origen, orden, traducciones y conjunto de palabras."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ces valeurs par défaut déterminent les nouveaux widgets de liste. Les widgets existants peuvent conserver leur propre source, tri, traductions et ensemble de mots."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bawaan ini membentuk widget Daftar baru. Widget yang sudah ada dapat mempertahankan sumber, urutan, terjemahan, dan set kata sendiri."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Queste impostazioni predefinite determinano i nuovi widget elenco. I widget esistenti possono mantenere la propria origine, ordinamento, traduzioni e set di parole."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "これらのデフォルトは新しいリストウィジェットに適用されます。既存のウィジェットは独自のソース、並べ替え、翻訳、単語セットを保持できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 기본값은 새 목록 위젯의 설정이 됩니다. 기존 위젯은 자체 소스, 정렬, 번역, 단어 세트를 유지할 수 있습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deze standaardwaarden bepalen nieuwe lijstwidgets. Bestaande widgets kunnen hun eigen bron, sortering, vertalingen en woordenset behouden."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te wartości domyślne kształtują nowe widżety listy. Istniejące widżety mogą zachować własne źródło, sortowanie, tłumaczenia i zbiór słów."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esses padrões definem os novos widgets de lista. Os widgets existentes podem manter sua própria origem, ordenação, traduções e conjunto de palavras."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эти значения по умолчанию задают новые виджеты-списки. Существующие виджеты могут сохранять свои источник, сортировку, переводы и подборку слов."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu varsayılanlar yeni liste araç takımlarını şekillendirir. Mevcut araç takımları kendi kaynak, sıralama, çeviri ve kelime seti seçimlerini koruyabilir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ці значення за замовчуванням задають нові віджети-списки. Наявні віджети можуть зберігати свої джерело, сортування, переклади й добірку слів."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Các mặc định này định hình tiện ích Danh sách mới. Tiện ích hiện có có thể giữ nguồn, cách sắp xếp, bản dịch và bộ từ riêng."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这些默认值会影响新的列表小组件。现有小组件可以保留自己的来源、排序、翻译和单词集。"
+          }
+        }
+      }
+    },
     "These defaults shape new List widgets. Existing widgets can keep their own stack, sort, and translation choices." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -36314,16 +38903,16 @@
       "comment" : "A label for an element that describes the upcoming card. The first argument is the action, either \"repeat\" or \"card\". The second argument is the name of the card.",
       "isCommentAutoGenerated" : true,
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Upcoming %1$@: %2$@"
-          }
-        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Anstehende %@: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Upcoming %1$@: %2$@"
           }
         },
         "es" : {
@@ -36332,58 +38921,16 @@
             "value" : "Próxima %@: %@"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Em breve, %@: %@"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "À venir, %@ : %@"
           }
         },
-        "ru" : {
+        "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Скоро %@: %@"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wkrótce %@: %@"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Скоро %@: %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "接下来的%@：%@"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "예정된 %@: %@"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今後の%@：%@"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sắp tới %@: %@"
+            "value" : "%@ mendatang: %@"
           }
         },
         "it" : {
@@ -36392,10 +38939,40 @@
             "value" : "In arrivo, %@: %@"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今後の%@：%@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예정된 %@: %@"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Binnenkort %@: %@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wkrótce %@: %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Em breve, %@: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скоро %@: %@"
           }
         },
         "tr" : {
@@ -36404,15 +38981,28 @@
             "value" : "Yaklaşan %@: %@"
           }
         },
-        "id" : {
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ mendatang: %@"
+            "value" : "Скоро %@: %@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sắp tới %@: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接下来的%@：%@"
           }
         }
       }
     },
     "Use app defaults" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -37736,6 +40326,196 @@
         }
       }
     },
+    "Word set" : {
+      "comment" : "The type display representation for a word set.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wörterset"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conjunto de palabras"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ensemble de mots"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set kata"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set di parole"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "単語セット"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단어 세트"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Woordenset"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zbiór słów"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conjunto de palavras"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подборка слов"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kelime seti"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добірка слів"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bộ từ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "单词集"
+          }
+        }
+      }
+    },
+    "Word sets" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wörtersets"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conjuntos de palabras"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ensembles de mots"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set kata"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set di parole"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "単語セット"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단어 세트"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Woordensets"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zbiory słów"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conjuntos de palavras"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подборки слов"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kelime setleri"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добірки слів"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bộ từ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "单词集"
+          }
+        }
+      }
+    },
     "Words" : {
       "localizations" : {
         "de" : {
@@ -38489,6 +41269,194 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你的单词保留在此设备上。"
+          }
+        }
+      }
+    },
+    "No words available" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Wörter verfügbar"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay palabras disponibles"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma palavra disponível"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun mot disponible"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет доступных слов"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brak dostępnych słów"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Немає доступних слів"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有可用的单词"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용 가능한 단어가 없습니다"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "利用できる単語がありません"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Không có từ nào"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessuna parola disponibile"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geen woorden beschikbaar"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kullanılabilir kelime yok"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tidak ada kata tersedia"
+          }
+        }
+      }
+    },
+    "Add words in Flipabulary first, then come back to build this set." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Füge zuerst Wörter in Flipabulary hinzu und komm dann zurück, um dieses Set zu erstellen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añade palabras en Flipabulary primero y luego vuelve para crear este conjunto."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicione palavras no Flipabulary primeiro e depois volte para montar este conjunto."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajoutez d'abord des mots dans Flipabulary, puis revenez pour créer cet ensemble."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сначала добавьте слова в Flipabulary, затем вернитесь, чтобы собрать этот набор."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Najpierw dodaj słowa w Flipabulary, a następnie wróć, aby zbudować ten zbiór."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Спочатку додайте слова у Flipabulary, потім поверніться, щоб створити цей набір."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请先在 Flipabulary 中添加单词，然后回来创建这个单词集。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "먼저 Flipabulary에서 단어를 추가한 다음 돌아와 이 세트를 만드세요."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "まず Flipabulary で単語を追加してから、戻ってこのセットを作成してください。"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trước tiên, hãy thêm từ trong Flipabulary, sau đó quay lại để tạo bộ từ này."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aggiungi prima le parole in Flipabulary, poi torna per creare questo set."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voeg eerst woorden toe in Flipabulary en kom dan terug om deze set te maken."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Önce Flipabulary'de kelime ekleyin, sonra bu seti oluşturmak için geri dönün."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tambahkan kata di Flipabulary terlebih dahulu, lalu kembali untuk membuat set ini."
           }
         }
       }

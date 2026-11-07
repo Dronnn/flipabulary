@@ -52,7 +52,8 @@ enum LibraryProjection {
                 id: card.id,
                 lifecycle: reconciled.lifecycle,
                 nextDueAt: reconciled.nextDueAt,
-                createdAt: card.createdAt
+                createdAt: card.createdAt,
+                appliedMilestoneCount: reconciled.appliedMilestones.count
             )
         }
     }
@@ -186,7 +187,35 @@ enum LibraryProjection {
                 nextDueAt: nextDue
             )
         }
+        let allCards = stackSnapshots.flatMap(\.cards)
+        let cardsByID = Dictionary(allCards.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        let wordSetSnapshots = preferences.widgetWordSets.map { set -> WidgetWordSetSnapshot in
+            var seen = Set<UUID>()
+            let cards = set.cardIDs.compactMap { id -> WidgetCardSnapshot? in
+                guard seen.insert(id).inserted else { return nil }
+                return cardsByID[id]
+            }
+            let activeCards = cards.filter { $0.lifecycle != "learned" }
+            let due = activeCards.filter { card in
+                guard let dueAt = card.dueAt else { return true }
+                return dueAt <= now
+            }.count
+            return WidgetWordSetSnapshot(
+                id: set.id,
+                name: set.name,
+                cards: cards,
+                savedCount: cards.count,
+                dueCount: due,
+                learnedCount: cards.filter { $0.lifecycle == "learned" }.count,
+                learningCount: cards.filter { $0.lifecycle == "learning" }.count,
+                newCount: cards.filter { $0.lifecycle == "new" }.count,
+                nextDueAt: activeCards.compactMap(\.dueAt).min()
+            )
+        }
         let validDefault = preferences.widgetDefaults.stackID ?? preferences.selectedStackID
+        let validDefaultSet = preferences.widgetDefaults.wordSetID.flatMap { id in
+            wordSetSnapshots.contains(where: { $0.id == id }) ? id : nil
+        }
         return WidgetSnapshot(
             schemaVersion: WidgetSnapshot.currentSchemaVersion,
             generatedAt: now,
@@ -194,7 +223,9 @@ enum LibraryProjection {
             defaultStackID: stackSnapshots.contains(where: { $0.id == validDefault }) ? validDefault : nil,
             defaultSort: preferences.widgetDefaults.sort,
             defaultShowTranslations: preferences.widgetDefaults.showTranslations,
-            languageCode: preferences.language.flatMap { $0.isSystem ? nil : $0.rawValue }
+            languageCode: preferences.language.flatMap { $0.isSystem ? nil : $0.rawValue },
+            wordSets: wordSetSnapshots,
+            defaultWordSetID: validDefaultSet
         )
     }
 }

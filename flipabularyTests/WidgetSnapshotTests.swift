@@ -17,8 +17,6 @@ final class WidgetSnapshotTests: XCTestCase {
         let entry = WidgetData.makeEntry(
             date: testDate("2026-11-07T10:00:00Z"),
             snapshot: snapshot,
-            useAppDefaults: false,
-            requestedStack: nil,
             sortOverride: .dueFirst,
             translationsOverride: true,
             isPlaceholder: true
@@ -63,8 +61,6 @@ final class WidgetSnapshotTests: XCTestCase {
         let entry = WidgetData.makeEntry(
             date: testDate("2026-11-07T10:00:00Z"),
             snapshot: snapshot,
-            useAppDefaults: false,
-            requestedStack: nil,
             sortOverride: .dueFirst,
             translationsOverride: true,
             isPlaceholder: true
@@ -76,9 +72,11 @@ final class WidgetSnapshotTests: XCTestCase {
                 date: entry.date,
                 snapshot: entry.snapshot,
                 stackID: entry.stackID,
+                wordSetID: nil,
                 sort: entry.sort,
                 showTranslations: false,
                 missingConfiguredStack: false,
+                missingConfiguredWordSet: false,
                 isPlaceholder: true
             ),
             familyOverride: .systemMedium

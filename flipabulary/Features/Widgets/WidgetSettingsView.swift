@@ -5,6 +5,8 @@ struct WidgetSettingsView: View {
     @Environment(AppEnvironment.self) private var app
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
+    @State private var editingSet: WidgetWordSet?
+
     private var defaults: WidgetDefaults { app.preferences.preferences.widgetDefaults }
 
     private var snapshot: WidgetSnapshot {
@@ -19,7 +21,12 @@ struct WidgetSettingsView: View {
         )
     }
 
-    private var scopeName: String {
+    private var wordSets: [WidgetWordSet] {
+        app.preferences.preferences.widgetWordSets
+    }
+
+    private var sourceName: String {
+        if let set = app.preferences.preferences.widgetWordSet(id: defaults.wordSetID) { return set.name }
         guard let stackID = defaults.stackID else { return "All stacks" }
         return app.library.stack(id: stackID)?.name ?? "All stacks"
     }
@@ -31,7 +38,7 @@ struct WidgetSettingsView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Home Screen")
                         .sectionLabelStyle()
-                    Text("These defaults shape new List widgets. Existing widgets can keep their own stack, sort, and translation choices.")
+                    Text("Choose the default source for new List widgets. Each widget can still choose its own source, sort, translations, and word set in Edit Widget.")
                         .font(AppFont.body())
                         .foregroundStyle(AppColor.textSecondary)
 
@@ -61,6 +68,12 @@ struct WidgetSettingsView: View {
             .pageBackground()
             .navigationTitle("List widget")
             .navigationBarTitleDisplayMode(.large)
+            .sheet(item: $editingSet) { set in
+                NavigationStack {
+                    WidgetWordSetEditorView(setID: set.id)
+                        .environment(app)
+                }
+            }
         }
     }
 
@@ -69,20 +82,40 @@ struct WidgetSettingsView: View {
             GroupedSurface {
                 Menu {
                     Button("All stacks") {
-                        update { $0.stackID = nil }
+                        update {
+                            $0.stackID = nil
+                            $0.wordSetID = nil
+                        }
                     }
                     ForEach(app.library.stacks()) { stack in
                         Button(stack.name) {
-                            update { $0.stackID = stack.id }
+                            update {
+                                $0.stackID = stack.id
+                                $0.wordSetID = nil
+                                if $0.sort == .manual { $0.sort = .dueFirst }
+                            }
+                        }
+                    }
+                    if !wordSets.isEmpty {
+                        Section("Word sets") {
+                            ForEach(wordSets) { set in
+                                Button(set.name) {
+                                    update {
+                                        $0.stackID = nil
+                                        $0.wordSetID = set.id
+                                        $0.sort = .manual
+                                    }
+                                }
+                            }
                         }
                     }
                 } label: {
                     HStack {
-                        Text("Stack")
+                        Text("Source")
                             .font(AppFont.fieldValue())
                             .foregroundStyle(AppColor.textPrimary)
                         Spacer()
-                        Text(scopeName)
+                        Text(sourceName)
                             .font(AppFont.font(14, .regular))
                             .foregroundStyle(AppColor.textSecondary)
                         Image(systemName: "chevron.up.chevron.down")
@@ -93,44 +126,63 @@ struct WidgetSettingsView: View {
                     .frame(height: 52)
                     .contentShape(Rectangle())
                 }
-                .accessibilityIdentifier("widget.stack")
-                SettingsDivider(inset: 16)
-                Menu {
-                    ForEach(WidgetSort.allCases) { sort in
+                .accessibilityIdentifier("widget.source")
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                SectionHeader(title: "Word sets")
+                GroupedSurface {
+                    ForEach(Array(wordSets.enumerated()), id: \.element.id) { index, set in
                         Button {
-                            update { $0.sort = sort }
+                            editingSet = set
                         } label: {
-                            Text(LocalizedStringKey(sort.title))
+                            HStack(spacing: 12) {
+                                Image(systemName: "square.stack.3d.up.fill")
+                                    .font(.system(size: 15, weight: .semibold))
+                                    .foregroundStyle(AppColor.accentStrong)
+                                    .frame(width: 28)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(set.name)
+                                        .font(AppFont.fieldValue())
+                                        .foregroundStyle(AppColor.textPrimary)
+                                        .lineLimit(1)
+                                    Text("\(set.cardIDs.count) words")
+                                        .font(AppFont.font(12, .regular))
+                                        .foregroundStyle(AppColor.textSecondary)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundStyle(AppColor.textMuted)
+                            }
+                            .padding(.horizontal, 16)
+                            .frame(minHeight: 56)
+                            .contentShape(Rectangle())
                         }
+                        .buttonStyle(.plain)
+                        if index < wordSets.count - 1 { SettingsDivider(inset: 16) }
                     }
-                } label: {
-                    HStack {
-                        Text("Sort")
-                            .font(AppFont.fieldValue())
-                            .foregroundStyle(AppColor.textPrimary)
-                        Spacer()
-                        Text(LocalizedStringKey(defaults.sort.title))
-                            .font(AppFont.font(14, .regular))
-                            .foregroundStyle(AppColor.textSecondary)
-                        Image(systemName: "chevron.up.chevron.down")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(AppColor.textMuted)
+                    if !wordSets.isEmpty { SettingsDivider(inset: 16) }
+                    Button {
+                        createWordSet()
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "plus")
+                            Text("New word set")
+                        }
+                        .font(AppFont.font(14, .semibold))
+                        .foregroundStyle(AppColor.accentStrong)
+                        .padding(.horizontal, 16)
+                        .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
+                        .contentShape(Rectangle())
                     }
-                    .padding(.horizontal, 16)
-                    .frame(height: 52)
-                    .contentShape(Rectangle())
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("widget.newSet")
                 }
-                .accessibilityIdentifier("widget.sort")
-                SettingsDivider(inset: 16)
-                SettingsToggleRow(
-                    title: "Show translations",
-                    detail: "Show the translation under each word.",
-                    isOn: Binding(
-                        get: { defaults.showTranslations },
-                        set: { value in update { $0.showTranslations = value } }
-                    ),
-                    accessibilityIdentifier: "widget.translations"
-                )
+                Text("Each List widget can choose its own set in Edit Widget. Sets can mix words from any stack.")
+                    .font(AppFont.caption())
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             VStack(alignment: .leading, spacing: 8) {
@@ -156,9 +208,10 @@ struct WidgetSettingsView: View {
     private func preview(mode: AppMetrics.LayoutMode) -> some View {
         let rows = mode == .compact ? 4 : (mode == .duo ? 5 : 7)
         let projection = snapshot
-        let stackID = projection.resolvedStackID(defaults.stackID)
-        let cards = Array(projection.projectedCards(stackID: stackID, sort: defaults.sort).prefix(rows))
-        let summary = projection.summary(stackID: stackID)
+        let stackID = defaults.wordSetID == nil ? projection.resolvedStackID(defaults.stackID) : nil
+        let wordSetID = defaults.wordSetID.flatMap { projection.wordSet(id: $0)?.id }
+        let cards = Array(projection.projectedCards(stackID: stackID, wordSetID: wordSetID, sort: defaults.sort).prefix(rows))
+        let summary = projection.summary(stackID: stackID, wordSetID: wordSetID)
         return VStack(alignment: .leading, spacing: 14) {
             SectionHeader(title: "Preview")
             VStack(alignment: .leading, spacing: 12) {
@@ -169,7 +222,7 @@ struct WidgetSettingsView: View {
                         .font(AppFont.font(10, .medium))
                         .foregroundStyle(AppColor.textSecondary)
                 }
-                Text(scopeName)
+                Text(sourceName)
                     .font(AppFont.font(18, .semibold))
                     .foregroundStyle(AppColor.textPrimary)
                 Divider().overlay(AppColor.divider)
@@ -187,7 +240,7 @@ struct WidgetSettingsView: View {
                 }
                 Spacer(minLength: 0)
                 HStack {
-                    Text(scopeName)
+                    Text(sourceName)
                     Spacer()
                     Text("\(summary.saved) words")
                 }
@@ -217,6 +270,15 @@ struct WidgetSettingsView: View {
         .frame(height: 48)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(title), \(count) entries")
+    }
+
+    private func createWordSet() {
+        var preferences = app.preferences.preferences
+        let set = WidgetWordSet(name: "Word set \(preferences.widgetWordSets.count + 1)")
+        preferences.widgetWordSets.append(set)
+        app.preferences.preferences = preferences
+        app.maintenance.publishSnapshot()
+        editingSet = set
     }
 
     private func update(_ change: (inout WidgetDefaults) -> Void) {

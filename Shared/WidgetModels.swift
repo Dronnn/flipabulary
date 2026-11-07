@@ -6,6 +6,7 @@ enum WidgetSort: String, Codable, CaseIterable, Identifiable, Sendable {
     case dueFirst
     case alphabetical
     case recentlyAdded
+    case manual
 
     var id: String { rawValue }
 
@@ -14,6 +15,7 @@ enum WidgetSort: String, Codable, CaseIterable, Identifiable, Sendable {
         case .dueFirst: "Due first"
         case .alphabetical: "Alphabetical"
         case .recentlyAdded: "Recently added"
+        case .manual: "Manual"
         }
     }
 }
@@ -41,8 +43,20 @@ struct WidgetStackSnapshot: Codable, Hashable, Identifiable, Sendable {
     var nextDueAt: Date?
 }
 
+struct WidgetWordSetSnapshot: Codable, Hashable, Identifiable, Sendable {
+    var id: UUID
+    var name: String
+    var cards: [WidgetCardSnapshot]
+    var savedCount: Int
+    var dueCount: Int
+    var learnedCount: Int
+    var learningCount: Int
+    var newCount: Int
+    var nextDueAt: Date?
+}
+
 struct WidgetSnapshot: Codable, Hashable, Sendable {
-    static let currentSchemaVersion = 1
+    static let currentSchemaVersion = 2
 
     var schemaVersion: Int
     var generatedAt: Date
@@ -51,6 +65,8 @@ struct WidgetSnapshot: Codable, Hashable, Sendable {
     var defaultSort: WidgetSort
     var defaultShowTranslations: Bool
     var languageCode: String? = nil
+    var wordSets: [WidgetWordSetSnapshot] = []
+    var defaultWordSetID: UUID? = nil
 
     static let empty = WidgetSnapshot(
         schemaVersion: currentSchemaVersion,
@@ -111,37 +127,56 @@ struct WidgetSnapshot: Codable, Hashable, Sendable {
         return stack(id: requested) == nil
     }
 
-    func projectedCards(stackID: UUID?, sort: WidgetSort) -> [WidgetCardSnapshot] {
+    func wordSet(id: UUID?) -> WidgetWordSetSnapshot? {
+        guard let id else { return nil }
+        return wordSets.first(where: { $0.id == id })
+    }
+
+    func resolvedWordSetID(_ requested: UUID?) -> UUID? {
+        if let requested, wordSet(id: requested) != nil { return requested }
+        if let defaultWordSetID, wordSet(id: defaultWordSetID) != nil { return defaultWordSetID }
+        return wordSets.first(where: { !$0.cards.isEmpty })?.id ?? wordSets.first?.id
+    }
+
+    func missingRequestedWordSet(_ requested: UUID?) -> Bool {
+        guard let requested else { return false }
+        return wordSet(id: requested) == nil
+    }
+
+    func projectedCards(stackID: UUID?, wordSetID: UUID? = nil, sort: WidgetSort) -> [WidgetCardSnapshot] {
+        let selectedSet = wordSet(id: wordSetID)
         let cards: [WidgetCardSnapshot]
-        if let stack = stack(id: stackID) {
+        if let selectedSet {
+            cards = selectedSet.cards
+        } else if let stack = stack(id: stackID) {
             cards = stack.cards
         } else {
             cards = stacks.flatMap(\.cards)
         }
         switch sort {
+        case .manual:
+            return selectedSet == nil ? dueFirstSorted(cards) : cards
         case .dueFirst:
-            return cards.sorted { lhs, rhs in
-                let l = lhs.dueAt ?? .distantFuture
-                let r = rhs.dueAt ?? .distantFuture
-                if l != r { return l < r }
-                if lhs.createdAt != rhs.createdAt { return lhs.createdAt < rhs.createdAt }
-                return lhs.id.uuidString < rhs.id.uuidString
-            }
+            return dueFirstSorted(cards)
         case .alphabetical:
-            return cards.sorted { lhs, rhs in
-                let comparison = lhs.word.localizedStandardCompare(rhs.word)
-                if comparison != .orderedSame { return comparison == .orderedAscending }
-                return lhs.id.uuidString < rhs.id.uuidString
-            }
+            return alphabeticalSorted(cards)
         case .recentlyAdded:
-            return cards.sorted { lhs, rhs in
-                if lhs.createdAt != rhs.createdAt { return lhs.createdAt > rhs.createdAt }
-                return lhs.id.uuidString < rhs.id.uuidString
-            }
+            return recentlyAddedSorted(cards)
         }
     }
 
-    func summary(stackID: UUID?) -> WidgetSummary {
+    func summary(stackID: UUID?, wordSetID: UUID? = nil) -> WidgetSummary {
+        if let set = wordSet(id: wordSetID) {
+            return WidgetSummary(
+                saved: set.savedCount,
+                due: set.dueCount,
+                learned: set.learnedCount,
+                learning: set.learningCount,
+                new: set.newCount,
+                cards: set.cards,
+                nextDueAt: set.nextDueAt
+            )
+        }
         if let stack = stack(id: stackID) {
             return WidgetSummary(
                 saved: stack.savedCount,
@@ -162,6 +197,58 @@ struct WidgetSnapshot: Codable, Hashable, Sendable {
             cards: stacks.flatMap(\.cards),
             nextDueAt: stacks.compactMap(\.nextDueAt).min()
         )
+    }
+
+    private func dueFirstSorted(_ cards: [WidgetCardSnapshot]) -> [WidgetCardSnapshot] {
+        cards.sorted { lhs, rhs in
+            let l = lhs.dueAt ?? .distantFuture
+            let r = rhs.dueAt ?? .distantFuture
+            if l != r { return l < r }
+            if lhs.createdAt != rhs.createdAt { return lhs.createdAt < rhs.createdAt }
+            return lhs.id.uuidString < rhs.id.uuidString
+        }
+    }
+
+    private func alphabeticalSorted(_ cards: [WidgetCardSnapshot]) -> [WidgetCardSnapshot] {
+        cards.sorted { lhs, rhs in
+            let comparison = lhs.word.localizedStandardCompare(rhs.word)
+            if comparison != .orderedSame { return comparison == .orderedAscending }
+            return lhs.id.uuidString < rhs.id.uuidString
+        }
+    }
+
+    private func recentlyAddedSorted(_ cards: [WidgetCardSnapshot]) -> [WidgetCardSnapshot] {
+        cards.sorted { lhs, rhs in
+            if lhs.createdAt != rhs.createdAt { return lhs.createdAt > rhs.createdAt }
+            return lhs.id.uuidString < rhs.id.uuidString
+        }
+    }
+}
+
+extension WidgetSnapshot {
+    private enum CodingKeys: String, CodingKey {
+        case schemaVersion
+        case generatedAt
+        case stacks
+        case defaultStackID
+        case defaultSort
+        case defaultShowTranslations
+        case languageCode
+        case wordSets
+        case defaultWordSetID
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        schemaVersion = try container.decode(Int.self, forKey: .schemaVersion)
+        generatedAt = try container.decode(Date.self, forKey: .generatedAt)
+        stacks = try container.decode([WidgetStackSnapshot].self, forKey: .stacks)
+        defaultStackID = try container.decodeIfPresent(UUID.self, forKey: .defaultStackID)
+        defaultSort = try container.decode(WidgetSort.self, forKey: .defaultSort)
+        defaultShowTranslations = try container.decode(Bool.self, forKey: .defaultShowTranslations)
+        languageCode = try container.decodeIfPresent(String.self, forKey: .languageCode)
+        wordSets = try container.decodeIfPresent([WidgetWordSetSnapshot].self, forKey: .wordSets) ?? []
+        defaultWordSetID = try container.decodeIfPresent(UUID.self, forKey: .defaultWordSetID)
     }
 }
 
@@ -191,8 +278,8 @@ enum WidgetSizeClass: String, CaseIterable, Sendable {
 }
 
 extension WidgetSnapshot {
-    func listCards(stackID: UUID?, sort: WidgetSort, size: WidgetSizeClass) -> [WidgetCardSnapshot] {
-        Array(projectedCards(stackID: stackID, sort: sort).prefix(size.entryCapacity))
+    func listCards(stackID: UUID?, wordSetID: UUID? = nil, sort: WidgetSort, size: WidgetSizeClass) -> [WidgetCardSnapshot] {
+        Array(projectedCards(stackID: stackID, wordSetID: wordSetID, sort: sort).prefix(size.entryCapacity))
     }
 }
 

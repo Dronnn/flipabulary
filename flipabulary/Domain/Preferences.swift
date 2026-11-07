@@ -55,12 +55,25 @@ enum AppLanguage: String, Codable, CaseIterable, Identifiable, Sendable {
     }
 }
 
+struct WidgetWordSet: Codable, Equatable, Identifiable, Sendable {
+    var id: UUID
+    var name: String
+    var cardIDs: [UUID]
+
+    init(id: UUID = UUID(), name: String, cardIDs: [UUID] = []) {
+        self.id = id
+        self.name = name
+        self.cardIDs = cardIDs
+    }
+}
+
 struct WidgetDefaults: Codable, Equatable, Sendable {
     var stackID: UUID?
+    var wordSetID: UUID?
     var sort: WidgetSort
     var showTranslations: Bool
 
-    static let `default` = WidgetDefaults(stackID: nil, sort: .dueFirst, showTranslations: false)
+    static let `default` = WidgetDefaults(stackID: nil, wordSetID: nil, sort: .dueFirst, showTranslations: false)
 }
 
 struct ReminderPreferences: Codable, Equatable, Sendable {
@@ -102,6 +115,54 @@ struct AppPreferences: Codable, Equatable, Sendable {
     var widgetDefaults: WidgetDefaults
     var reminders: ReminderPreferences
     var language: AppLanguage?
+    var widgetWordSets: [WidgetWordSet]
+
+    init(
+        schemaVersion: Int,
+        appearance: AppearancePreference,
+        selectedStackID: UUID?,
+        filter: CardFilter,
+        rules: LearningRules,
+        widgetDefaults: WidgetDefaults,
+        reminders: ReminderPreferences,
+        language: AppLanguage?,
+        widgetWordSets: [WidgetWordSet] = []
+    ) {
+        self.schemaVersion = schemaVersion
+        self.appearance = appearance
+        self.selectedStackID = selectedStackID
+        self.filter = filter
+        self.rules = rules
+        self.widgetDefaults = widgetDefaults
+        self.reminders = reminders
+        self.language = language
+        self.widgetWordSets = widgetWordSets
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case schemaVersion
+        case appearance
+        case selectedStackID
+        case filter
+        case rules
+        case widgetDefaults
+        case reminders
+        case language
+        case widgetWordSets
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        schemaVersion = try container.decode(Int.self, forKey: .schemaVersion)
+        appearance = try container.decode(AppearancePreference.self, forKey: .appearance)
+        selectedStackID = try container.decodeIfPresent(UUID.self, forKey: .selectedStackID)
+        filter = try container.decode(CardFilter.self, forKey: .filter)
+        rules = try container.decode(LearningRules.self, forKey: .rules)
+        widgetDefaults = try container.decode(WidgetDefaults.self, forKey: .widgetDefaults)
+        reminders = try container.decode(ReminderPreferences.self, forKey: .reminders)
+        language = try container.decodeIfPresent(AppLanguage.self, forKey: .language)
+        widgetWordSets = try container.decodeIfPresent([WidgetWordSet].self, forKey: .widgetWordSets) ?? []
+    }
 
     static let `default` = AppPreferences(
         schemaVersion: 1,
@@ -113,6 +174,11 @@ struct AppPreferences: Codable, Equatable, Sendable {
         reminders: .default,
         language: .system
     )
+
+    func widgetWordSet(id: UUID?) -> WidgetWordSet? {
+        guard let id else { return nil }
+        return widgetWordSets.first(where: { $0.id == id })
+    }
 }
 
 extension AppearancePreference {

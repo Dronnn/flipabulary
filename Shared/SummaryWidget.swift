@@ -6,7 +6,6 @@ struct SummaryProvider: AppIntentTimelineProvider {
         WidgetData.makeEntry(
             date: Date(),
             snapshot: .galleryPlaceholder,
-            useAppDefaults: true,
             requestedStack: nil,
             isPlaceholder: true
         )
@@ -17,7 +16,6 @@ struct SummaryProvider: AppIntentTimelineProvider {
         return WidgetData.makeEntry(
             date: Date(),
             snapshot: snapshot,
-            useAppDefaults: configuration.useAppDefaults,
             requestedStack: configuration.stack,
             isPlaceholder: context.isPreview
         )
@@ -30,7 +28,6 @@ struct SummaryProvider: AppIntentTimelineProvider {
             WidgetData.makeEntry(
                 date: date,
                 snapshot: snapshot,
-                useAppDefaults: configuration.useAppDefaults,
                 requestedStack: configuration.stack,
                 isPlaceholder: context.isPreview
             )

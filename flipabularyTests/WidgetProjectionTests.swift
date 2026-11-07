@@ -109,43 +109,127 @@ final class WidgetProjectionTests: XCTestCase {
         XCTAssertEqual(WidgetSizeClass.extraLarge.entryCapacity, 16)
     }
 
-    func testAppDefaultsVersusPerInstanceOverrides() {
+    func testPerWidgetSourceSortAndTranslationsAreAlwaysUsed() {
         let snapshot = snapshot()
         let stackB = snapshot.stacks[1]
-        let entity = WidgetStackEntity(id: stackB.id.uuidString, name: "B", isAllStacks: false)
-        let defaults = WidgetData.makeEntry(
-            date: now,
-            snapshot: snapshot,
-            useAppDefaults: true,
-            requestedStack: entity,
-            sortOverride: .alphabetical,
-            translationsOverride: true
-        )
-        XCTAssertEqual(defaults.stackID, stackB.id)
-        XCTAssertEqual(defaults.sort, .dueFirst)
-        XCTAssertFalse(defaults.showTranslations)
-
-        let untouchedDefaults = WidgetData.makeEntry(
-            date: now,
-            snapshot: snapshot,
-            useAppDefaults: true,
-            requestedStack: nil
-        )
-        XCTAssertEqual(untouchedDefaults.stackID, snapshot.defaultStackID)
-        XCTAssertEqual(untouchedDefaults.sort, .dueFirst)
-        XCTAssertFalse(untouchedDefaults.showTranslations)
-
+        let stackSource = WidgetSourceEntity(id: stackB.id.uuidString, name: "B", kind: .stack)
         let override = WidgetData.makeEntry(
             date: now,
             snapshot: snapshot,
-            useAppDefaults: false,
-            requestedStack: entity,
+            source: stackSource,
             sortOverride: .alphabetical,
             translationsOverride: true
         )
         XCTAssertEqual(override.stackID, stackB.id)
+        XCTAssertNil(override.wordSetID)
         XCTAssertEqual(override.sort, .alphabetical)
         XCTAssertTrue(override.showTranslations)
+
+        let all = WidgetData.makeEntry(
+            date: now,
+            snapshot: snapshot,
+            source: .all,
+            sortOverride: .recentlyAdded
+        )
+        XCTAssertNil(all.stackID)
+        XCTAssertNil(all.wordSetID)
+        XCTAssertEqual(all.summary.saved, 7)
+        XCTAssertEqual(all.sort, .recentlyAdded)
+        XCTAssertFalse(all.showTranslations)
+
+        let appDefault = WidgetData.makeEntry(date: now, snapshot: snapshot)
+        XCTAssertEqual(appDefault.stackID, snapshot.defaultStackID)
+        XCTAssertEqual(appDefault.sort, .dueFirst)
+        XCTAssertFalse(appDefault.showTranslations)
+    }
+
+    func testWordSetsProjectIndependentlyAndPreserveManualOrder() {
+        var snapshot = snapshot()
+        let stackA = snapshot.stacks[0]
+        let stackB = snapshot.stacks[1]
+        let late = stackA.cards.first(where: { $0.word == "late" })!
+        let early = stackA.cards.first(where: { $0.word == "early" })!
+        let secondStack = stackB.cards[0]
+        let setA = WidgetWordSetSnapshot(
+            id: UUID(),
+            name: "Set A",
+            cards: [late, early],
+            savedCount: 2,
+            dueCount: 2,
+            learnedCount: 0,
+            learningCount: 2,
+            newCount: 0,
+            nextDueAt: now.addingTimeInterval(10)
+        )
+        let setB = WidgetWordSetSnapshot(
+            id: UUID(),
+            name: "Set B",
+            cards: [secondStack],
+            savedCount: 1,
+            dueCount: 1,
+            learnedCount: 0,
+            learningCount: 1,
+            newCount: 0,
+            nextDueAt: now
+        )
+        snapshot.wordSets = [setA, setB]
+        snapshot.defaultWordSetID = setA.id
+
+        let entityA = WidgetSourceEntity(id: setA.id.uuidString, name: setA.name, kind: .wordSet)
+        let entityB = WidgetSourceEntity(id: setB.id.uuidString, name: setB.name, kind: .wordSet)
+
+        let first = WidgetData.makeEntry(
+            date: now,
+            snapshot: snapshot,
+            source: entityA,
+            sortOverride: .manual
+        )
+        XCTAssertEqual(first.wordSetID, setA.id)
+        XCTAssertEqual(first.scopeName, "Set A")
+        XCTAssertEqual(first.cards.map(\.word), ["late", "early"])
+        XCTAssertEqual(first.summary.saved, 2)
+
+        let second = WidgetData.makeEntry(
+            date: now,
+            snapshot: snapshot,
+            source: entityB,
+            sortOverride: .manual
+        )
+        XCTAssertEqual(second.wordSetID, setB.id)
+        XCTAssertEqual(second.scopeName, "Set B")
+        XCTAssertEqual(second.cards.map(\.word), ["secondStack"])
+
+        let defaults = WidgetData.makeEntry(
+            date: now,
+            snapshot: snapshot,
+            sortOverride: .manual
+        )
+        XCTAssertEqual(defaults.wordSetID, setA.id)
+        XCTAssertEqual(defaults.cards.map(\.word), ["late", "early"])
+    }
+
+    func testWordSetSnapshotStoreRoundTrip() throws {
+        var snapshot = snapshot()
+        let cards = snapshot.stacks[0].cards.prefix(2)
+        let set = WidgetWordSetSnapshot(
+            id: UUID(),
+            name: "Custom",
+            cards: Array(cards),
+            savedCount: 2,
+            dueCount: 1,
+            learnedCount: 0,
+            learningCount: 2,
+            newCount: 0,
+            nextDueAt: now
+        )
+        snapshot.wordSets = [set]
+        snapshot.defaultWordSetID = set.id
+
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("widget-set-store-\(UUID())")
+        let store = WidgetSnapshotStore(fileURL: directory.appendingPathComponent("snapshot.json"), defaultsSuiteName: nil)
+        try store.save(snapshot)
+        XCTAssertEqual(store.load(), snapshot)
+        store.clear()
     }
 
     func testAllStacksAggregateAndSummary() {
@@ -160,12 +244,11 @@ final class WidgetProjectionTests: XCTestCase {
     func testRemovedConfiguredStackFallsBack() {
         let snapshot = snapshot()
         let missingID = UUID()
-        let entity = WidgetStackEntity(id: missingID.uuidString, name: "Gone", isAllStacks: false)
+        let entity = WidgetSourceEntity(id: missingID.uuidString, name: "Gone", kind: .stack)
         let entry = WidgetData.makeEntry(
             date: now,
             snapshot: snapshot,
-            useAppDefaults: false,
-            requestedStack: entity
+            source: entity
         )
         XCTAssertTrue(entry.missingConfiguredStack)
         XCTAssertEqual(entry.stackID, snapshot.defaultStackID)

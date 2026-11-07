@@ -6,21 +6,24 @@ struct FlipWidgetEntry: TimelineEntry {
     let date: Date
     let snapshot: WidgetSnapshot
     let stackID: UUID?
+    let wordSetID: UUID?
     let sort: WidgetSort
     let showTranslations: Bool
     let missingConfiguredStack: Bool
+    let missingConfiguredWordSet: Bool
     let isPlaceholder: Bool
 
     var scopeName: String {
-        snapshot.stack(id: stackID)?.name ?? "All stacks"
+        if let wordSet = snapshot.wordSet(id: wordSetID) { return wordSet.name }
+        return snapshot.stack(id: stackID)?.name ?? "All stacks"
     }
 
     var summary: WidgetSummary {
-        snapshot.summary(stackID: stackID)
+        snapshot.summary(stackID: stackID, wordSetID: wordSetID)
     }
 
     var cards: [WidgetCardSnapshot] {
-        snapshot.projectedCards(stackID: stackID, sort: sort)
+        snapshot.projectedCards(stackID: stackID, wordSetID: wordSetID, sort: sort)
     }
 
     var wordsURL: URL {
@@ -54,46 +57,71 @@ enum WidgetData {
         return WidgetSnapshotStore.shared.load() ?? .empty
     }
 
-    static func resolveStackID(
-        snapshot: WidgetSnapshot,
-        useAppDefaults: Bool,
-        requested: WidgetStackEntity?
-    ) -> UUID? {
-        if useAppDefaults {
-            return snapshot.resolvedStackID(snapshot.defaultStackID)
-        }
-        if let requested, let id = requested.stackID {
-            return snapshot.resolvedStackID(id)
-        }
-        return nil
-    }
-
     static func makeEntry(
         date: Date,
         snapshot: WidgetSnapshot,
-        useAppDefaults: Bool,
-        requestedStack: WidgetStackEntity?,
+        source: WidgetSourceEntity? = nil,
+        requestedStack: WidgetStackEntity? = nil,
         sortOverride: WidgetSort? = nil,
         translationsOverride: Bool? = nil,
         isPlaceholder: Bool = false
     ) -> FlipWidgetEntry {
-        let requestedID = requestedStack?.stackID
         let stackID: UUID?
-        if useAppDefaults && requestedStack == nil {
-            stackID = snapshot.resolvedStackID(snapshot.defaultStackID)
-        } else if let requestedID {
-            stackID = snapshot.resolvedStackID(requestedID)
+        let wordSetID: UUID?
+        var missingStack = false
+        var missingSet = false
+
+        if let source {
+            switch source.kind {
+            case .all:
+                stackID = nil
+                wordSetID = nil
+            case .stack:
+                if let id = source.stackID, snapshot.stack(id: id) != nil {
+                    stackID = id
+                    wordSetID = nil
+                } else {
+                    missingStack = true
+                    stackID = snapshot.defaultStackID
+                    wordSetID = nil
+                }
+            case .wordSet:
+                if let id = source.wordSetID, snapshot.wordSet(id: id) != nil {
+                    wordSetID = id
+                    stackID = nil
+                } else {
+                    missingSet = true
+                    if let id = snapshot.defaultWordSetID, snapshot.wordSet(id: id) != nil {
+                        wordSetID = id
+                    } else {
+                        wordSetID = nil
+                    }
+                    stackID = nil
+                }
+            }
+        } else if let requestedStack {
+            stackID = requestedStack.isAllStacks ? nil : snapshot.resolvedStackID(requestedStack.stackID)
+            wordSetID = nil
+        } else if let defaultSetID = snapshot.defaultWordSetID, snapshot.wordSet(id: defaultSetID) != nil {
+            wordSetID = defaultSetID
+            stackID = nil
+        } else if let defaultStackID = snapshot.defaultStackID, snapshot.stack(id: defaultStackID) != nil {
+            wordSetID = nil
+            stackID = defaultStackID
         } else {
+            wordSetID = nil
             stackID = nil
         }
-        let missing = requestedID != nil && snapshot.stack(id: requestedID!) == nil
+
         return FlipWidgetEntry(
             date: date,
             snapshot: snapshot,
             stackID: stackID,
-            sort: useAppDefaults ? snapshot.defaultSort : (sortOverride ?? .dueFirst),
-            showTranslations: useAppDefaults ? snapshot.defaultShowTranslations : (translationsOverride ?? false),
-            missingConfiguredStack: missing,
+            wordSetID: wordSetID,
+            sort: sortOverride ?? .dueFirst,
+            showTranslations: translationsOverride ?? false,
+            missingConfiguredStack: missingStack,
+            missingConfiguredWordSet: missingSet,
             isPlaceholder: isPlaceholder
         )
     }
@@ -104,8 +132,7 @@ enum WidgetData {
         makeEntry: (Date) -> FlipWidgetEntry
     ) -> Timeline<FlipWidgetEntry> {
         var dates: [Date] = [now]
-        let upcoming = snapshot.stacks
-            .compactMap(\.nextDueAt)
+        let upcoming = (snapshot.stacks.compactMap(\.nextDueAt) + snapshot.wordSets.compactMap(\.nextDueAt))
             .filter { $0 > now }
             .sorted()
             .prefix(2)

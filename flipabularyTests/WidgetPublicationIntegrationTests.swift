@@ -31,10 +31,41 @@ final class WidgetPublicationIntegrationTests: XCTestCase {
         XCTAssertEqual(snapshot.stacks[0].cards.count, 3)
         XCTAssertEqual(snapshot.defaultStackID, stack.id)
 
-        let entry = WidgetData.makeEntry(date: harness.clock.now, snapshot: snapshot, useAppDefaults: true, requestedStack: nil)
+        let entry = WidgetData.makeEntry(date: harness.clock.now, snapshot: snapshot)
         XCTAssertEqual(entry.summary.saved, 3)
         XCTAssertEqual(entry.summary.due, 3)
         XCTAssertFalse(entry.missingConfiguredStack)
+    }
+
+    func testWordSetsPublishAcrossStacksInManualOrder() throws {
+        let stackA = harness.makeStack(name: "A", newCardsPerDay: 0)
+        let stackB = harness.makeStack(name: "B", isDefault: false, newCardsPerDay: 0)
+        _ = harness.makeCard(word: "a1", stack: stackA)
+        let b1 = harness.makeCard(word: "b1", stack: stackB)
+        let a2 = harness.makeCard(word: "a2", stack: stackA)
+        try harness.save()
+
+        let set = WidgetWordSet(name: "Mix", cardIDs: [b1.id, a2.id])
+        harness.preferences.preferences.widgetWordSets = [set]
+        harness.preferences.preferences.widgetDefaults.wordSetID = set.id
+        harness.preferences.preferences.widgetDefaults.sort = .manual
+        harness.maintenance.publishSnapshot()
+
+        let snapshot = try XCTUnwrap(harness.snapshotStore.load())
+        XCTAssertEqual(snapshot.wordSets.count, 1)
+        XCTAssertEqual(snapshot.wordSets[0].name, "Mix")
+        XCTAssertEqual(snapshot.wordSets[0].cards.map(\.word), ["b1", "a2"])
+        XCTAssertEqual(snapshot.defaultWordSetID, set.id)
+
+        let entry = WidgetData.makeEntry(
+            date: harness.clock.now,
+            snapshot: snapshot,
+            sortOverride: .manual
+        )
+        XCTAssertEqual(entry.wordSetID, set.id)
+        XCTAssertEqual(entry.scopeName, "Mix")
+        XCTAssertEqual(entry.cards.map(\.word), ["b1", "a2"])
+        XCTAssertFalse(entry.missingConfiguredWordSet)
     }
 
     func testRatingAndDeletionRepublishSnapshot() throws {
@@ -99,12 +130,11 @@ final class WidgetPublicationIntegrationTests: XCTestCase {
         harness.maintenance.publishSnapshot()
         let snapshot = try XCTUnwrap(harness.snapshotStore.load())
 
-        let missing = WidgetStackEntity(id: UUID().uuidString, name: "Gone", isAllStacks: false)
+        let missing = WidgetSourceEntity(id: UUID().uuidString, name: "Gone", kind: .stack)
         let entry = WidgetData.makeEntry(
             date: harness.clock.now,
             snapshot: snapshot,
-            useAppDefaults: false,
-            requestedStack: missing
+            source: missing
         )
         XCTAssertTrue(entry.missingConfiguredStack)
         XCTAssertEqual(entry.stackID, stack.id)
