@@ -8,17 +8,19 @@ final class QueueTests: XCTestCase {
         _ id: UUID = UUID(),
         lifecycle: CardLifecycle,
         due: Date? = nil,
-        created: Date? = nil
+        created: Date? = nil,
+        applied: Int = 0
     ) -> LearningEngine.QueueCandidate {
         LearningEngine.QueueCandidate(
             id: id,
             lifecycle: lifecycle,
             nextDueAt: due,
-            createdAt: created ?? now.addingTimeInterval(-1_000)
+            createdAt: created ?? now.addingTimeInterval(-1_000),
+            appliedMilestoneCount: applied
         )
     }
 
-    func testDueLearningComesBeforeNewAndExcludesFutureAndLearned() {
+    func testDueReviewsComeBeforeNewAndExcludeFuture() {
         let dueA = UUID()
         let dueB = UUID()
         let future = UUID()
@@ -27,7 +29,7 @@ final class QueueTests: XCTestCase {
         let queue = LearningEngine.buildQueue(
             candidates: [
                 candidate(new, lifecycle: .new),
-                candidate(learned, lifecycle: .learned, due: now.addingTimeInterval(-10)),
+                candidate(learned, lifecycle: .learned, due: now.addingTimeInterval(-50)),
                 candidate(future, lifecycle: .learning, due: now.addingTimeInterval(10)),
                 candidate(dueB, lifecycle: .learning, due: now.addingTimeInterval(-10)),
                 candidate(dueA, lifecycle: .learning, due: now.addingTimeInterval(-100))
@@ -39,9 +41,25 @@ final class QueueTests: XCTestCase {
             seed: 1,
             now: now
         )
-        XCTAssertEqual(queue.admittedIDs, [dueA, dueB, new])
-        XCTAssertEqual(queue.learningCount, 2)
+        XCTAssertEqual(queue.admittedIDs, [dueA, learned, dueB, new])
+        XCTAssertEqual(queue.learningCount, 3)
         XCTAssertEqual(queue.newCount, 1)
+    }
+
+    func testMasteredLearnedCandidateIsExcluded() {
+        let mastered = UUID()
+        let queue = LearningEngine.buildQueue(
+            candidates: [
+                candidate(mastered, lifecycle: .learned, due: now.addingTimeInterval(-10), applied: 5)
+            ],
+            cardsPerSession: 20,
+            newCardsPerDay: 10,
+            consumedNewCardIDs: [],
+            shuffle: false,
+            seed: 1,
+            now: now
+        )
+        XCTAssertTrue(queue.admittedIDs.isEmpty)
     }
 
     func testSessionCapLimitsAdmissionAndDailyQuotaIsShared() {

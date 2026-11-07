@@ -123,7 +123,7 @@ final class ReminderSchedulerTests: XCTestCase {
         XCTAssertTrue(requests.isEmpty)
     }
 
-    func testLearnedDecayCreatesWork() {
+    func testLearnedReviewCreatesWork() {
         let learned = ReminderCardWork(
             lifecycle: .learned,
             repeatCount: 5,

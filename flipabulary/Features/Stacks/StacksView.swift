@@ -350,7 +350,7 @@ struct StackSettingsView: View {
                             .accessibilityIdentifier("stack.steps")
                             SettingsDivider(inset: 16)
                             SettingsRow(
-                                title: "Repeats & decay",
+                                title: "Learning rules",
                                 value: rulesSummary(stack),
                                 detail: stack.customRules == nil ? "Using default learning rules." : "Custom rules for this stack.",
                                 showsChevron: true

@@ -125,7 +125,6 @@ struct LearningRulesView: View {
                         set: { newValue in
                             var updated = rules
                             updated.correctThreshold = newValue
-                            updated.returnBelow = min(updated.returnBelow, newValue)
                             update(updated)
                         }
                     ),
@@ -146,39 +145,7 @@ struct LearningRulesView: View {
                     ),
                     accessibilityIdentifier: "rules.resetOnMistake"
                 )
-                SettingsDivider(inset: 16)
-                SettingsToggleRow(
-                    title: "Auto-decrease",
-                    detail: "Remove a repeat at each decay milestone.",
-                    isOn: Binding(
-                        get: { rules.autoDecrease },
-                        set: { newValue in
-                            let wasOn = rules.autoDecrease
-                            var updated = rules
-                            updated.autoDecrease = newValue
-                            update(updated)
-                            if !wasOn && newValue {
-                                app.maintenance.reanchorDecay(scopeID: stackID)
-                            }
-                        }
-                    ),
-                    accessibilityIdentifier: "rules.autoDecrease"
-                )
-                SettingsDivider(inset: 16)
-                settingStepper(
-                    title: "Return when below",
-                    detail: "A Learned word returns to Learning below this repeat count.",
-                    value: Binding(
-                        get: { rules.returnBelow },
-                        set: { newValue in
-                            var updated = rules
-                            updated.returnBelow = newValue
-                            update(updated)
-                        }
-                    ),
-                    range: 1...max(1, rules.correctThreshold),
-                    identifier: "rules.returnBelow"
-                )
+
             }
             if let error { InlineMessage(text: error) }
         }
@@ -186,7 +153,7 @@ struct LearningRulesView: View {
 
     private var schedule: some View {
         VStack(alignment: .leading, spacing: 8) {
-            SectionHeader(title: "Schedule")
+            SectionHeader(title: "Learned reviews")
             GroupedSurface {
                 ForEach(Array(LearningEngine.decayMilestones.enumerated()), id: \.element.index) { index, milestone in
                     HStack {
@@ -194,20 +161,12 @@ struct LearningRulesView: View {
                             .font(AppFont.fieldValue())
                             .foregroundStyle(AppColor.textPrimary)
                         Spacer()
-                        Text("−1")
-                            .font(AppFont.font(14, .semibold))
-                            .foregroundStyle(AppColor.textSecondary)
-                            .monospacedDigit()
                     }
                     .padding(.horizontal, 16)
                     .frame(height: 48)
                     if index < LearningEngine.decayMilestones.count - 1 {
                         SettingsDivider(inset: 16)
                     }
-                }
-                if !rules.autoDecrease {
-                    InlineMessage(text: "Auto-decrease is off. Earned repeats stay unchanged.", kind: .info)
-                        .padding(16)
                 }
             }
         }
@@ -219,10 +178,11 @@ struct LearningRulesView: View {
             GroupedSurface {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("A word becomes Learned after \(rules.correctThreshold) correct answers in a row.")
-                    Text("A Learned word returns to Learning when fewer than \(rules.returnBelow) repeats remain.")
-                    Text("Good moves through the learning steps: \(formattedSteps(rules.steps)). A card becomes Learned at the threshold, then decay removes repeats at the schedule above.")
-                    Text("Again schedules the first step immediately. Changing these rules never rewrites answer history, and an active session finishes with the rules it started with.")
-                    Text("Decay milestones are cumulative from the latest learned or reinforced date. Month-end and daylight-saving changes use your local calendar.")
+                    Text("Learned words return for review after each interval above. A Good answer moves the card to the next interval.")
+                    Text("After the final review, the word is fully learned and will not appear again.")
+                    Text("Good moves through the learning steps: \(formattedSteps(rules.steps)).")
+                    Text("Again returns a Learned word to Learning and schedules the first learning step. Changing these rules never rewrites answer history, and an active session finishes with the rules it started with.")
+                    Text("Month-end and daylight-saving changes use your local calendar.")
                 }
                 .font(AppFont.body())
                 .foregroundStyle(AppColor.textSecondary)

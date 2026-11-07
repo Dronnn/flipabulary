@@ -69,7 +69,6 @@ final class MaintenanceService {
         var changed = false
         for stack in stacks {
             let rules = stack.effectiveRules(global: preferences.preferences.rules)
-            guard rules.autoDecrease else { continue }
             for card in stack.cards {
                 guard let state = card.learningState, state.lifecycle == .learned else { continue }
                 let transition = LearningEngine.reconcileDecay(
@@ -205,14 +204,8 @@ final class MaintenanceService {
                 if reconciled.lifecycle == .learning, let due = reconciled.nextDueAt, due > now {
                     dates.append(due)
                 }
-                if reconciled.lifecycle == .learned {
-                    let anchor = reconciled.learnedAnchor ?? now
-                    for milestone in LearningEngine.decayMilestones {
-                        if let date = LearningEngine.milestoneDate(index: milestone.index, anchor: anchor, calendar: calendar), date > now {
-                            dates.append(date)
-                            break
-                        }
-                    }
+                if reconciled.lifecycle == .learned, let due = reconciled.nextDueAt, due > now {
+                    dates.append(due)
                 }
             }
         }

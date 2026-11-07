@@ -103,7 +103,7 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     SectionHeader(title: "Learning")
                     GroupedSurface {
-                        SettingsRow(title: "Learning rules", detail: "Threshold, reset, and decay.") {
+                        SettingsRow(title: "Learning rules") {
                             app.router.push(.learningRules)
                         }
                         .accessibilityIdentifier("settings.rules")
