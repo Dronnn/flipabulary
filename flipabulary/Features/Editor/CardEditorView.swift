@@ -7,6 +7,7 @@ struct CardEditorView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     let target: EditorTarget
+    var onSaved: ((VocabularyCard) -> Void)? = nil
 
     @State private var draft = CardDraft()
     @State private var initialDraft = CardDraft()
@@ -483,6 +484,7 @@ struct CardEditorView: View {
         case .success(let card):
             existingCard = card
             initialDraft = draft
+            onSaved?(card)
             if addAnother && !wasEditing {
                 keepOrganizationAndClear()
             } else {
@@ -556,6 +558,7 @@ struct CardEditorView: View {
             case .success(let saved):
                 existingCard = saved
                 initialDraft = draft
+                onSaved?(saved)
             case .failure(let error):
                 generalError = error.localizedDescription
                 return
