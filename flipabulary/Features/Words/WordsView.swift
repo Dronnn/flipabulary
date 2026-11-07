@@ -219,7 +219,7 @@ struct WordsView: View {
                 Button {
                     isScopePickerPresented = true
                 } label: {
-                    VStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: 3) {
                         HStack(spacing: 5) {
                             Image(systemName: "rectangle.stack.fill")
                                 .font(.system(size: 11, weight: .semibold))
@@ -227,8 +227,15 @@ struct WordsView: View {
                                 .font(AppFont.font(13, .semibold))
                                 .lineLimit(2)
                                 .fixedSize(horizontal: false, vertical: true)
+                                .layoutPriority(1)
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 9, weight: .bold))
+                                .accessibilityHidden(true)
                         }
-                        .foregroundStyle(AppColor.accentStrong)
+                        .foregroundStyle(AppColor.accentInk)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(AppColor.accentSoft, in: Capsule())
                         Text("\(summary.saved) saved · \(dueCount) due today")
                             .font(AppFont.font(13, .regular))
                             .foregroundStyle(AppColor.textSecondary)
