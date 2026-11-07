@@ -210,6 +210,7 @@ struct WidgetWordPickerView: View {
 
     @Binding var selectedCardIDs: [UUID]
     @State private var searchText = ""
+    @State private var isQuickAddPresented = false
 
     private var selected: Set<UUID> { Set(selectedCardIDs) }
 
@@ -241,11 +242,13 @@ struct WidgetWordPickerView: View {
         List {
             if sections.isEmpty {
                 Section {
-                    ContentUnavailableView(
-                        "No words available",
-                        systemImage: "text.book.closed",
-                        description: Text("Add words in Flipabulary first, then come back to build this set.")
-                    )
+                    ContentUnavailableView {
+                        Label("No words available", systemImage: "text.book.closed")
+                    } description: {
+                        Text("Add words in Flipabulary first, then come back to build this set.")
+                    } actions: {
+                        Button("New word") { isQuickAddPresented = true }
+                    }
                     .frame(maxWidth: .infinity, minHeight: 240)
                 }
                 .listRowBackground(Color.clear)
@@ -287,9 +290,25 @@ struct WidgetWordPickerView: View {
         .navigationTitle("Add words")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    isQuickAddPresented = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+                .accessibilityLabel("New word")
+            }
             ToolbarItem(placement: .confirmationAction) {
                 Button("Done") { dismiss() }
             }
+        }
+        .sheet(isPresented: $isQuickAddPresented) {
+            WidgetWordQuickAddView { card in
+                if !selectedCardIDs.contains(card.id) {
+                    selectedCardIDs.append(card.id)
+                }
+            }
+            .environment(app)
         }
     }
 
@@ -298,6 +317,104 @@ struct WidgetWordPickerView: View {
             selectedCardIDs.remove(at: index)
         } else {
             selectedCardIDs.append(id)
+        }
+    }
+}
+
+struct WidgetWordQuickAddView: View {
+    @Environment(AppEnvironment.self) private var app
+    @Environment(\.dismiss) private var dismiss
+
+    let onSaved: (VocabularyCard) -> Void
+
+    @State private var word = ""
+    @State private var translation = ""
+    @State private var stackID: UUID?
+    @State private var error: String?
+    @State private var didLoad = false
+
+    private var stacks: [VocabularyStack] { app.library.stacks() }
+
+    private var canSave: Bool {
+        !word.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            && !translation.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            && stackID != nil
+    }
+
+    private var stackName: String {
+        stacks.first(where: { $0.id == stackID })?.name ?? "Choose stack"
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    TextField("Word", text: $word)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                    TextField("Translation", text: $translation)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                }
+                Section {
+                    Menu {
+                        ForEach(stacks) { stack in
+                            Button(stack.name) { stackID = stack.id }
+                        }
+                    } label: {
+                        HStack {
+                            Text("Stack")
+                                .foregroundStyle(AppColor.textPrimary)
+                            Spacer()
+                            Text(stackName)
+                                .foregroundStyle(AppColor.textSecondary)
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(AppColor.textMuted)
+                        }
+                    }
+                }
+                if let error {
+                    Section {
+                        Text(error)
+                            .font(AppFont.caption())
+                            .foregroundStyle(AppColor.danger)
+                    }
+                }
+            }
+            .scrollContentBackground(.hidden)
+            .background(AppColor.page)
+            .navigationTitle("New word")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") { save() }
+                        .disabled(!canSave)
+                }
+            }
+            .task {
+                guard !didLoad else { return }
+                didLoad = true
+                stackID = app.library.defaultStack()?.id ?? stacks.first?.id
+            }
+        }
+    }
+
+    private func save() {
+        var draft = CardDraft()
+        draft.word = word
+        draft.translation = translation
+        draft.stackID = stackID
+
+        switch app.library.saveCard(draft: draft, existing: nil) {
+        case .success(let card):
+            onSaved(card)
+            dismiss()
+        case .failure(let failure):
+            error = failure.localizedDescription
         }
     }
 }
