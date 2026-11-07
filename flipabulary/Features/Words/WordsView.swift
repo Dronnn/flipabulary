@@ -11,6 +11,7 @@ struct WordsView: View {
     @State private var searchText = ""
     @State private var now = Date()
     @State private var pendingEndSession: ReviewSession?
+    @State private var isScopePickerPresented = false
 
     private var preferences: AppPreferences { app.preferences.preferences }
 
@@ -85,6 +86,10 @@ struct WordsView: View {
         }
         .pageBackground()
         .toolbar(.hidden, for: .navigationBar)
+        .sheet(isPresented: $isScopePickerPresented) {
+            WordsStackPickerView()
+                .environment(app)
+        }
         .confirmationDialog(
             "End unfinished session?",
             isPresented: Binding(
@@ -123,7 +128,7 @@ struct WordsView: View {
                     .foregroundStyle(AppColor.textPrimary)
                     .accessibilityAddTraits(.isHeader)
                 Button {
-                    app.startReview(scopeID: preferences.selectedStackID)
+                    isScopePickerPresented = true
                 } label: {
                     VStack(alignment: .leading, spacing: 2) {
                         HStack(spacing: 5) {
@@ -143,17 +148,10 @@ struct WordsView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("\(scopeName), \(summary.saved) saved, \(dueCount) due")
+                .accessibilityHint("Choose stack")
                 .accessibilityIdentifier("words.due")
             }
             Spacer(minLength: 4)
-            CircleIconButton(
-                systemName: "play.fill",
-                accessibilityLabel: "Review due cards",
-                filled: true
-            ) {
-                app.startReview(scopeID: preferences.selectedStackID)
-            }
-            .accessibilityIdentifier("words.review")
             Menu {
                 Button("Review due cards") {
                     app.startReview(scopeID: preferences.selectedStackID)
@@ -182,6 +180,15 @@ struct WordsView: View {
                 app.router.presentEditor(.new(stackID: preferences.selectedStackID ?? app.library.defaultStack()?.id))
             }
             .accessibilityIdentifier("words.add")
+
+            CircleIconButton(
+                systemName: "play.fill",
+                accessibilityLabel: "Review due cards",
+                filled: true
+            ) {
+                app.startReview(scopeID: preferences.selectedStackID)
+            }
+            .accessibilityIdentifier("words.review")
         }
     }
 
@@ -437,5 +444,100 @@ struct ReviewScopePickerView: View {
                 }
             }
         }
+    }
+}
+
+struct WordsStackPickerView: View {
+    @Environment(AppEnvironment.self) private var app
+    @Environment(\.dismiss) private var dismiss
+
+    private var stacks: [VocabularyStack] { app.library.stacks() }
+    private var cards: [VocabularyCard] { app.maintenance.cards() }
+    private let allStacksTileID = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 14) {
+                    GroupedSurface {
+                        row(
+                            title: Text("All stacks"),
+                            tileWord: "All stacks",
+                            count: cards.count,
+                            isSelected: app.preferences.preferences.selectedStackID == nil,
+                            tileID: allStacksTileID,
+                            identifier: "words.scope.all"
+                        ) {
+                            select(nil)
+                        }
+
+                        if !stacks.isEmpty { SettingsDivider(inset: 68) }
+
+                        ForEach(Array(stacks.enumerated()), id: \.element.id) { index, stack in
+                            let count = cards.filter { $0.stack?.id == stack.id }.count
+                            row(
+                                title: Text(stack.name),
+                                tileWord: stack.name,
+                                count: count,
+                                isSelected: app.preferences.preferences.selectedStackID == stack.id,
+                                tileID: stack.id,
+                                identifier: "words.scope.\(stack.id.uuidString)"
+                            ) {
+                                select(stack.id)
+                            }
+                            if index < stacks.count - 1 { SettingsDivider(inset: 68) }
+                        }
+                    }
+                }
+                .padding(20)
+            }
+            .pageBackground()
+            .navigationTitle("Choose stack")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Cancel") { dismiss() }
+                }
+            }
+        }
+    }
+
+    private func row(
+        title: Text,
+        tileWord: String,
+        count: Int,
+        isSelected: Bool,
+        tileID: UUID,
+        identifier: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                InitialTile(word: tileWord, id: tileID, size: 40)
+                VStack(alignment: .leading, spacing: 2) {
+                    title
+                        .font(AppFont.fieldValue())
+                        .foregroundStyle(AppColor.textPrimary)
+                        .lineLimit(1)
+                    Text("\(count) words")
+                        .font(AppFont.caption())
+                        .foregroundStyle(AppColor.textSecondary)
+                }
+                Spacer()
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(isSelected ? AppColor.accentStrong : AppColor.textMuted)
+            }
+            .padding(.horizontal, 16)
+            .frame(height: 64)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier(identifier)
+    }
+
+    private func select(_ id: UUID?) {
+        app.preferences.preferences.selectedStackID = id
+        dismiss()
     }
 }
