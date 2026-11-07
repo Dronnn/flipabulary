@@ -98,11 +98,11 @@ struct LearningRules: Codable, Equatable, Sendable {
         resetOnMistake: true,
         autoDecrease: true,
         returnBelow: 5,
-        steps: [60, 600, 86_400],
+        steps: [60, 300, 600, 1_800, 3_600, 10_800, 43_200, 86_400],
         version: 1
     )
 
-    static let defaultSteps: [TimeInterval] = [60, 600, 86_400]
+    static let defaultSteps: [TimeInterval] = [60, 300, 600, 1_800, 3_600, 10_800, 43_200, 86_400]
 
     var normalized: LearningRules {
         var copy = self
