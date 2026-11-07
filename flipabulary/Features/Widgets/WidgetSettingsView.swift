@@ -256,7 +256,7 @@ struct WidgetSettingsView: View {
                     .foregroundStyle(AppColor.textSecondary)
                     .monospacedDigit()
             }
-            (Text("Word set") + Text(" \(number)"))
+            (Text("Word set") + Text(verbatim: " \(number)"))
                 .font(AppFont.font(13, .semibold))
                 .foregroundStyle(AppColor.textPrimary)
                 .lineLimit(1)
@@ -276,7 +276,7 @@ struct WidgetSettingsView: View {
                                 .frame(width: 38, height: 2)
                         }
                         Spacer(minLength: 0)
-                        Text("0/5")
+                        Text(verbatim: "0/5")
                             .font(AppFont.font(7, .medium))
                             .foregroundStyle(AppColor.textMuted)
                     }
