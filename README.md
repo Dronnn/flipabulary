@@ -1,6 +1,6 @@
 # Flipabulary
 
-Flipabulary is an offline vocabulary and flashcard app for iPhone, iPad, and iPhone Duo. It stores words, translations, examples, stacks, and tags locally, then schedules short self-assessed review sessions with Again and Good. A branded launch screen follows the system light/dark appearance, with a short animated card intro after launch.
+Flipabulary is an offline vocabulary and flashcard app for iPhone, iPad, and iPhone Duo. It stores words, translations, examples, stacks, and tags locally, then schedules short self-assessed review sessions with Again and Good. A branded launch screen follows the system light/dark appearance.
 
 ## Features
 

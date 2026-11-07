@@ -61,18 +61,6 @@ struct RootView: View {
     @Environment(AppEnvironment.self) private var app
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var showsLaunchOverlay = true
-
-    private var shouldShowLaunchOverlay: Bool {
-        #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("-DebugShowLaunchOverlay") {
-            return true
-        }
-        return !ProcessInfo.processInfo.arguments.contains("-UITestInMemory")
-        #else
-        return true
-        #endif
-    }
 
     var body: some View {
         @Bindable var router = app.router
@@ -118,16 +106,6 @@ struct RootView: View {
             }
         }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: router.toast?.id)
-        .overlay {
-            if showsLaunchOverlay && shouldShowLaunchOverlay {
-                LaunchOverlayView {
-                    withAnimation(.easeOut(duration: 0.32)) {
-                        showsLaunchOverlay = false
-                    }
-                }
-                .transition(.opacity)
-            }
-        }
         .onOpenURL { url in
             Task { await app.handle(url: url) }
         }
