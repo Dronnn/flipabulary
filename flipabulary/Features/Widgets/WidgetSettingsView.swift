@@ -185,24 +185,127 @@ struct WidgetSettingsView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
+            VStack(alignment: .leading, spacing: 4) {
+                (Text("Small") + Text(" 3  ·  ")
+                    + Text("Medium") + Text(" 6  ·  ")
+                    + Text("Large") + Text(" 10  ·  ")
+                    + Text("Extra Large") + Text(" 16"))
+                    .font(AppFont.caption().weight(.medium))
+                    .foregroundStyle(AppColor.textSecondary)
+                Text("Entry counts are fixed by the Home Screen size. Larger text may show fewer rows so labels stay legible.")
+                    .font(AppFont.caption())
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            multipleWidgetsSection
+        }
+    }
+
+    private var multipleWidgetsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
-                SectionHeader(title: "Entries by size")
+                SectionHeader(title: "Multiple widgets")
                 GroupedSurface {
-                    capacityRow("Small", 3)
-                    SettingsDivider(inset: 16)
-                    capacityRow("Medium", 6)
-                    SettingsDivider(inset: 16)
-                    capacityRow("Large", 10)
-                    SettingsDivider(inset: 16)
-                    capacityRow("Extra Large", 16)
+                    VStack(alignment: .leading, spacing: 14) {
+                        Text("You can add more than one Word list widget to the Home Screen. Each widget can show a different word set, stack, sort, and translation setting, even on different Home Screen pages.")
+                            .font(AppFont.body())
+                            .foregroundStyle(AppColor.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        HStack(spacing: 12) {
+                            exampleWidget(number: 1, tint: AppColor.peach, rows: 3)
+                            exampleWidget(number: 2, tint: AppColor.blue, rows: 3)
+                        }
+                        .accessibilityHidden(true)
+
+                        Text("Each widget keeps its own settings.")
+                            .font(AppFont.caption())
+                            .foregroundStyle(AppColor.textMuted)
+                    }
+                    .padding(16)
                 }
             }
 
-            Text("Entry counts are fixed by the Home Screen size. Larger text may show fewer rows so labels stay legible.")
-                .font(AppFont.caption())
+            VStack(alignment: .leading, spacing: 8) {
+                SectionHeader(title: "How to add a widget")
+                GroupedSurface {
+                    instructionStep(1, "Touch and hold an empty area of the Home Screen.")
+                    SettingsDivider(inset: 16)
+                    instructionStep(2, "Tap Edit or Add Widget, search for Flipabulary, and choose Word list.")
+                    SettingsDivider(inset: 16)
+                    instructionStep(3, "Touch and hold the new widget, choose Edit Widget, then pick its Source, Sort, and Show translations.")
+                    SettingsDivider(inset: 16)
+                    instructionStep(4, "Repeat on any Home Screen page. Every widget can use a different word set.")
+                }
+                Text("Word sets are shared: editing a set updates every widget that uses it.")
+                    .font(AppFont.caption())
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private func exampleWidget(number: Int, tint: Color, rows: Int) -> some View {
+        VStack(alignment: .leading, spacing: 7) {
+            HStack {
+                WidgetWordmark()
+                Spacer()
+                Text("\(rows) due")
+                    .font(AppFont.font(8, .medium))
+                    .foregroundStyle(AppColor.textSecondary)
+                    .monospacedDigit()
+            }
+            (Text("Word set") + Text(" \(number)"))
+                .font(AppFont.font(13, .semibold))
+                .foregroundStyle(AppColor.textPrimary)
+                .lineLimit(1)
+            Divider().overlay(AppColor.divider)
+            VStack(spacing: 5) {
+                ForEach(0..<rows, id: \.self) { index in
+                    HStack(spacing: 6) {
+                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                            .fill(tint.opacity(0.85))
+                            .frame(width: 18, height: 18)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Capsule()
+                                .fill(AppColor.textMuted.opacity(0.55))
+                                .frame(width: 54 - CGFloat(index * 7), height: 3)
+                            Capsule()
+                                .fill(AppColor.divider)
+                                .frame(width: 38, height: 2)
+                        }
+                        Spacer(minLength: 0)
+                        Text("0/5")
+                            .font(AppFont.font(7, .medium))
+                            .foregroundStyle(AppColor.textMuted)
+                    }
+                }
+            }
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, minHeight: 132, alignment: .topLeading)
+        .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(AppColor.surface))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(AppColor.divider, lineWidth: 1)
+        )
+    }
+
+    private func instructionStep(_ number: Int, _ text: String) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Text("\(number)")
+                .font(AppFont.font(12, .bold))
+                .foregroundStyle(AppColor.onAccent)
+                .frame(width: 22, height: 22)
+                .background(Circle().fill(AppColor.accentStrong))
+            Text(LocalizedStringKey(text))
+                .font(AppFont.body())
                 .foregroundStyle(AppColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
         }
+        .padding(16)
     }
 
     private func preview(mode: AppMetrics.LayoutMode) -> some View {
@@ -253,23 +356,6 @@ struct WidgetSettingsView: View {
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("widget.preview")
         }
-    }
-
-    private func capacityRow(_ title: String, _ count: Int) -> some View {
-        HStack {
-            Text(LocalizedStringKey(title))
-                .font(AppFont.fieldValue())
-                .foregroundStyle(AppColor.textPrimary)
-            Spacer()
-            Text("\(count) entries")
-                .font(AppFont.font(14, .regular))
-                .foregroundStyle(AppColor.textSecondary)
-                .monospacedDigit()
-        }
-        .padding(.horizontal, 16)
-        .frame(height: 48)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(title), \(count) entries")
     }
 
     private func createWordSet() {

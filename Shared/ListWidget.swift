@@ -54,7 +54,7 @@ struct FlipabularyListWidget: Widget {
                 }
         }
         .configurationDisplayName("Word list")
-        .description("See words from a stack, sorted for the next review.")
+        .description("Show a stack or your own word set. Add multiple widgets for different sets.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .systemExtraLarge])
     }
 }
