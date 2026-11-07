@@ -125,17 +125,35 @@ struct WordsView: View {
                 Button {
                     app.startReview(scopeID: preferences.selectedStackID)
                 } label: {
-                    Text("\(summary.saved) saved · \(dueCount) due today")
-                        .font(AppFont.font(13, .regular))
-                        .foregroundStyle(AppColor.textSecondary)
-                        .frame(minHeight: 44)
-                        .contentShape(Rectangle())
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(spacing: 5) {
+                            Image(systemName: "rectangle.stack.fill")
+                                .font(.system(size: 11, weight: .semibold))
+                            Text(LocalizedStringKey(scopeName))
+                                .font(AppFont.font(13, .semibold))
+                                .lineLimit(1)
+                        }
+                        .foregroundStyle(AppColor.accentStrong)
+                        Text("\(summary.saved) saved · \(dueCount) due today")
+                            .font(AppFont.font(13, .regular))
+                            .foregroundStyle(AppColor.textSecondary)
+                    }
+                    .frame(minHeight: 44, alignment: .leading)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel(dueCount > 0 ? "Review \(dueCount) due cards" : "No cards due today")
+                .accessibilityLabel("\(scopeName), \(summary.saved) saved, \(dueCount) due")
                 .accessibilityIdentifier("words.due")
             }
             Spacer(minLength: 4)
+            CircleIconButton(
+                systemName: "play.fill",
+                accessibilityLabel: "Review due cards",
+                filled: true
+            ) {
+                app.startReview(scopeID: preferences.selectedStackID)
+            }
+            .accessibilityIdentifier("words.review")
             Menu {
                 Button("Review due cards") {
                     app.startReview(scopeID: preferences.selectedStackID)
