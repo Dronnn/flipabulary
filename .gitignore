@@ -1,0 +1,8 @@
+docs/
+logs/
+.DS_Store
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcresult

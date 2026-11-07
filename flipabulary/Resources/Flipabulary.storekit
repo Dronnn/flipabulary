@@ -1,0 +1,154 @@
+{
+  "identifier": "8C7F3C52-0D4D-4A69-9A70-31D7F6E97E21",
+  "nonRenewingSubscriptions": [],
+  "products": [
+    {
+      "displayPrice": "2.00",
+      "familyShareable": false,
+      "internalID": "8D0D8A11-1B0A-4C10-8A4A-7B03D1B0A001",
+      "localizations": [
+        {
+          "description": "Optional support. No features are unlocked.",
+          "displayName": "Coffee",
+          "locale": "en_US"
+        },
+        {
+          "description": "Добровольная поддержка без новых функций.",
+          "displayName": "Кофе",
+          "locale": "ru_RU"
+        }
+      ],
+      "productID": "com.mrmaier.flipabulary.support.coffee",
+      "referenceName": "Coffee",
+      "type": "Consumable"
+    },
+    {
+      "displayPrice": "5.00",
+      "familyShareable": false,
+      "internalID": "8D0D8A11-1B0A-4C10-8A4A-7B03D1B0A002",
+      "localizations": [
+        {
+          "description": "Optional support. No features are unlocked.",
+          "displayName": "Lunch",
+          "locale": "en_US"
+        },
+        {
+          "description": "Добровольная поддержка без новых функций.",
+          "displayName": "Обед",
+          "locale": "ru_RU"
+        }
+      ],
+      "productID": "com.mrmaier.flipabulary.support.lunch",
+      "referenceName": "Lunch",
+      "type": "Consumable"
+    },
+    {
+      "displayPrice": "10.00",
+      "familyShareable": false,
+      "internalID": "8D0D8A11-1B0A-4C10-8A4A-7B03D1B0A003",
+      "localizations": [
+        {
+          "description": "Optional support. No features are unlocked.",
+          "displayName": "Big fan",
+          "locale": "en_US"
+        },
+        {
+          "description": "Добровольная поддержка без новых функций.",
+          "displayName": "Большой фанат",
+          "locale": "ru_RU"
+        }
+      ],
+      "productID": "com.mrmaier.flipabulary.support.bigfan",
+      "referenceName": "Big fan",
+      "type": "Consumable"
+    }
+  ],
+  "settings": {
+    "_failTransactionsEnabled": false,
+    "_locale": "en_US",
+    "_storefront": "USA",
+    "_storeKitErrors": []
+  },
+  "subscriptionGroups": [
+    {
+      "id": "8D0D8A11-1B0A-4C10-8A4A-7B03D1B0B000",
+      "localizations": [
+        {
+          "description": "Monthly support for Flipabulary.",
+          "displayName": "Monthly support",
+          "locale": "en_US"
+        }
+      ],
+      "name": "Monthly support",
+      "subscriptions": [
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "2.00",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "8D0D8A11-1B0A-4C10-8A4A-7B03D1B0B001",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Monthly support. Renews until cancelled.",
+              "displayName": "Coffee monthly",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "com.mrmaier.flipabulary.support.coffee.monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Coffee monthly",
+          "subscriptionGroupID": "8D0D8A11-1B0A-4C10-8A4A-7B03D1B0B000",
+          "type": "Auto-Renewable Subscription"
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "5.00",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "8D0D8A11-1B0A-4C10-8A4A-7B03D1B0B002",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Monthly support. Renews until cancelled.",
+              "displayName": "Lunch monthly",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "com.mrmaier.flipabulary.support.lunch.monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Lunch monthly",
+          "subscriptionGroupID": "8D0D8A11-1B0A-4C10-8A4A-7B03D1B0B000",
+          "type": "Auto-Renewable Subscription"
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "10.00",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "8D0D8A11-1B0A-4C10-8A4A-7B03D1B0B003",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Monthly support. Renews until cancelled.",
+              "displayName": "Big fan monthly",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "com.mrmaier.flipabulary.support.bigfan.monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Big fan monthly",
+          "subscriptionGroupID": "8D0D8A11-1B0A-4C10-8A4A-7B03D1B0B000",
+          "type": "Auto-Renewable Subscription"
+        }
+      ]
+    }
+  ],
+  "version": {
+    "major": 3,
+    "minor": 0
+  }
+}
