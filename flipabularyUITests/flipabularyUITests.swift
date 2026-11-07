@@ -83,6 +83,45 @@ final class FlipabularyUITests: XCTestCase {
     }
 
     @MainActor
+    func testAddAnotherSavesEveryWord() throws {
+        let app = launch(demo: false)
+        app.buttons["words.add"].tap()
+        XCTAssertTrue(app.textFields["card.word"].waitForExistence(timeout: 3))
+
+        let addAnother = app.descendants(matching: .any)["card.addAnother"]
+        XCTAssertTrue(addAnother.exists)
+        addAnother.tap()
+
+        for (word, translation) in [("alpha", "one"), ("beta", "two"), ("gamma", "three")] {
+            app.textFields["card.word"].tap()
+            app.textFields["card.word"].typeText(word)
+            app.textFields["card.translation"].tap()
+            app.textFields["card.translation"].typeText(translation)
+            app.buttons["card.save"].tap()
+            XCTAssertTrue(app.staticTexts["Saved. Add another word."].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.textFields["card.word"].exists)
+        }
+
+        app.buttons["card.close"].tap()
+        XCTAssertTrue(app.staticTexts["alpha"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["beta"].exists)
+        XCTAssertTrue(app.staticTexts["gamma"].exists)
+    }
+
+    @MainActor
+    func testImportExportScreenOpens() throws {
+        let app = launch()
+        app.buttons["words.more"].tap()
+        let importExport = app.buttons["Import & Export"].firstMatch
+        XCTAssertTrue(importExport.waitForExistence(timeout: 3))
+        importExport.tap()
+        XCTAssertTrue(app.navigationBars["Import & Export"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["import.csv"].exists)
+        XCTAssertTrue(app.buttons["import.anki"].exists)
+        XCTAssertTrue(app.buttons["export.stack"].exists)
+    }
+
+    @MainActor
     func testSearchAndFiltersUpdateTheList() throws {
         let app = launch()
         XCTAssertTrue(app.staticTexts["Words"].waitForExistence(timeout: 5))
@@ -129,7 +168,7 @@ final class FlipabularyUITests: XCTestCase {
     func testReviewRevealRateEndAndSummary() throws {
         let app = launch()
         XCTAssertTrue(app.buttons["words.due"].waitForExistence(timeout: 5))
-        app.buttons["words.due"].tap()
+        app.buttons["words.review"].tap()
 
         XCTAssertTrue(app.buttons["review.reveal"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["review.good"].exists)
@@ -159,6 +198,17 @@ final class FlipabularyUITests: XCTestCase {
     }
 
     @MainActor
+    func testWordsScopeOpensStackPicker() throws {
+        let app = launch()
+        XCTAssertTrue(app.buttons["words.due"].waitForExistence(timeout: 5))
+        app.buttons["words.due"].tap()
+        XCTAssertTrue(app.navigationBars["Choose stack"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["words.scope.all"].waitForExistence(timeout: 3))
+        app.buttons["words.scope.all"].tap()
+        XCTAssertTrue(app.staticTexts["Words"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
     func testTranslationFirstKeepsSourceHiddenUntilReveal() throws {
         let app = launch()
         openSettings(app)
@@ -170,7 +220,7 @@ final class FlipabularyUITests: XCTestCase {
         goBack(app)
 
         XCTAssertTrue(app.buttons["words.due"].waitForExistence(timeout: 5))
-        app.buttons["words.due"].tap()
+        app.buttons["words.review"].tap()
         XCTAssertTrue(app.buttons["review.reveal"].waitForExistence(timeout: 5))
         let reviewCard = app.descendants(matching: .any)["review.card"].firstMatch
         XCTAssertTrue(reviewCard.exists)
@@ -249,12 +299,12 @@ final class FlipabularyUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Support"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["Support Flipabulary"].exists)
 
-        let coffee = app.buttons["support.amount.2"]
+        let coffee = app.buttons["support.amount.3"]
         XCTAssertTrue(coffee.waitForExistence(timeout: 5) || app.staticTexts.matching(NSPredicate(format: "label CONTAINS[c] 'available'")).firstMatch.exists)
         if coffee.exists {
             coffee.tap()
             XCTAssertTrue(app.buttons["support.donate"].exists)
-            XCTAssertTrue(app.buttons["support.restore"].exists)
+            XCTAssertTrue(app.buttons["support.amount.100"].exists)
         }
     }
 
@@ -277,7 +327,7 @@ final class FlipabularyUITests: XCTestCase {
     func testCardFlipsRepeatedlyAndSwipesLeftToAgain() throws {
         let app = launch()
         XCTAssertTrue(app.buttons["words.due"].waitForExistence(timeout: 5))
-        app.buttons["words.due"].tap()
+        app.buttons["words.review"].tap()
         XCTAssertTrue(app.buttons["review.reveal"].waitForExistence(timeout: 5))
 
         let initialLabel = app.descendants(matching: .any)["review.card"].firstMatch.label
@@ -302,7 +352,7 @@ final class FlipabularyUITests: XCTestCase {
     func testSwipeRightRatesGood() throws {
         let app = launch()
         XCTAssertTrue(app.buttons["words.due"].waitForExistence(timeout: 5))
-        app.buttons["words.due"].tap()
+        app.buttons["words.review"].tap()
         XCTAssertTrue(app.buttons["review.reveal"].waitForExistence(timeout: 5))
         app.buttons["review.reveal"].tap()
         XCTAssertTrue(app.buttons["review.good"].waitForExistence(timeout: 3))
@@ -314,7 +364,7 @@ final class FlipabularyUITests: XCTestCase {
     func testReviewSettingsKeepsTheRevealedCard() throws {
         let app = launch()
         XCTAssertTrue(app.buttons["words.due"].waitForExistence(timeout: 5))
-        app.buttons["words.due"].tap()
+        app.buttons["words.review"].tap()
         XCTAssertTrue(app.buttons["review.reveal"].waitForExistence(timeout: 5))
         app.buttons["review.reveal"].tap()
         XCTAssertTrue(app.buttons["review.good"].waitForExistence(timeout: 3))
@@ -405,7 +455,7 @@ final class FlipabularyUITests: XCTestCase {
         )
         XCTAssertTrue(app.staticTexts["Words"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["words.add"].isHittable)
-        XCTAssertTrue(app.buttons["words.due"].isHittable)
+        XCTAssertTrue(app.buttons["words.review"].isHittable)
         app.buttons["words.add"].tap()
         XCTAssertTrue(app.textFields["card.word"].waitForExistence(timeout: 3))
         XCTAssertTrue(app.buttons["card.save"].exists)
