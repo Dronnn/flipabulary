@@ -10,6 +10,7 @@ enum AppRoute: Hashable {
     case settings
     case widgets
     case reminders
+    case importExport
 }
 
 enum EditorTarget: Identifiable, Hashable {

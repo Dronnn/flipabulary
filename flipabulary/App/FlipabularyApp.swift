@@ -154,6 +154,8 @@ struct RootView: View {
             WidgetSettingsView()
         case .reminders:
             RemindersView()
+        case .importExport:
+            ImportExportView()
         }
     }
 }

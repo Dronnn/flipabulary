@@ -38,7 +38,7 @@ final class FlipabularyVisualTests: XCTestCase {
     func testCaptureReviewPresentation() throws {
         let app = launch()
         XCTAssertTrue(app.buttons["words.due"].waitForExistence(timeout: 5))
-        app.buttons["words.due"].tap()
+        app.buttons["words.review"].tap()
         XCTAssertTrue(app.buttons["review.reveal"].waitForExistence(timeout: 5))
         attach("review-front", app)
 
@@ -65,7 +65,7 @@ final class FlipabularyVisualTests: XCTestCase {
         app.buttons["card.close"].tap()
 
         XCTAssertTrue(app.buttons["words.due"].waitForExistence(timeout: 5))
-        app.buttons["words.due"].tap()
+        app.buttons["words.review"].tap()
         XCTAssertTrue(app.buttons["review.reveal"].waitForExistence(timeout: 5))
         attach("review-front", app)
         app.buttons["review.reveal"].tap()
@@ -132,6 +132,12 @@ final class FlipabularyVisualTests: XCTestCase {
         app.staticTexts["Widgets"].tap()
         XCTAssertTrue(app.navigationBars["List widget"].waitForExistence(timeout: 3))
         attach("widget-config", app)
+        back(app)
+
+        app.staticTexts["Import & Export"].tap()
+        XCTAssertTrue(app.navigationBars["Import & Export"].waitForExistence(timeout: 3))
+        attach("import-export", app)
+        try app.performAccessibilityAudit(for: [.contrast, .hitRegion, .sufficientElementDescription, .textClipped])
         back(app)
 
         app.staticTexts["Local notifications that respect your review workload."].tap()

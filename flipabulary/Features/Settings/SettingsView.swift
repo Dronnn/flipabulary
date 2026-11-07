@@ -121,6 +121,11 @@ struct SettingsView: View {
                             app.router.push(.widgets)
                         }
                         .accessibilityIdentifier("settings.widgets")
+                        SettingsDivider(inset: 16)
+                        SettingsRow(title: "Import & Export", detail: "Bring in decks or export your words.") {
+                            app.router.push(.importExport)
+                        }
+                        .accessibilityIdentifier("settings.importExport")
                     }
                 }
 

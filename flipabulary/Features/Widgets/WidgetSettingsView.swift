@@ -186,10 +186,10 @@ struct WidgetSettingsView: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                (Text("Small") + Text(" 3  ·  ")
-                    + Text("Medium") + Text(" 6  ·  ")
-                    + Text("Large") + Text(" 10  ·  ")
-                    + Text("Extra Large") + Text(" 16"))
+                (Text("Small") + Text(verbatim: " 3  ·  ")
+                    + Text("Medium") + Text(verbatim: " 6  ·  ")
+                    + Text("Large") + Text(verbatim: " 10  ·  ")
+                    + Text("Extra Large") + Text(verbatim: " 16"))
                     .font(AppFont.caption().weight(.medium))
                     .foregroundStyle(AppColor.textSecondary)
                 Text("Entry counts are fixed by the Home Screen size. Larger text may show fewer rows so labels stay legible.")

@@ -159,6 +159,8 @@ struct WordsView: View {
                 Button("Stacks") { app.router.push(.stacks) }
                 Button("Settings") { app.router.push(.settings) }
                 Button("Widgets") { app.router.push(.widgets) }
+                Button("Import & Export") { app.router.push(.importExport) }
+                Button("Support") { app.router.supportVisible = true }
                 Divider()
                 Button {
                     app.preferences.preferences.filter = preferences.filter == .difficult ? .all : .difficult
