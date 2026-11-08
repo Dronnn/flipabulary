@@ -106,6 +106,75 @@ final class LibraryIntegrationTests: XCTestCase {
         XCTAssertEqual(harness.maintenance.appUsageByDay()[key] ?? 0, 150, accuracy: 0.01)
     }
 
+    func testAppUsageIntervalSplitsAcrossMidnight() {
+        let start = testDate("2026-11-06T23:50:00Z")
+        let end = testDate("2026-11-07T00:10:00Z")
+        harness.maintenance.addAppUsage(from: start, to: end)
+
+        let usage = harness.maintenance.appUsageByDay()
+        XCTAssertEqual(usage["2026-11-06"] ?? 0, 600, accuracy: 0.01)
+        XCTAssertEqual(usage["2026-11-07"] ?? 0, 600, accuracy: 0.01)
+    }
+
+    func testAppUsageIntervalAccumulatesAcrossCalls() {
+        let start = testDate("2026-11-07T09:00:00Z")
+        let middle = testDate("2026-11-07T09:10:00Z")
+        let end = testDate("2026-11-07T09:15:00Z")
+        harness.maintenance.addAppUsage(from: start, to: middle)
+        harness.maintenance.addAppUsage(from: middle, to: end)
+
+        XCTAssertEqual(harness.maintenance.appUsageByDay()["2026-11-07"] ?? 0, 900, accuracy: 0.01)
+    }
+
+    func testAppUsageIntervalIgnoresEmptyAndNegativeRanges() {
+        let now = testDate("2026-11-07T10:00:00Z")
+        harness.maintenance.addAppUsage(from: now, to: now)
+        harness.maintenance.addAppUsage(from: now, to: now.addingTimeInterval(-60))
+
+        XCTAssertTrue(harness.maintenance.appUsageByDay().isEmpty)
+    }
+
+    func testAppUsageSecondsAtDateKeepsThatDaysAttribution() {
+        let date = testDate("2026-11-07T23:59:00Z")
+        harness.maintenance.addAppUsage(seconds: 120, at: date)
+
+        let usage = harness.maintenance.appUsageByDay()
+        XCTAssertEqual(usage["2026-11-07"] ?? 0, 120, accuracy: 0.01)
+        XCTAssertNil(usage["2026-11-06"])
+    }
+
+    func testAppUsageSecondsEndingAfterMidnightSplitsAcrossDays() {
+        harness.maintenance.addAppUsage(seconds: 120, at: testDate("2026-11-07T00:01:00Z"))
+
+        let usage = harness.maintenance.appUsageByDay()
+        XCTAssertEqual(usage["2026-11-06"] ?? 0, 60, accuracy: 0.01)
+        XCTAssertEqual(usage["2026-11-07"] ?? 0, 60, accuracy: 0.01)
+    }
+
+    func testAppUsageIntervalUsesTheMaintenanceCalendarTimeZone() {
+        let calendar = testCalendar(timeZone: "America/New_York")
+        harness.maintenance.calendar = calendar
+        let start = calendar.date(from: DateComponents(year: 2026, month: 11, day: 7, hour: 23, minute: 30))!
+        let end = calendar.date(from: DateComponents(year: 2026, month: 11, day: 8, hour: 0, minute: 30))!
+
+        harness.maintenance.addAppUsage(from: start, to: end)
+
+        let usage = harness.maintenance.appUsageByDay()
+        XCTAssertEqual(usage["2026-11-07"] ?? 0, 1_800, accuracy: 0.01)
+        XCTAssertEqual(usage["2026-11-08"] ?? 0, 1_800, accuracy: 0.01)
+    }
+
+    func testAppUsageIntervalOnDSTSpringForwardDayUsesTwentyThreeHours() {
+        let calendar = testCalendar(timeZone: "America/New_York")
+        harness.maintenance.calendar = calendar
+        let start = calendar.date(from: DateComponents(year: 2026, month: 3, day: 8, hour: 0, minute: 0))!
+        let end = calendar.date(byAdding: .day, value: 1, to: start)!
+
+        harness.maintenance.addAppUsage(from: start, to: end)
+
+        XCTAssertEqual(harness.maintenance.appUsageByDay()["2026-03-08"] ?? 0, 23 * 3_600, accuracy: 0.01)
+    }
+
     func testDuplicateInLibraryFindsTheSameWordInAnotherStack() throws {
         let first = harness.makeStack(name: "First")
         let second = harness.makeStack(name: "Second", isDefault: false)

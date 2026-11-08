@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import SwiftData
+import UIKit
 
 @MainActor
 @Observable
@@ -18,7 +19,7 @@ final class AppEnvironment {
     let storageError: String?
 
     private(set) var didBootstrap = false
-    @ObservationIgnored private var usageStartedAt: Date?
+    @ObservationIgnored private let usageTracker = AppUsageTracker()
 
     init(bootstrap: PersistenceBootstrap) {
         container = bootstrap.container
@@ -71,7 +72,9 @@ final class AppEnvironment {
     func bootstrap() async {
         guard !didBootstrap else { return }
         didBootstrap = true
-        startAppUsage()
+        if UIApplication.shared.applicationState == .active {
+            startAppUsage()
+        }
         maintenance.refresh()
         await reminders.refreshAndReconcile()
         let stackIDs = Set(maintenance.stacks().map(\.id))
@@ -133,27 +136,37 @@ final class AppEnvironment {
         }
     }
 
-    func appDidEnterBackground() {
+    func appDidBecomeInactive() {
         stopAppUsage()
         if let session = review.latestActiveSession() {
             review.pause(session)
         }
     }
 
+    func appDidEnterBackground() {
+        appDidBecomeInactive()
+    }
+
+    func handleTimeChange() async {
+        maintenance.refresh()
+        await reminders.refreshAndReconcile()
+    }
+
     func startAppUsage() {
-        guard usageStartedAt == nil else { return }
-        usageStartedAt = Date()
+        usageTracker.start()
     }
 
     func stopAppUsage() {
-        guard let started = usageStartedAt else { return }
-        usageStartedAt = nil
-        maintenance.addAppUsage(seconds: Date().timeIntervalSince(started))
+        guard let interval = usageTracker.stop() else { return }
+        maintenance.addAppUsage(from: interval.start, to: interval.end)
     }
 
     func currentAppUsageSeconds(now: Date = Date()) -> Double {
-        guard let started = usageStartedAt else { return 0 }
-        return max(0, now.timeIntervalSince(started))
+        usageTracker.liveSeconds(now: now)
+    }
+
+    func currentAppUsageInterval(now: Date = Date()) -> AppUsageInterval? {
+        usageTracker.liveInterval(now: now)
     }
 
     func handle(url: URL) async {

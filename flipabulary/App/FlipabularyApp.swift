@@ -120,6 +120,8 @@ struct RootView: View {
             switch phase {
             case .active:
                 Task { await app.appDidBecomeActive() }
+            case .inactive:
+                app.appDidBecomeInactive()
             case .background:
                 app.appDidEnterBackground()
             default:
@@ -127,13 +129,13 @@ struct RootView: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in
-            Task { await app.appDidBecomeActive() }
+            Task { await app.handleTimeChange() }
         }
         .onReceive(NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange)) { _ in
-            Task { await app.appDidBecomeActive() }
+            Task { await app.handleTimeChange() }
         }
         .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in
-            Task { await app.appDidBecomeActive() }
+            Task { await app.handleTimeChange() }
         }
     }
 

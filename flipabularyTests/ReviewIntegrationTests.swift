@@ -489,6 +489,137 @@ final class ReviewIntegrationTests: XCTestCase {
         XCTAssertEqual(try harness.context.fetch(FetchDescriptor<ReviewEvent>()).count, 1)
         XCTAssertNil(harness.review.latestActiveSession())
     }
+
+    // MARK: - Session and face timing
+
+    private func event(for cardID: UUID) throws -> ReviewEvent {
+        let descriptor = FetchDescriptor<ReviewEvent>(predicate: #Predicate { $0.cardID == cardID })
+        return try XCTUnwrap(try harness.context.fetch(descriptor).first)
+    }
+
+    func testElapsedSecondsTracksActiveAndPausedTime() throws {
+        let stack = harness.makeStack()
+        _ = dueCard(word: "elapsed", stack: stack)
+        try harness.save()
+        let session = try start(stack)
+
+        XCTAssertEqual(harness.review.elapsedSeconds(session, at: harness.clock.now), 0, accuracy: 0.01)
+        harness.clock.advance(by: 5)
+        XCTAssertEqual(harness.review.elapsedSeconds(session, at: harness.clock.now), 5, accuracy: 0.01)
+        harness.review.pause(session)
+        harness.clock.advance(by: 10)
+        XCTAssertEqual(harness.review.elapsedSeconds(session, at: harness.clock.now), 5, accuracy: 0.01)
+        harness.review.resume(session)
+        harness.clock.advance(by: 3)
+        XCTAssertEqual(harness.review.elapsedSeconds(session, at: harness.clock.now), 8, accuracy: 0.01)
+        _ = harness.review.endSession(session)
+        harness.clock.advance(by: 100)
+        XCTAssertEqual(harness.review.elapsedSeconds(session, at: harness.clock.now), 8, accuracy: 0.01)
+    }
+
+    func testPauseAndResumeAccumulateSessionTime() throws {
+        let stack = harness.makeStack()
+        _ = dueCard(word: "pause", stack: stack)
+        try harness.save()
+        let session = try start(stack)
+
+        harness.clock.advance(by: 2)
+        harness.review.pause(session)
+        harness.clock.advance(by: 3)
+        harness.review.resume(session)
+        harness.clock.advance(by: 4)
+        harness.review.pause(session)
+
+        XCTAssertEqual(session.activeSeconds, 6, accuracy: 0.01)
+    }
+
+    func testRepeatedRevealsDoNotDoubleCountFrontTime() throws {
+        let stack = harness.makeStack()
+        let card = dueCard(word: "reveal", stack: stack)
+        try harness.save()
+        let session = try start(stack)
+
+        harness.clock.advance(by: 2)
+        XCTAssertTrue(harness.review.reveal(session))
+        harness.clock.advance(by: 3)
+        XCTAssertTrue(harness.review.reveal(session))
+        XCTAssertEqual(harness.review.grade(session, grade: .good), .completed)
+
+        let recorded = try event(for: card.id)
+        XCTAssertEqual(recorded.frontSeconds ?? 0, 2, accuracy: 0.01)
+        XCTAssertEqual(recorded.backSeconds ?? 0, 3, accuracy: 0.01)
+    }
+
+    func testSwitchingFacesAccumulatesEachSide() throws {
+        let stack = harness.makeStack()
+        let card = dueCard(word: "faces", stack: stack)
+        try harness.save()
+        let session = try start(stack)
+
+        harness.clock.advance(by: 2)
+        XCTAssertTrue(harness.review.setShowingBack(session, showing: true))
+        XCTAssertEqual(session.currentFrontSeconds ?? 0, 2, accuracy: 0.01)
+        harness.clock.advance(by: 3)
+        XCTAssertTrue(harness.review.setShowingBack(session, showing: false))
+        XCTAssertEqual(session.currentBackSeconds ?? 0, 3, accuracy: 0.01)
+        harness.clock.advance(by: 4)
+        XCTAssertTrue(harness.review.setShowingBack(session, showing: true))
+        XCTAssertEqual(session.currentFrontSeconds ?? 0, 6, accuracy: 0.01)
+        XCTAssertEqual(harness.review.grade(session, grade: .good), .completed)
+
+        let recorded = try event(for: card.id)
+        XCTAssertEqual(recorded.frontSeconds ?? 0, 6, accuracy: 0.01)
+        XCTAssertEqual(recorded.backSeconds ?? 0, 3, accuracy: 0.01)
+    }
+
+    func testPauseWhileShowingBackKeepsFaceTime() throws {
+        let stack = harness.makeStack()
+        let card = dueCard(word: "background", stack: stack)
+        try harness.save()
+        let session = try start(stack)
+
+        harness.clock.advance(by: 2)
+        XCTAssertTrue(harness.review.reveal(session))
+        harness.clock.advance(by: 3)
+        harness.review.pause(session)
+        harness.clock.advance(by: 10)
+        harness.review.resume(session)
+        harness.clock.advance(by: 4)
+        XCTAssertEqual(harness.review.grade(session, grade: .good), .completed)
+
+        let recorded = try event(for: card.id)
+        XCTAssertEqual(recorded.frontSeconds ?? 0, 2, accuracy: 0.01)
+        XCTAssertEqual(recorded.backSeconds ?? 0, 7, accuracy: 0.01)
+        XCTAssertEqual(session.activeSeconds, 9, accuracy: 0.01)
+    }
+
+    func testGradeRecordsZeroTimingWhenClockDoesNotAdvance() throws {
+        let stack = harness.makeStack()
+        let card = dueCard(word: "instant", stack: stack)
+        try harness.save()
+        let session = try start(stack)
+
+        XCTAssertTrue(harness.review.reveal(session))
+        XCTAssertEqual(harness.review.grade(session, grade: .good), .completed)
+
+        let recorded = try event(for: card.id)
+        XCTAssertEqual(recorded.frontSeconds ?? 0, 0, accuracy: 0.01)
+        XCTAssertEqual(recorded.backSeconds ?? 0, 0, accuracy: 0.01)
+    }
+
+    func testEndSessionFreezesElapsedTime() throws {
+        let stack = harness.makeStack()
+        _ = dueCard(word: "end", stack: stack)
+        try harness.save()
+        let session = try start(stack)
+
+        harness.clock.advance(by: 6)
+        XCTAssertTrue(harness.review.endSession(session))
+        harness.clock.advance(by: 60)
+
+        XCTAssertEqual(harness.review.elapsedSeconds(session, at: harness.clock.now), 6, accuracy: 0.01)
+        XCTAssertEqual(session.activeSeconds, 6, accuracy: 0.01)
+    }
 }
 
 private extension Result {

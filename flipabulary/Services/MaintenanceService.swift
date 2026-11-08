@@ -168,11 +168,17 @@ final class MaintenanceService {
         return record
     }
 
+    func addAppUsage(from start: Date, to end: Date) {
+        guard end > start else { return }
+        for segment in AppUsageDaySplitter.split(from: start, to: end, calendar: calendar) {
+            appUsageRecord(dayKey: segment.dayKey).seconds += segment.seconds
+        }
+        _ = save()
+    }
+
     func addAppUsage(seconds: Double, at date: Date = Date()) {
         guard seconds > 0 else { return }
-        let key = CalendarTools.dayKey(for: date, calendar: calendar)
-        appUsageRecord(dayKey: key).seconds += seconds
-        _ = save()
+        addAppUsage(from: date.addingTimeInterval(-seconds), to: date)
     }
 
     func appUsageByDay() -> [String: Double] {

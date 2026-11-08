@@ -82,7 +82,7 @@ extension LibraryService {
         rangeDays: Int,
         now: Date,
         calendar: Calendar,
-        liveAppSeconds: Double
+        liveAppUsage: AppUsageInterval?
     ) async -> LibraryStatistics {
         let container = modelContext.container
         return await Task.detached(priority: .userInitiated) {
@@ -106,27 +106,41 @@ extension LibraryService {
 
             let range = min(max(rangeDays, 1), 366)
             let today = calendar.startOfDay(for: now)
+            let rangeStart = calendar.date(byAdding: .day, value: -(range - 1), to: today) ?? today
             var dayPoints: [String: DayStatistics] = [:]
             for offset in stride(from: range - 1, through: 0, by: -1) {
                 guard let date = calendar.date(byAdding: .day, value: -offset, to: today) else { continue }
                 let key = CalendarTools.dayKey(for: date, calendar: calendar)
                 dayPoints[key] = DayStatistics(date: date, dayKey: key)
             }
+            let rangeDayKeys = Set(dayPoints.keys)
 
             var totalAppSeconds = 0.0
             if stackID == nil {
-                for record in usageRecords {
-                    totalAppSeconds += record.seconds
+                for record in usageRecords where rangeDayKeys.contains(record.dayKey) {
+                    let seconds = max(0, record.seconds)
+                    totalAppSeconds += seconds
                     if var point = dayPoints[record.dayKey] {
-                        point.appSeconds += record.seconds
+                        point.appSeconds += seconds
                         dayPoints[record.dayKey] = point
                     }
                 }
-                totalAppSeconds += max(0, liveAppSeconds)
-                let todayKey = CalendarTools.dayKey(for: today, calendar: calendar)
-                if var point = dayPoints[todayKey] {
-                    point.appSeconds += max(0, liveAppSeconds)
-                    dayPoints[todayKey] = point
+                if let liveAppUsage {
+                    let liveEnd = min(liveAppUsage.end, now)
+                    if liveEnd > liveAppUsage.start {
+                        let segments = AppUsageDaySplitter.split(
+                            from: liveAppUsage.start,
+                            to: liveEnd,
+                            calendar: calendar
+                        )
+                        for segment in segments where rangeDayKeys.contains(segment.dayKey) {
+                            totalAppSeconds += segment.seconds
+                            if var point = dayPoints[segment.dayKey] {
+                                point.appSeconds += segment.seconds
+                                dayPoints[segment.dayKey] = point
+                            }
+                        }
+                    }
                 }
             }
 
@@ -174,7 +188,7 @@ extension LibraryService {
             var totalGood = 0
             var totalAgain = 0
             var totalReviewSeconds = 0.0
-            for event in events {
+            for event in events where event.timestamp >= rangeStart && event.timestamp <= now {
                 let eventStackID = sessionsByID[event.sessionID]?.stackID ?? cardStackByID[event.cardID]
                 if let stackID, eventStackID != stackID { continue }
 
@@ -207,7 +221,7 @@ extension LibraryService {
                 }
             }
 
-            for session in sessions {
+            for session in sessions where session.startedAt >= rangeStart && session.startedAt <= now {
                 if let stackID, session.stackID != stackID { continue }
                 guard var stats = stackStats[session.stackID] else { continue }
                 stats.activeSessionSeconds += session.activeSeconds

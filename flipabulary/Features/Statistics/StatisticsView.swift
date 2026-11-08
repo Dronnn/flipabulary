@@ -21,8 +21,8 @@ struct StatisticsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 if let statistics {
-                    summary(statistics)
                     rangePicker
+                    summary(statistics)
                     timeChart(statistics)
                     answersChart(statistics)
                     if stackID == nil {
@@ -67,13 +67,13 @@ struct StatisticsView: View {
     }
 
     private func load() async {
-        let live = stackID == nil ? app.currentAppUsageSeconds() : 0
+        let live = stackID == nil ? app.currentAppUsageInterval() : nil
         let result = await app.library.libraryStatistics(
             stackID: stackID,
             rangeDays: rangeDays,
             now: Date(),
             calendar: app.maintenance.calendar,
-            liveAppSeconds: live
+            liveAppUsage: live
         )
         guard !Task.isCancelled else { return }
         statistics = result
