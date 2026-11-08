@@ -19,8 +19,8 @@ let screens: [Screen] = [
            subhead: "Summary and list widgets in four sizes."),
     Screen(slug: "rules", line1: "A learning rhythm", line2: "that adapts",
            subhead: "Tune steps, thresholds, and decay."),
-    Screen(slug: "support", line1: "Keep Flipabulary", line2: "free",
-           subhead: "Six optional one-time tips. No features locked."),
+    Screen(slug: "stackSettings", line1: "Tune every stack", line2: "to your pace",
+           subhead: "Session limits, card direction, and learning steps."),
 ]
 
 struct Device {
@@ -34,27 +34,31 @@ struct Device {
 }
 
 let devices: [Device] = [
-    Device(key: "iphone-65", source: "iphone-raw", width: 1284, height: 2778,
+    Device(key: "iphone-69", source: "iphone-raw-new", width: 1320, height: 2868,
            isPad: false, hasIsland: true, frameFraction: 0.765),
-    Device(key: "iphone-63", source: "iphone-raw", width: 1206, height: 2622,
+    Device(key: "iphone-65", source: "iphone-raw-new", width: 1284, height: 2778,
            isPad: false, hasIsland: true, frameFraction: 0.765),
-    Device(key: "iphone-61", source: "iphone-raw", width: 1170, height: 2532,
+    Device(key: "iphone-63", source: "iphone-raw-new", width: 1206, height: 2622,
            isPad: false, hasIsland: true, frameFraction: 0.765),
-    Device(key: "iphone-55", source: "iphone-raw", width: 1242, height: 2208,
+    Device(key: "iphone-61", source: "iphone-raw-new", width: 1170, height: 2532,
+           isPad: false, hasIsland: true, frameFraction: 0.765),
+    Device(key: "iphone-55", source: "iphone-raw-new", width: 1242, height: 2208,
            isPad: false, hasIsland: false, frameFraction: 0.765),
-    Device(key: "iphone-47", source: "iphone-raw", width: 750, height: 1334,
+    Device(key: "iphone-47", source: "iphone-raw-new", width: 750, height: 1334,
            isPad: false, hasIsland: false, frameFraction: 0.765),
-    Device(key: "iphone-40", source: "iphone-raw", width: 640, height: 1136,
+    Device(key: "iphone-40", source: "iphone-raw-new", width: 640, height: 1136,
            isPad: false, hasIsland: false, frameFraction: 0.72),
-    Device(key: "iphone-35", source: "iphone-raw", width: 640, height: 960,
+    Device(key: "iphone-35", source: "iphone-raw-new", width: 640, height: 960,
            isPad: false, hasIsland: false, frameFraction: 0.70),
-    Device(key: "ipad-129", source: "ipad-raw", width: 2048, height: 2732,
+    Device(key: "ipad-13", source: "ipad-raw-new", width: 2064, height: 2752,
            isPad: true, hasIsland: false, frameFraction: 0.73),
-    Device(key: "ipad-11", source: "ipad-raw", width: 1668, height: 2388,
+    Device(key: "ipad-129", source: "ipad-raw-new", width: 2048, height: 2732,
            isPad: true, hasIsland: false, frameFraction: 0.73),
-    Device(key: "ipad-105", source: "ipad-raw", width: 1668, height: 2224,
+    Device(key: "ipad-11", source: "ipad-raw-new", width: 1668, height: 2388,
            isPad: true, hasIsland: false, frameFraction: 0.73),
-    Device(key: "ipad-97", source: "ipad-raw", width: 1536, height: 2048,
+    Device(key: "ipad-105", source: "ipad-raw-new", width: 1668, height: 2224,
+           isPad: true, hasIsland: false, frameFraction: 0.73),
+    Device(key: "ipad-97", source: "ipad-raw-new", width: 1536, height: 2048,
            isPad: true, hasIsland: false, frameFraction: 0.73),
 ]
 
@@ -245,7 +249,7 @@ func render(_ screen: Screen, device: Device) -> String {
     guard let data = rep.representation(using: .jpeg, properties: [.compressionFactor: 0.95]) else {
         fatalError("jpeg")
     }
-    let outputDir = URL(fileURLWithPath: "docs/app-store/\(device.key)", isDirectory: true)
+    let outputDir = URL(fileURLWithPath: "docs/app-store/device-new/\(device.key)", isDirectory: true)
     try? FileManager.default.createDirectory(at: outputDir, withIntermediateDirectories: true)
     let url = outputDir.appendingPathComponent("\(screen.slug).jpg")
     try? data.write(to: url)
