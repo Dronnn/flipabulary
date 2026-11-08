@@ -58,7 +58,7 @@ struct SupportView: View {
         }
         .padding(.top, 20)
         .padding(.bottom, 28)
-        .frame(maxWidth: 900)
+        .frame(maxWidth: .infinity)
     }
 
     private var intro: some View {

@@ -61,7 +61,7 @@ struct WidgetSettingsView: View {
                         settingsColumn
                     }
                 }
-                .frame(maxWidth: 820)
+                .frame(maxWidth: .infinity)
                 .padding(.horizontal, mode.inset)
                 .padding(.top, 12)
                 .padding(.bottom, 28)

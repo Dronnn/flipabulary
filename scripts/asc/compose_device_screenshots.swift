@@ -211,7 +211,7 @@ func render(_ screen: Screen, device: Device) -> String {
     frame.fill()
     NSGraphicsContext.restoreGraphicsState()
 
-    let inset = max(5, frameWidth * 0.011)
+    let inset = device.isPad ? frameWidth * 0.032 : max(5, frameWidth * 0.011)
     let screenRect = frameRect.insetBy(dx: inset, dy: inset)
     let screenshotPath = "docs/app-store/\(device.source)/\(screen.slug).png"
     guard let screenshot = NSImage(contentsOfFile: screenshotPath) else {

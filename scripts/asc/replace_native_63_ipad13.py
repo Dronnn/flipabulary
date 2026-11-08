@@ -220,7 +220,7 @@ def main():
                     print(f"reuse {key}/{slug} -> {known}", flush=True)
                     continue
             path = f"docs/app-store/device-new/{key}/{slug}.jpg"
-            image_id = reserve_image(path, f"2026-11-08 native {key} {slug}")
+            image_id = reserve_image(path, f"2026-11-08 native v2 {key} {slug}")
             images[key][slug] = image_id
             save(state)
             print(f"uploaded {path} -> {image_id}", flush=True)

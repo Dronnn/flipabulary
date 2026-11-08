@@ -47,7 +47,7 @@ struct ImportExportView: View {
                         InlineMessage(text: errorMessage)
                     }
                 }
-                .frame(maxWidth: 820)
+                .frame(maxWidth: .infinity)
                 .padding(.horizontal, mode.inset)
                 .padding(.top, 12)
                 .padding(.bottom, 28)
@@ -267,6 +267,7 @@ struct ImportExportView: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func handleImport(_ result: Result<[URL], Error>, format: ImportFormat) {
