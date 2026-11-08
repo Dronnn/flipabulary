@@ -49,6 +49,7 @@ enum SeedService {
             let shouldSeedLargeLibrary = arguments.contains("-UITestLargeLibrary")
             #else
             let shouldSeed = false
+            let shouldSeedSpanish = false
             let shouldSeedLargeLibrary = false
             #endif
             var didSeed = false
