@@ -109,8 +109,6 @@ final class AppEnvironment {
             if let card = library.cards().first {
                 router.presentEditor(.edit(card.id))
             }
-        case "statistics":
-            router.push(.statistics(nil))
         case "support":
             router.supportVisible = true
         case "review":

@@ -42,14 +42,10 @@ enum SeedService {
 
             #if DEBUG
             let arguments = ProcessInfo.processInfo.arguments
-            let shouldSeed = arguments.contains("-UITestDemoData")
-                || arguments.contains("-DemoData")
-                || arguments.contains("-DemoDataSpanish")
-            let shouldSeedSpanish = arguments.contains("-DemoDataSpanish")
+            let shouldSeed = arguments.contains("-UITestDemoData") || arguments.contains("-DemoData")
             let shouldSeedLargeLibrary = arguments.contains("-UITestLargeLibrary")
             #else
             let shouldSeed = false
-            let shouldSeedSpanish = false
             let shouldSeedLargeLibrary = false
             #endif
             var didSeed = false
@@ -59,7 +55,7 @@ enum SeedService {
                 didSeed = true
             } else if shouldSeed && defaultStack.cards.isEmpty && stacks.allSatisfy({ $0.cards.isEmpty }) {
                 defaultStack.shuffleOrder = false
-                seedDemo(context: context, stack: defaultStack, now: now, spanish: shouldSeedSpanish)
+                seedDemo(context: context, stack: defaultStack, now: now)
                 if !stacks.contains(where: { $0.name == "Spanish B1" }) {
                     let spanish = VocabularyStack(name: "Spanish B1", createdAt: now.addingTimeInterval(-86_400))
                     context.insert(spanish)
@@ -87,12 +83,7 @@ enum SeedService {
         }
     }
 
-    private static func seedDemo(
-        context: ModelContext,
-        stack: VocabularyStack,
-        now: Date,
-        spanish: Bool
-    ) {
+    private static func seedDemo(context: ModelContext, stack: VocabularyStack, now: Date) {
         let tag = VocabularyTag(name: "B1", createdAt: now.addingTimeInterval(-200_000))
         context.insert(tag)
 
@@ -112,9 +103,9 @@ enum SeedService {
         let fixtures: [Fixture] = [
             Fixture(
                 word: "ephemeral",
-                translation: spanish ? "efímero" : "мимолетный",
+                translation: "мимолетный",
                 sourceExample: "Fame can be ephemeral.",
-                translatedExample: spanish ? "La fama puede ser efímera." : "Слава может быть мимолетной.",
+                translatedExample: "Слава может быть мимолетной.",
                 phonetic: "ɪˈfem(ə)rəl",
                 partOfSpeech: "adj",
                 count: 3,
@@ -124,9 +115,9 @@ enum SeedService {
             ),
             Fixture(
                 word: "ubiquitous",
-                translation: spanish ? "omnipresente" : "вездесущий",
+                translation: "вездесущий",
                 sourceExample: "Phones are ubiquitous now.",
-                translatedExample: spanish ? "Los teléfonos son omnipresentes hoy." : "Телефоны сейчас повсюду.",
+                translatedExample: "Телефоны сейчас повсюду.",
                 phonetic: "juːˈbɪkwɪtəs",
                 partOfSpeech: "adj",
                 count: 5,
@@ -136,9 +127,9 @@ enum SeedService {
             ),
             Fixture(
                 word: "mitigate",
-                translation: spanish ? "mitigar" : "смягчать",
+                translation: "смягчать",
                 sourceExample: "We can mitigate the risk.",
-                translatedExample: spanish ? "Podemos mitigar el riesgo." : "Мы можем смягчить риск.",
+                translatedExample: "Мы можем смягчить риск.",
                 phonetic: "ˈmɪtɪɡeɪt",
                 partOfSpeech: "vt",
                 count: 1,
@@ -148,9 +139,9 @@ enum SeedService {
             ),
             Fixture(
                 word: "resilient",
-                translation: spanish ? "resiliente" : "устойчивый",
+                translation: "устойчивый",
                 sourceExample: "Children are wonderfully resilient.",
-                translatedExample: spanish ? "Los niños son asombrosamente resilientes." : "Дети удивительно устойчивы.",
+                translatedExample: "Дети удивительно устойчивы.",
                 phonetic: "rɪˈzɪliənt",
                 partOfSpeech: "adj",
                 count: 2,
@@ -160,9 +151,9 @@ enum SeedService {
             ),
             Fixture(
                 word: "ambiguous",
-                translation: spanish ? "ambiguo" : "двусмысленный",
+                translation: "двусмысленный",
                 sourceExample: "The answer was ambiguous.",
-                translatedExample: spanish ? "La respuesta era ambigua." : "Ответ был двусмысленным.",
+                translatedExample: "Ответ был двусмысленным.",
                 phonetic: "amˈbɪɡjuəs",
                 partOfSpeech: "adj",
                 count: 4,
