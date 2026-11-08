@@ -13,22 +13,25 @@ APP_ID = "6831894963"
 
 EXPECTED_SCREENSHOTS = {
     "IPHONE_DYNAMIC_ISLAND_LARGE_PROFILE": 6,
-    "IPHONE_FACE_ID_LARGE_PROFILE": 6,
     "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE": 6,
-    "IPHONE_FACE_ID_MEDIUM_PROFILE": 6,
-    "IPHONE_HOME_BUTTON_LARGE_PROFILE": 6,
-    "IPHONE_HOME_BUTTON_MEDIUM_PROFILE": 6,
-    "IPHONE_HOME_BUTTON_40_PROFILE": 6,
-    "IPHONE_HOME_BUTTON_35_PROFILE": 6,
-    "IPAD_13_PROFILE": 6,
-    "IPAD_129_PROFILE": 6,
-    "IPAD_11_PROFILE": 6,
-    "IPAD_105_PROFILE": 6,
-    "IPAD_97_PROFILE": 6,
     "IPHONE_DUO_PROFILE": 6,
+    "IPAD_13_PROFILE": 6,
     "PRODUCT_PAGE_HEADER_ASSET": 1,
     "APP_STORE_SEARCH_RESULTS_ASSET": 1,
 }
+
+OPTIONAL_GROUPS = [
+    "IPHONE_FACE_ID_LARGE_PROFILE",
+    "IPHONE_FACE_ID_MEDIUM_PROFILE",
+    "IPHONE_HOME_BUTTON_LARGE_PROFILE",
+    "IPHONE_HOME_BUTTON_MEDIUM_PROFILE",
+    "IPHONE_HOME_BUTTON_40_PROFILE",
+    "IPHONE_HOME_BUTTON_35_PROFILE",
+    "IPAD_129_PROFILE",
+    "IPAD_11_PROFILE",
+    "IPAD_105_PROFILE",
+    "IPAD_97_PROFILE",
+]
 
 TOKEN = subprocess.check_output(
     ["ruby", os.path.expanduser("~/.config/opencode/scripts/asc-jwt.rb")],
@@ -65,6 +68,10 @@ def main():
             actual = counts.get(key, 0)
             if actual != expected:
                 problems.append(f"{locale}: {key} = {actual}, expected {expected}")
+        for group in OPTIONAL_GROUPS:
+            actual = counts.get(group, 0)
+            if actual != 0:
+                problems.append(f"{locale}: optional {group} = {actual}, expected 0")
 
     app_info = get(
         f"/v1/appInfos/64555a63-89db-4b46-870c-90a59c630d2c/appInfoLocalizations?limit=50"

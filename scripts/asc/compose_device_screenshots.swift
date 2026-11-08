@@ -23,6 +23,21 @@ let screens: [Screen] = [
            subhead: "Session limits, card direction, and learning steps."),
 ]
 
+let ipadScreens: [Screen] = [
+    Screen(slug: "words", line1: "Every word,", line2: "in its place",
+           subhead: "Stacks, tags, search, and clear progress."),
+    Screen(slug: "review", line1: "Remember more", line2: "with short reviews",
+           subhead: "Self-paced reviews that fit your day."),
+    Screen(slug: "editor", line1: "Add words", line2: "with context",
+           subhead: "Examples, phonetics, tags, and stacks."),
+    Screen(slug: "widgets", line1: "Your words on", line2: "the Home Screen",
+           subhead: "Summary and list widgets in four sizes."),
+    Screen(slug: "statistics", line1: "See what", line2: "is working",
+           subhead: "Time, reviews, accuracy, and progress."),
+    Screen(slug: "stacks", line1: "Every language", line2: "in its own stack",
+           subhead: "Separate notebooks, one clear library."),
+]
+
 struct Device {
     let key: String
     let source: String
@@ -38,7 +53,7 @@ let devices: [Device] = [
            isPad: false, hasIsland: true, frameFraction: 0.765),
     Device(key: "iphone-65", source: "iphone-raw-new", width: 1284, height: 2778,
            isPad: false, hasIsland: true, frameFraction: 0.765),
-    Device(key: "iphone-63", source: "iphone-raw-new", width: 1206, height: 2622,
+    Device(key: "iphone-63", source: "iphone-63-raw-native", width: 1206, height: 2622,
            isPad: false, hasIsland: true, frameFraction: 0.765),
     Device(key: "iphone-61", source: "iphone-raw-new", width: 1170, height: 2532,
            isPad: false, hasIsland: true, frameFraction: 0.765),
@@ -50,7 +65,7 @@ let devices: [Device] = [
            isPad: false, hasIsland: false, frameFraction: 0.72),
     Device(key: "iphone-35", source: "iphone-raw-new", width: 640, height: 960,
            isPad: false, hasIsland: false, frameFraction: 0.70),
-    Device(key: "ipad-13", source: "ipad-raw-new", width: 2064, height: 2752,
+    Device(key: "ipad-13", source: "ipad-raw-native", width: 2064, height: 2752,
            isPad: true, hasIsland: false, frameFraction: 0.73),
     Device(key: "ipad-129", source: "ipad-raw-new", width: 2048, height: 2732,
            isPad: true, hasIsland: false, frameFraction: 0.73),
@@ -257,7 +272,8 @@ func render(_ screen: Screen, device: Device) -> String {
 }
 
 for device in devices {
-    for screen in screens {
+    let list = device.key == "ipad-13" ? ipadScreens : screens
+    for screen in list {
         print(render(screen, device: device))
     }
 }

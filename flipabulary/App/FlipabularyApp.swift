@@ -68,8 +68,10 @@ struct RootView: View {
             WordsView()
                 .navigationDestination(for: AppRoute.self) { route in
                     destination(for: route)
+                        .background(AppColor.page.ignoresSafeArea())
                 }
         }
+        .background(AppColor.page.ignoresSafeArea())
         .tint(AppColor.accent)
         .preferredColorScheme(app.preferences.preferences.appearance.colorScheme)
         .safeAreaInset(edge: .top, spacing: 0) {
@@ -80,10 +82,12 @@ struct RootView: View {
         .fullScreenCover(item: $router.editorTarget) { target in
             CardEditorView(target: target)
                 .environment(app)
+                .background(AppColor.page.ignoresSafeArea())
         }
         .fullScreenCover(isPresented: $router.supportVisible) {
             SupportView(purchasing: app.purchasing)
                 .environment(app)
+                .background(AppColor.page.ignoresSafeArea())
         }
         .sheet(item: $router.scopePicker) { picker in
             ReviewScopePickerView(picker: picker)
@@ -95,6 +99,7 @@ struct RootView: View {
                 router.reviewLaunch = nil
             }
             .environment(app)
+            .background(AppColor.page.ignoresSafeArea())
         }
         .overlay(alignment: .bottom) {
             if let toast = router.toast {

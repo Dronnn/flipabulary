@@ -256,6 +256,7 @@ struct StackSettingsView: View {
                     .pageBackground()
             }
         }
+        .background(AppColor.page.ignoresSafeArea())
         .navigationTitle(LocalizedStringKey(showsClose ? "Session settings" : "Stack"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
