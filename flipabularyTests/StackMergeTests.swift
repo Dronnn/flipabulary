@@ -408,6 +408,36 @@ final class StackMergeTests: XCTestCase {
         )
     }
 
+    func testMergeFillsFieldsFromSeveralDuplicates() throws {
+        let first = harness.makeStack(name: "First", isDefault: false)
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        let third = harness.makeStack(name: "Third", isDefault: false)
+        harness.makeCard(
+            word: "cat",
+            translation: "кошка",
+            stack: first,
+            lifecycle: .learned,
+            repeatCount: 4
+        )
+        let secondCard = harness.makeCard(word: "cat", translation: "кошка", stack: second)
+        secondCard.sourceExample = "The cat sat."
+        secondCard.phonetic = "kæt"
+        let thirdCard = harness.makeCard(word: "cat", translation: "кошка", stack: third)
+        thirdCard.translatedExample = "Кошка сидела."
+        thirdCard.partOfSpeech = "noun"
+        thirdCard.tags = [try XCTUnwrap(harness.library.findOrCreateTag(named: "animals"))]
+        try harness.save()
+
+        let result = try requireMerge([first.id, second.id, third.id], name: "Merged", deleteOriginals: false)
+        let card = try XCTUnwrap(cards(in: result.stack).first)
+
+        XCTAssertEqual(card.sourceExample, "The cat sat.")
+        XCTAssertEqual(card.phonetic, "kæt")
+        XCTAssertEqual(card.translatedExample, "Кошка сидела.")
+        XCTAssertEqual(card.partOfSpeech, "noun")
+        XCTAssertEqual(card.tags.map(\.name), ["animals"])
+    }
+
     func testMergeKeepsWinnerFieldsWhenDuplicatesDisagree() throws {
         let first = harness.makeStack(name: "First", isDefault: false)
         let second = harness.makeStack(name: "Second", isDefault: false)
@@ -437,13 +467,19 @@ final class StackMergeTests: XCTestCase {
     func testKeepOriginalsLeavesSourcesUntouchedAndCopiesProgress() throws {
         let first = harness.makeStack(name: "First", isDefault: false)
         let second = harness.makeStack(name: "Second", isDefault: false)
+        let due = harness.clock.now.addingTimeInterval(7_200)
         let winner = harness.makeCard(
             word: "cat",
             translation: "кошка",
             stack: first,
             lifecycle: .learned,
-            repeatCount: 4
+            repeatCount: 4,
+            nextDueAt: due
         )
+        winner.learningState?.totalGrades = 12
+        winner.learningState?.mistakeReturn = true
+        winner.learningState?.appliedMilestones = [1, 2]
+        winner.learningState?.rulesVersion = 12
         let loser = harness.makeCard(word: "cat", translation: "кошка", stack: second)
         loser.sourceExample = "The cat sat."
         try harness.save()
@@ -462,6 +498,11 @@ final class StackMergeTests: XCTestCase {
         XCTAssertNotEqual(copy.id, loser.id)
         XCTAssertEqual(copy.learningState?.lifecycle, .learned)
         XCTAssertEqual(copy.learningState?.repeatCount, 4)
+        XCTAssertEqual(copy.learningState?.totalGrades, 12)
+        XCTAssertEqual(copy.learningState?.nextDueAt, due)
+        XCTAssertEqual(copy.learningState?.mistakeReturn, true)
+        XCTAssertEqual(copy.learningState?.appliedMilestones, [1, 2])
+        XCTAssertEqual(copy.learningState?.rulesVersion, 12)
         XCTAssertEqual(copy.sourceExample, "The cat sat.")
         XCTAssertEqual(harness.library.stacks().count, 3)
     }
@@ -672,6 +713,7 @@ final class StackMergeTests: XCTestCase {
             lifecycle: .learned,
             repeatCount: 5
         )
+        harness.addEvent(to: defaultCard, grade: .good, at: harness.clock.now)
         try harness.save()
 
         let result = try requireMerge([myWords.id, other.id], name: "Merged", deleteOriginals: true)
@@ -682,6 +724,8 @@ final class StackMergeTests: XCTestCase {
         XCTAssertEqual(myWords.cards.map(\.id), [defaultCard.id])
         XCTAssertEqual(mergedCard.id, otherCard.id)
         XCTAssertEqual(mergedCard.learningState?.repeatCount, 5)
+        XCTAssertEqual(defaultCard.reviewEvents.count, 1)
+        XCTAssertTrue(mergedCard.reviewEvents.isEmpty)
     }
 
     func testDeleteOriginalsMovesLoserEventsToCopiedDefaultWinner() throws {
