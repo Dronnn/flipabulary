@@ -227,6 +227,41 @@ final class StatisticsFeatureTests: XCTestCase {
         }
     }
 
+    func testLibraryDueCountIncludesDecayedLearnedCard() throws {
+        let stack = harness.makeStack(newCardsPerDay: 0)
+        harness.makeCard(
+            word: "decay",
+            stack: stack,
+            lifecycle: .learned,
+            repeatCount: 5,
+            nextDueAt: harness.clock.now.addingTimeInterval(86_400)
+        )
+        try harness.save()
+
+        XCTAssertEqual(
+            LibraryProjection.dueCount(
+                stack: stack,
+                consumed: [],
+                globalRules: .default,
+                now: harness.clock.now,
+                calendar: harness.calendar
+            ),
+            0
+        )
+
+        harness.clock.advance(by: 86_400)
+        XCTAssertEqual(
+            LibraryProjection.dueCount(
+                stack: stack,
+                consumed: [],
+                globalRules: .default,
+                now: harness.clock.now,
+                calendar: harness.calendar
+            ),
+            1
+        )
+    }
+
     func testWordStatisticsReflectsEditedStreak() async throws {
         let stack = harness.makeStack()
         let card = harness.makeCard(word: "streak", stack: stack)
@@ -961,8 +996,8 @@ final class StatisticsFeatureTests: XCTestCase {
         stack.customRules = LearningRules(
             correctThreshold: 7,
             resetOnMistake: false,
-            autoDecrease: false,
-            returnBelow: 3,
+            autoDecrease: true,
+            returnBelow: 7,
             steps: [30, 60],
             version: 2
         )

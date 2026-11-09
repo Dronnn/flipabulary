@@ -42,9 +42,6 @@ struct ReminderStackWork: Sendable {
     var consumedToday: Set<UUID>
     var rules: LearningRules
     var cards: [ReminderCardWork]
-    var newCount: Int = 0
-    var earliestLearningDue: Date? = nil
-    var earliestLearnedDue: Date? = nil
 }
 
 struct ReminderWorkSnapshot: Sendable {
@@ -129,32 +126,38 @@ enum ReminderScheduler {
     ) -> Bool {
         let stacks = work.stacks.filter { scopeID == nil || $0.id == scopeID }
         for stack in stacks {
-            let newCount: Int
-            let earliestLearning: Date?
-            let earliestLearned: Date?
-
-            if stack.cards.isEmpty {
-                newCount = stack.newCount
-                earliestLearning = stack.earliestLearningDue
-                earliestLearned = stack.earliestLearnedDue
-            } else {
-                newCount = stack.cards.lazy.filter { $0.lifecycle == .new }.count
-                earliestLearning = stack.cards.compactMap { card in
-                    card.lifecycle == .learning ? card.nextDueAt : nil
-                }.min()
-                earliestLearned = stack.cards.compactMap { card in
-                    guard card.lifecycle == .learned,
-                          card.appliedMilestones.count < LearningEngine.decayMilestones.count else { return nil }
-                    return card.nextDueAt
-                }.min()
-            }
-
             if stack.newPerDay > 0 {
+                let newCount = stack.cards.lazy.filter { $0.lifecycle == .new }.count
                 let consumed = isToday ? stack.consumedToday.count : 0
                 if newCount > 0, stack.newPerDay - consumed > 0 { return true }
             }
-            if let earliestLearning, earliestLearning <= date { return true }
-            if let earliestLearned, earliestLearned <= date { return true }
+            for card in stack.cards {
+                switch card.lifecycle {
+                case .learning:
+                    if let due = card.nextDueAt, due <= date { return true }
+                case .learned:
+                    guard stack.rules.autoDecrease, let anchor = card.learnedAnchor else { continue }
+                    let snapshot = LearningSnapshot(
+                        repeatCount: card.repeatCount,
+                        lifecycle: .learned,
+                        stepIndex: 0,
+                        nextDueAt: card.nextDueAt,
+                        lastGradedAt: nil,
+                        learnedAnchor: anchor,
+                        appliedMilestones: card.appliedMilestones,
+                        mistakeReturn: false
+                    )
+                    let result = LearningEngine.reconcileDecay(
+                        snapshot,
+                        rules: stack.rules,
+                        at: date,
+                        calendar: calendar
+                    )
+                    if result.after.lifecycle == .learning { return true }
+                case .new:
+                    continue
+                }
+            }
         }
         return false
     }

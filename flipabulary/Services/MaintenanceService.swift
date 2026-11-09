@@ -81,6 +81,7 @@ final class MaintenanceService {
         var changed = false
         for stack in stacks {
             let rules = stack.effectiveRules(global: preferences.preferences.rules)
+            guard rules.autoDecrease else { continue }
             for card in stack.cards {
                 guard let state = card.learningState, state.lifecycle == .learned else { continue }
                 let transition = LearningEngine.reconcileDecay(
@@ -252,11 +253,25 @@ final class MaintenanceService {
             let rules = stack.effectiveRules(global: preferences.preferences.rules)
             for card in stack.cards {
                 let state = card.learningState?.snapshot ?? .fresh
-                let reconciled = LearningEngine.reconcileDecay(state, rules: rules, at: now, calendar: calendar).after
-                guard reconciled.lifecycle == .learning || reconciled.lifecycle == .learned,
-                      let due = reconciled.nextDueAt,
-                      due > now else { continue }
-                earliest = earliest.map { min($0, due) } ?? due
+                let reconciled = LearningEngine.reconcileDecay(
+                    state,
+                    rules: rules,
+                    at: now,
+                    calendar: calendar
+                ).after
+                if reconciled.lifecycle == .learning,
+                   let due = reconciled.nextDueAt,
+                   due > now {
+                    earliest = earliest.map { min($0, due) } ?? due
+                } else if reconciled.lifecycle == .learned,
+                          let returnDate = LearningEngine.nextReturnToLearningDate(
+                              reconciled,
+                              rules: rules,
+                              after: now,
+                              calendar: calendar
+                          ) {
+                    earliest = earliest.map { min($0, returnDate) } ?? returnDate
+                }
             }
         }
         return earliest

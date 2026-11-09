@@ -8,19 +8,17 @@ final class QueueTests: XCTestCase {
         _ id: UUID = UUID(),
         lifecycle: CardLifecycle,
         due: Date? = nil,
-        created: Date? = nil,
-        applied: Int = 0
+        created: Date? = nil
     ) -> LearningEngine.QueueCandidate {
         LearningEngine.QueueCandidate(
             id: id,
             lifecycle: lifecycle,
             nextDueAt: due,
-            createdAt: created ?? now.addingTimeInterval(-1_000),
-            appliedMilestoneCount: applied
+            createdAt: created ?? now.addingTimeInterval(-1_000)
         )
     }
 
-    func testDueReviewsComeBeforeNewAndExcludeFuture() {
+    func testDueLearningComesBeforeNewAndExcludesFutureAndLearned() {
         let dueA = UUID()
         let dueB = UUID()
         let future = UUID()
@@ -41,25 +39,9 @@ final class QueueTests: XCTestCase {
             seed: 1,
             now: now
         )
-        XCTAssertEqual(queue.admittedIDs, [dueA, learned, dueB, new])
-        XCTAssertEqual(queue.learningCount, 3)
+        XCTAssertEqual(queue.admittedIDs, [dueA, dueB, new])
+        XCTAssertEqual(queue.learningCount, 2)
         XCTAssertEqual(queue.newCount, 1)
-    }
-
-    func testMasteredLearnedCandidateIsExcluded() {
-        let mastered = UUID()
-        let queue = LearningEngine.buildQueue(
-            candidates: [
-                candidate(mastered, lifecycle: .learned, due: now.addingTimeInterval(-10), applied: 5)
-            ],
-            cardsPerSession: 20,
-            newCardsPerDay: 10,
-            consumedNewCardIDs: [],
-            shuffle: false,
-            seed: 1,
-            now: now
-        )
-        XCTAssertTrue(queue.admittedIDs.isEmpty)
     }
 
     func testSessionCapLimitsAdmissionAndDailyQuotaIsShared() {
@@ -117,6 +99,17 @@ final class QueueTests: XCTestCase {
         XCTAssertEqual(
             LearningEngine.actionableDueCount(candidates: candidates, newCardsPerDay: 3, consumedNewCardIDs: [candidates[2].id], now: now),
             4
+        )
+    }
+
+    func testActionableDueCountExcludesLearnedCards() {
+        let candidates = [
+            candidate(lifecycle: .learned, due: now.addingTimeInterval(-1)),
+            candidate(lifecycle: .learning, due: now.addingTimeInterval(-2))
+        ]
+        XCTAssertEqual(
+            LearningEngine.actionableDueCount(candidates: candidates, newCardsPerDay: 0, consumedNewCardIDs: [], now: now),
+            1
         )
     }
 

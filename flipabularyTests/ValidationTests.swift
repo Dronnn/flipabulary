@@ -73,6 +73,10 @@ final class ValidationTests: XCTestCase {
         XCTAssertEqual(rules.normalized.correctThreshold, 1)
         XCTAssertEqual(rules.normalized.returnBelow, 1)
 
+        rules.correctThreshold = 3
+        rules.returnBelow = 9
+        XCTAssertEqual(rules.normalized.returnBelow, 3)
+
         var config = SessionConfig(
             stackID: UUID(),
             cardsPerSession: 0,

@@ -193,28 +193,64 @@ final class ReviewIntegrationTests: XCTestCase {
         XCTAssertEqual(try harness.context.fetch(FetchDescriptor<ReviewEvent>()).count, 0)
     }
 
-    func testLearnedReviewIsAdmittedAndAdvancesWithoutReturningToLearning() throws {
+    func testDecayedLearnedCardReturnsToLearningAndCanBeRelearned() throws {
         let stack = harness.makeStack(newCardsPerDay: 0)
         let card = harness.makeCard(
-            word: "learned",
+            word: "decay",
             stack: stack,
             lifecycle: .learned,
             repeatCount: 5,
-            nextDueAt: harness.clock.now.addingTimeInterval(-10)
+            nextDueAt: harness.clock.now.addingTimeInterval(86_400)
         )
         try harness.save()
+
+        harness.clock.advance(by: 86_400)
         let session = try start(stack)
 
         XCTAssertEqual(harness.review.currentCard(for: session)?.id, card.id)
+        XCTAssertEqual(card.learningState?.lifecycle, .learning)
+        XCTAssertEqual(card.learningState?.repeatCount, 4)
+        XCTAssertEqual(card.learningState?.nextDueAt, harness.clock.now)
+
         XCTAssertTrue(harness.review.reveal(session))
         XCTAssertEqual(harness.review.grade(session, grade: .good), .completed)
         XCTAssertEqual(card.learningState?.lifecycle, .learned)
         XCTAssertEqual(card.learningState?.repeatCount, 5)
-        XCTAssertEqual(card.learningState?.appliedMilestones, [0])
-        XCTAssertEqual(
-            card.learningState?.nextDueAt,
-            harness.clock.now.addingTimeInterval(3 * 86_400)
+        XCTAssertEqual(card.learningState?.learnedAnchor, harness.clock.now)
+        XCTAssertEqual(card.learningState?.nextDueAt, harness.clock.now.addingTimeInterval(86_400))
+    }
+
+    func testReanchorDecayStartsFreshScheduleWithoutLosingRepeats() throws {
+        let stack = harness.makeStack(newCardsPerDay: 0)
+        stack.customRules = LearningRules(
+            correctThreshold: 5,
+            resetOnMistake: true,
+            autoDecrease: true,
+            returnBelow: 5,
+            steps: LearningRules.defaultSteps,
+            version: 2
         )
+        let card = harness.makeCard(
+            word: "reanchor",
+            stack: stack,
+            lifecycle: .learned,
+            repeatCount: 3,
+            nextDueAt: harness.clock.now.addingTimeInterval(86_400)
+        )
+        let state = try XCTUnwrap(card.learningState)
+        state.repeatCount = 3
+        state.learnedAnchor = harness.clock.now.addingTimeInterval(-86_400 * 10)
+        state.appliedMilestones = [0, 1, 2]
+        state.nextDueAt = harness.clock.now.addingTimeInterval(-1)
+        try harness.save()
+
+        harness.maintenance.reanchorDecay(scopeID: stack.id)
+
+        XCTAssertEqual(state.repeatCount, 3)
+        XCTAssertEqual(state.lifecycle, .learned)
+        XCTAssertEqual(state.learnedAnchor, harness.clock.now)
+        XCTAssertTrue(state.appliedMilestones.isEmpty)
+        XCTAssertEqual(state.nextDueAt, harness.clock.now.addingTimeInterval(86_400))
     }
 
     func testSwipeRatingFromFrontDoesNotRequireReveal() throws {
@@ -379,8 +415,8 @@ final class ReviewIntegrationTests: XCTestCase {
         stack.customRules = LearningRules(
             correctThreshold: 2,
             resetOnMistake: false,
-            autoDecrease: false,
-            returnBelow: 1,
+            autoDecrease: true,
+            returnBelow: 2,
             steps: [30],
             version: 8
         )

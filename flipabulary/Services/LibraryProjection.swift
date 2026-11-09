@@ -279,8 +279,7 @@ enum LibraryProjection {
                         id: card.id,
                         lifecycle: reconciled.lifecycle,
                         nextDueAt: reconciled.nextDueAt,
-                        createdAt: card.createdAt,
-                        appliedMilestoneCount: reconciled.appliedMilestones.count
+                        createdAt: card.createdAt
                     )
                 )
                 cards.append(
@@ -393,8 +392,7 @@ enum LibraryProjection {
                     id: card.id,
                     lifecycle: reconciled.lifecycle,
                     nextDueAt: reconciled.nextDueAt,
-                    createdAt: card.createdAt,
-                    appliedMilestoneCount: reconciled.appliedMilestones.count
+                    createdAt: card.createdAt
                 )
             )
         }

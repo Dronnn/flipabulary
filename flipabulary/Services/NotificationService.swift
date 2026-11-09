@@ -256,23 +256,15 @@ final class ReminderService {
         let stacks = maintenance.stacks().map { stack -> ReminderStackWork in
             let rules = stack.effectiveRules(global: preferences.preferences.rules)
             let consumed = recordsByStack[stack.id]?.cardIDs ?? []
-            var newCount = 0
-            var earliestLearning: Date?
-            var earliestLearned: Date?
-            for card in cardsByStack[stack.id] ?? [] {
+            let cards = (cardsByStack[stack.id] ?? []).map { card -> ReminderCardWork in
                 let state = card.learningState?.snapshot ?? .fresh
-                switch state.lifecycle {
-                case .new:
-                    newCount += 1
-                case .learning:
-                    if let due = state.nextDueAt {
-                        earliestLearning = earliestLearning.map { min($0, due) } ?? due
-                    }
-                case .learned:
-                    guard state.appliedMilestones.count < LearningEngine.decayMilestones.count,
-                          let due = state.nextDueAt else { continue }
-                    earliestLearned = earliestLearned.map { min($0, due) } ?? due
-                }
+                return ReminderCardWork(
+                    lifecycle: state.lifecycle,
+                    repeatCount: state.repeatCount,
+                    nextDueAt: state.nextDueAt,
+                    learnedAnchor: state.learnedAnchor,
+                    appliedMilestones: state.appliedMilestones
+                )
             }
             return ReminderStackWork(
                 id: stack.id,
@@ -280,10 +272,7 @@ final class ReminderService {
                 newPerDay: stack.newCardsPerDay,
                 consumedToday: consumed,
                 rules: rules,
-                cards: [],
-                newCount: newCount,
-                earliestLearningDue: earliestLearning,
-                earliestLearnedDue: earliestLearned
+                cards: cards
             )
         }
         return ReminderWorkSnapshot(stacks: stacks)

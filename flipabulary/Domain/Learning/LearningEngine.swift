@@ -32,26 +32,13 @@ enum LearningEngine {
         switch grade {
         case .good:
             if snapshot.lifecycle == .learned {
-                after.repeatCount = rules.correctThreshold
+                after.repeatCount = min(rules.correctThreshold, snapshot.repeatCount)
                 after.lifecycle = .learned
                 after.stepIndex = 0
-                after.learnedAnchor = snapshot.learnedAnchor ?? date
+                after.learnedAnchor = date
+                after.appliedMilestones = []
+                after.nextDueAt = milestoneDate(index: 0, anchor: date, calendar: calendar)
                 after.mistakeReturn = false
-
-                let completed = snapshot.appliedMilestones
-                guard completed.count < decayMilestones.count else {
-                    after.appliedMilestones = completed
-                    after.nextDueAt = nil
-                    return LearningTransition(before: before, after: after, becameLearned: false, returnedFromLearned: false)
-                }
-
-                let reviewIndex = decayMilestones.map(\.index).first(where: { !completed.contains($0) }) ?? 0
-                var applied = completed
-                applied.insert(reviewIndex)
-                after.appliedMilestones = applied
-                after.nextDueAt = applied.count >= decayMilestones.count
-                    ? nil
-                    : milestoneDate(index: reviewIndex + 1, anchor: date, calendar: calendar)
                 return LearningTransition(before: before, after: after, becameLearned: false, returnedFromLearned: false)
             }
 
@@ -91,25 +78,43 @@ enum LearningEngine {
         }
     }
 
-    // MARK: Learned reviews
+    // MARK: Decay
 
-    /// Learned reviews are scheduled when the card is graded. This reconciliation only
-    /// repairs older learned cards that have no due date yet; it never removes progress.
     static func reconcileDecay(
         _ snapshot: LearningSnapshot,
         rules inputRules: LearningRules,
         at date: Date,
         calendar: Calendar = .current
     ) -> LearningTransition {
+        let rules = inputRules.normalized
         let before = snapshot
         guard snapshot.lifecycle == .learned,
-              snapshot.appliedMilestones.count < decayMilestones.count,
-              snapshot.nextDueAt == nil else {
+              rules.autoDecrease,
+              let anchor = snapshot.learnedAnchor else {
             return LearningTransition(before: before, after: before, becameLearned: false, returnedFromLearned: false)
         }
 
         var after = snapshot
-        after.nextDueAt = milestoneDate(index: 0, anchor: date, calendar: calendar)
+        var applied = snapshot.appliedMilestones
+        for milestone in decayMilestones where !applied.contains(milestone.index) {
+            guard let reached = milestoneDate(index: milestone.index, anchor: anchor, calendar: calendar) else { continue }
+            if date >= reached {
+                after.repeatCount = max(0, after.repeatCount - 1)
+                applied.insert(milestone.index)
+            }
+        }
+        after.appliedMilestones = applied
+
+        if after.repeatCount < rules.returnBelow {
+            after.lifecycle = .learning
+            after.stepIndex = 0
+            after.learnedAnchor = nil
+            after.nextDueAt = date
+            after.mistakeReturn = true
+            return LearningTransition(before: before, after: after, becameLearned: false, returnedFromLearned: true)
+        }
+
+        after.nextDueAt = nextMilestoneDate(after: date, anchor: anchor, applied: applied, calendar: calendar)
         return LearningTransition(before: before, after: after, becameLearned: false, returnedFromLearned: false)
     }
 
@@ -118,7 +123,12 @@ enum LearningEngine {
         at date: Date,
         calendar: Calendar = .current
     ) -> LearningSnapshot {
-        snapshot
+        guard snapshot.lifecycle == .learned else { return snapshot }
+        var copy = snapshot
+        copy.learnedAnchor = date
+        copy.appliedMilestones = []
+        copy.nextDueAt = milestoneDate(index: 0, anchor: date, calendar: calendar)
+        return copy
     }
 
     static func milestoneDate(index: Int, anchor: Date, calendar: Calendar) -> Date? {
@@ -140,15 +150,35 @@ enum LearningEngine {
             .first(where: { $0 > date })
     }
 
+    /// The first future decay milestone that would move this Learned card back to Learning.
+    static func nextReturnToLearningDate(
+        _ snapshot: LearningSnapshot,
+        rules inputRules: LearningRules,
+        after date: Date,
+        calendar: Calendar = .current
+    ) -> Date? {
+        let rules = inputRules.normalized
+        guard snapshot.lifecycle == .learned,
+              rules.autoDecrease,
+              let anchor = snapshot.learnedAnchor else { return nil }
+
+        for milestone in decayMilestones.sorted(by: { $0.index < $1.index })
+        where !snapshot.appliedMilestones.contains(milestone.index) {
+            guard let reached = milestoneDate(index: milestone.index, anchor: anchor, calendar: calendar),
+                  reached > date else { continue }
+            let result = reconcileDecay(snapshot, rules: rules, at: reached, calendar: calendar)
+            if result.after.lifecycle == .learning {
+                return reached
+            }
+        }
+        return nil
+    }
+
     static func isDue(_ snapshot: LearningSnapshot, at date: Date) -> Bool {
         switch snapshot.lifecycle {
         case .learning:
             return (snapshot.nextDueAt ?? .distantPast) <= date
-        case .learned:
-            guard snapshot.appliedMilestones.count < decayMilestones.count else { return false }
-            guard let due = snapshot.nextDueAt else { return false }
-            return due <= date
-        case .new:
+        case .new, .learned:
             return false
         }
     }
@@ -160,7 +190,6 @@ enum LearningEngine {
         var lifecycle: CardLifecycle
         var nextDueAt: Date?
         var createdAt: Date
-        var appliedMilestoneCount: Int = 0
     }
 
     struct QueueResult: Equatable, Sendable {
@@ -181,18 +210,7 @@ enum LearningEngine {
         let capacity = min(max(cardsPerSession, 1), 100)
         let quota = min(max(newCardsPerDay, 0), 100)
 
-        var dueLearning = candidates.filter { candidate in
-            switch candidate.lifecycle {
-            case .learning:
-                return (candidate.nextDueAt ?? .distantPast) <= now
-            case .learned:
-                guard candidate.appliedMilestoneCount < decayMilestones.count else { return false }
-                guard let due = candidate.nextDueAt else { return false }
-                return due <= now
-            case .new:
-                return false
-            }
-        }
+        var dueLearning = candidates.filter { $0.lifecycle == .learning && ($0.nextDueAt ?? .distantPast) <= now }
         let newCandidates = candidates.filter { $0.lifecycle == .new }
         let remainingNew = max(0, quota - consumedNewCardIDs.count)
         let sessionNew = min(remainingNew, max(0, capacity - dueLearning.count))
@@ -232,18 +250,7 @@ enum LearningEngine {
         consumedNewCardIDs: Set<UUID>,
         now: Date
     ) -> Int {
-        let dueLearning = candidates.filter { candidate in
-            switch candidate.lifecycle {
-            case .learning:
-                return (candidate.nextDueAt ?? .distantPast) <= now
-            case .learned:
-                guard candidate.appliedMilestoneCount < decayMilestones.count else { return false }
-                guard let due = candidate.nextDueAt else { return false }
-                return due <= now
-            case .new:
-                return false
-            }
-        }.count
+        let dueLearning = candidates.filter { $0.lifecycle == .learning && ($0.nextDueAt ?? .distantPast) <= now }.count
         let newAvailable = candidates.filter { $0.lifecycle == .new }.count
         let remaining = max(0, min(max(newCardsPerDay, 0), 100) - consumedNewCardIDs.count)
         return dueLearning + min(newAvailable, remaining)
