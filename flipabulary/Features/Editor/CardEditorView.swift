@@ -845,7 +845,7 @@ struct CardEditorView: View {
             focusFirstInvalid()
             return
         }
-        if !addAnyway, let duplicate = app.library.duplicateInLibrary(of: draft, excluding: existingCard?.id) {
+        if !addAnyway, let duplicate = app.library.duplicateWarning(for: draft, existing: existingCard) {
             duplicateCard = duplicate
             duplicateStackName = duplicate.stack?.name ?? "My words"
             showDuplicateWarning = true
@@ -936,7 +936,7 @@ struct CardEditorView: View {
                 focusFirstInvalid()
                 return
             }
-            if let duplicate = app.library.duplicateInLibrary(of: draft, excluding: existingCard?.id) {
+            if let duplicate = app.library.duplicateWarning(for: draft, existing: existingCard) {
                 duplicateCard = duplicate
                 duplicateStackName = duplicate.stack?.name ?? "My words"
                 showDuplicateWarning = true

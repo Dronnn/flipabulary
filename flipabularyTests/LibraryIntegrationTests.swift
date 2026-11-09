@@ -191,6 +191,84 @@ final class LibraryIntegrationTests: XCTestCase {
         XCTAssertEqual(duplicate.stack?.name, "First")
     }
 
+    func testEditingMetadataDoesNotWarnAboutDuplicatePairElsewhere() throws {
+        let first = harness.makeStack(name: "First")
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        let card = harness.makeCard(word: "ephemeral", translation: "мимолетный", stack: first)
+        harness.makeCard(word: "ephemeral", translation: "мимолетный", stack: second)
+        try harness.save()
+
+        var draft = CardDraft(card: card)
+        draft.tagNames = ["B1"]
+        draft.sourceExample = "An ephemeral feeling."
+        XCTAssertFalse(harness.library.pairChanged(draft: draft, from: card))
+        XCTAssertNil(harness.library.duplicateWarning(for: draft, existing: card))
+
+        switch harness.library.saveCard(draft: draft, existing: card) {
+        case .success(let saved):
+            XCTAssertEqual(saved.tags.map(\.name), ["B1"])
+            XCTAssertEqual(saved.sourceExample, "An ephemeral feeling.")
+        case .failure(let error):
+            XCTFail("Metadata edit failed: \(error)")
+        }
+    }
+
+    func testPairComparisonIgnoresCaseAndWhitespace() throws {
+        let stack = harness.makeStack()
+        let card = harness.makeCard(word: "ephemeral", translation: "мимолетный", stack: stack)
+        try harness.save()
+
+        var draft = CardDraft(card: card)
+        draft.word = "  EPHEMERAL "
+        draft.translation = "Мимолетный  "
+        XCTAssertFalse(harness.library.pairChanged(draft: draft, from: card))
+    }
+
+    func testEditingPairStillWarnsAboutDuplicateElsewhere() throws {
+        let first = harness.makeStack(name: "First")
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        let card = harness.makeCard(word: "ephemeral", translation: "мимолетный", stack: first)
+        let duplicate = harness.makeCard(word: "fleeting", translation: "мимолетный", stack: second)
+        try harness.save()
+
+        var draft = CardDraft(card: card)
+        draft.word = "Fleeting"
+        XCTAssertTrue(harness.library.pairChanged(draft: draft, from: card))
+        XCTAssertEqual(harness.library.duplicateWarning(for: draft, existing: card)?.id, duplicate.id)
+    }
+
+    func testSaveCardSkipsStackDuplicateCheckWhenPairIsUnchanged() throws {
+        let stack = harness.makeStack()
+        let card = harness.makeCard(word: "ephemeral", translation: "мимолетный", stack: stack)
+        harness.makeCard(word: "ephemeral", translation: "мимолетный", stack: stack)
+        try harness.save()
+
+        var draft = CardDraft(card: card)
+        draft.tagNames = ["B1"]
+        switch harness.library.saveCard(draft: draft, existing: card) {
+        case .success(let saved):
+            XCTAssertEqual(saved.tags.map(\.name), ["B1"])
+        case .failure(let error):
+            XCTFail("Metadata edit failed: \(error)")
+        }
+    }
+
+    func testSaveCardStillChecksStackDuplicateWhenPairChanges() throws {
+        let stack = harness.makeStack()
+        let card = harness.makeCard(word: "ephemeral", translation: "мимолетный", stack: stack)
+        let duplicate = harness.makeCard(word: "fleeting", translation: "мимолетный", stack: stack)
+        try harness.save()
+
+        var draft = CardDraft(card: card)
+        draft.word = "fleeting"
+        switch harness.library.saveCard(draft: draft, existing: card) {
+        case .failure(.duplicate(let id)):
+            XCTAssertEqual(id, duplicate.id)
+        default:
+            XCTFail("Expected duplicate warning")
+        }
+    }
+
     func testInvalidDraftDoesNotPersistAnything() throws {
         let stack = harness.makeStack()
         try harness.save()

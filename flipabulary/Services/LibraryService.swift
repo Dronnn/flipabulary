@@ -367,6 +367,17 @@ final class LibraryService {
         }
     }
 
+    func pairChanged(draft: CardDraft, from existing: VocabularyCard?) -> Bool {
+        guard let existing else { return true }
+        return SearchNormalizer.normalize(draft.trimmedWord) != SearchNormalizer.normalize(existing.word)
+            || SearchNormalizer.normalize(draft.trimmedTranslation) != SearchNormalizer.normalize(existing.translation)
+    }
+
+    func duplicateWarning(for draft: CardDraft, existing: VocabularyCard?) -> VocabularyCard? {
+        guard pairChanged(draft: draft, from: existing) else { return nil }
+        return duplicateInLibrary(of: draft, excluding: existing?.id)
+    }
+
     // MARK: Card writes
 
     func saveCard(
@@ -379,7 +390,7 @@ final class LibraryService {
         guard let stackID = draft.stackID, let stack = stack(id: stackID) else {
             return .failure(.missingStack)
         }
-        if !addAnyway, let duplicate = duplicate(of: draft, excluding: existing?.id) {
+        if !addAnyway, pairChanged(draft: draft, from: existing), let duplicate = duplicate(of: draft, excluding: existing?.id) {
             return .failure(.duplicate(duplicate.id))
         }
 
