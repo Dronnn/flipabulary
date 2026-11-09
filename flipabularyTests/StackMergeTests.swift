@@ -593,6 +593,24 @@ final class StackMergeTests: XCTestCase {
         XCTAssertEqual(Set(snapshot.stacks.map(\.id)).contains(second.id), false)
     }
 
+    func testMergeEndsActiveSessionForRemovedStackSafely() throws {
+        let myWords = harness.makeStack(name: "My words", isDefault: true)
+        let first = harness.makeStack(name: "First", isDefault: false)
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        harness.makeCard(word: "cat", translation: "кошка", stack: first)
+        harness.makeCard(word: "dog", translation: "собака", stack: second)
+        try harness.save()
+
+        let session = try startReview(first)
+        let result = try requireMerge([first.id, second.id], name: "Merged", deleteOriginals: true)
+        harness.review.repair(session)
+
+        XCTAssertEqual(session.status, .completed)
+        XCTAssertNotNil(harness.library.stack(id: result.stack.id))
+        XCTAssertNotNil(harness.library.stack(id: myWords.id))
+        XCTAssertNil(harness.library.stack(id: first.id))
+    }
+
     // MARK: Delete originals
 
     func testDeleteOriginalsMovesWinnerRemovesStacksAndReassignsDuplicateHistory() throws {
@@ -943,6 +961,19 @@ final class StackMergeTests: XCTestCase {
 
     private func cards(in stack: VocabularyStack) -> [VocabularyCard] {
         harness.library.stack(id: stack.id)?.cards ?? []
+    }
+
+    private func startReview(_ stack: VocabularyStack) throws -> ReviewSession {
+        switch harness.review.requestReview(scopeID: stack.id) {
+        case .started(let id), .existing(let id):
+            return try XCTUnwrap(harness.review.session(id: id))
+        case .failure(let message):
+            XCTFail(message)
+            throw NSError(domain: "StackMergeTests", code: 1)
+        case .empty, .needsScope:
+            XCTFail("Expected a review session")
+            throw NSError(domain: "StackMergeTests", code: 2)
+        }
     }
 
     private func mergeKey(_ word: String, _ translation: String) -> String {
