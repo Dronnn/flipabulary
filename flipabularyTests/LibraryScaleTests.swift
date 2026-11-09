@@ -33,6 +33,48 @@ final class LibraryScaleTests: XCTestCase {
     }
 
     @MainActor
+    func testMergeScalesAcrossLargeOverlappingStacks() throws {
+        let harness = try TestHarness()
+        defer { harness.finish() }
+        let first = harness.makeStack(name: "First", isDefault: false)
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        for index in 0..<600 {
+            harness.makeCard(
+                word: "word \(index)",
+                translation: "translation \(index)",
+                stack: first
+            )
+            if index.isMultiple(of: 2) {
+                harness.makeCard(
+                    word: "translation \(index)",
+                    translation: "word \(index)",
+                    stack: second,
+                    lifecycle: .learned,
+                    repeatCount: 5
+                )
+            } else {
+                harness.makeCard(
+                    word: "word \(index)",
+                    translation: "translation \(index)",
+                    stack: second
+                )
+            }
+        }
+        try harness.save()
+
+        switch harness.library.mergeStacks([first.id, second.id], named: "Merged", deleteOriginals: true) {
+        case .success(let result):
+            XCTAssertEqual(result.mergedCardCount, 600)
+            XCTAssertEqual(result.duplicateCount, 600)
+            XCTAssertEqual(result.removedStackCount, 2)
+            XCTAssertEqual(result.stack.cards.count, 600)
+            XCTAssertEqual(Set(result.stack.cards.map { "\($0.word)\u{1f}\($0.translation)" }).count, 600)
+        case .failure(let error):
+            XCTFail("Merge failed: \(error)")
+        }
+    }
+
+    @MainActor
     func testStackStatsForLargeLibrary() async throws {
         let harness = try TestHarness()
         defer { harness.finish() }

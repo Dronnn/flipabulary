@@ -358,6 +358,44 @@ final class FlipabularyUITests: XCTestCase {
     }
 
     @MainActor
+    func testStackMergeFlowCanKeepOriginals() throws {
+        let app = launch()
+        app.buttons["words.more"].tap()
+        app.buttons["Stacks"].tap()
+        XCTAssertTrue(app.navigationBars["Stacks"].waitForExistence(timeout: 3))
+
+        for name in ["Keep A", "Keep B"] {
+            app.buttons["stacks.add"].tap()
+            let field = app.alerts.textFields.firstMatch
+            XCTAssertTrue(field.waitForExistence(timeout: 2))
+            field.typeText(name)
+            app.alerts.buttons["Create"].tap()
+            XCTAssertTrue(stackRow(app, name: name).waitForExistence(timeout: 3))
+        }
+
+        app.buttons["stacks.merge"].tap()
+        let rowA = stackRow(app, name: "Keep A")
+        let rowB = stackRow(app, name: "Keep B")
+        XCTAssertTrue(rowA.waitForExistence(timeout: 3))
+        rowA.tap()
+        rowB.tap()
+        let mergeAction = app.buttons["stacks.merge.action"]
+        XCTAssertTrue(mergeAction.isEnabled)
+        mergeAction.tap()
+
+        XCTAssertTrue(app.alerts.textFields.firstMatch.waitForExistence(timeout: 3))
+        app.alerts.buttons["Continue"].tap()
+        let keepOriginals = app.buttons["Keep originals"]
+        XCTAssertTrue(keepOriginals.waitForExistence(timeout: 3))
+        keepOriginals.tap()
+
+        XCTAssertTrue(stackRow(app, name: "Merged stack").waitForExistence(timeout: 5))
+        XCTAssertTrue(stackRow(app, name: "Keep A").exists)
+        XCTAssertTrue(stackRow(app, name: "Keep B").exists)
+        XCTAssertTrue(stackRow(app, name: "My words").exists)
+    }
+
+    @MainActor
     func testHapticsToggleIsAvailableAndPersists() throws {
         let app = launch()
         openSettings(app)

@@ -26,6 +26,19 @@ final class StackMergeTests: XCTestCase {
         XCTAssertNil(harness.library.stacks().first(where: { $0.name == "Merged" }))
     }
 
+    func testMergeRejectsUnknownAndDuplicateStackIDs() throws {
+        let first = harness.makeStack(name: "First", isDefault: false)
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        try harness.save()
+
+        assertFailure(harness.library.mergeStacks([first.id, UUID()], named: "Merged", deleteOriginals: false))
+        assertFailure(harness.library.mergeStacks([first.id, first.id], named: "Merged", deleteOriginals: false))
+        XCTAssertNil(harness.library.stacks().first(where: { $0.name == "Merged" }))
+
+        let result = try requireMerge([first.id, first.id, second.id], name: "Merged", deleteOriginals: false)
+        XCTAssertEqual(result.stack.name, "Merged")
+    }
+
     func testMergeRejectsInvalidAndDuplicateNames() throws {
         let first = harness.makeStack(name: "First", isDefault: true)
         let second = harness.makeStack(name: "Second", isDefault: false)
@@ -80,6 +93,22 @@ final class StackMergeTests: XCTestCase {
             harness.library.mergeStacks([first.id, second.id], named: "First", deleteOriginals: false)
         )
         XCTAssertNotNil(harness.library.stack(id: first.id))
+    }
+
+    func testMergeNameBoundaryAndCaseInsensitiveDuplicateCheck() throws {
+        let first = harness.makeStack(name: "First", isDefault: false)
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        let survivor = harness.makeStack(name: "Café", isDefault: false)
+        try harness.save()
+
+        assertFailure(
+            harness.library.mergeStacks([first.id, second.id], named: "CAFE", deleteOriginals: false)
+        )
+
+        let boundaryName = String(repeating: "x", count: 60)
+        let result = try requireMerge([first.id, second.id], name: boundaryName, deleteOriginals: false)
+        XCTAssertEqual(result.stack.name, boundaryName)
+        XCTAssertNotNil(harness.library.stack(id: survivor.id))
     }
 
     // MARK: Deduplication
@@ -140,6 +169,29 @@ final class StackMergeTests: XCTestCase {
         XCTAssertEqual(result.duplicateCount, 0)
     }
 
+    func testMergeCombinesMoreThanTwoStacksInOneGroup() throws {
+        let first = harness.makeStack(name: "First", isDefault: false)
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        let third = harness.makeStack(name: "Third", isDefault: false)
+        harness.makeCard(word: "cat", translation: "кошка", stack: first)
+        harness.makeCard(word: "cat", translation: "кошка", stack: second)
+        harness.makeCard(word: "кошка", translation: "cat", stack: third, lifecycle: .learned, repeatCount: 4)
+        harness.makeCard(word: "dog", translation: "собака", stack: third)
+        try harness.save()
+
+        let result = try requireMerge([first.id, second.id, third.id], name: "Merged", deleteOriginals: true)
+        let cards = cards(in: result.stack)
+
+        XCTAssertEqual(result.mergedCardCount, 2)
+        XCTAssertEqual(result.duplicateCount, 2)
+        XCTAssertEqual(cards.count, 2)
+        XCTAssertEqual(result.removedStackCount, 3)
+        XCTAssertEqual(cards.first(where: { $0.word == "кошка" })?.learningState?.repeatCount, 4)
+        XCTAssertNil(harness.library.stack(id: first.id))
+        XCTAssertNil(harness.library.stack(id: second.id))
+        XCTAssertNil(harness.library.stack(id: third.id))
+    }
+
     // MARK: Card selection and field merging
 
     func testMergeKeepsMostProgressedCardAndCopiesItsProgress() throws {
@@ -168,6 +220,56 @@ final class StackMergeTests: XCTestCase {
         XCTAssertEqual(card.learningState?.totalGrades, 12)
         XCTAssertEqual(card.learningState?.nextDueAt, due)
         XCTAssertEqual(result.duplicateCount, 1)
+    }
+
+    func testMergeTieBreaksUseGradesThenRepeatsThenLastGradedThenCreation() throws {
+        let first = harness.makeStack(name: "First", isDefault: false)
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        let now = harness.clock.now
+
+        let gradesLow = harness.makeCard(word: "grades", translation: "оценки", stack: first, lifecycle: .learned, repeatCount: 2)
+        let gradesHigh = harness.makeCard(word: "grades", translation: "оценки", stack: second, lifecycle: .learned, repeatCount: 2)
+        gradesLow.learningState?.totalGrades = 3
+        gradesHigh.learningState?.totalGrades = 9
+
+        let repeatsLow = harness.makeCard(word: "repeats", translation: "повторы", stack: first, lifecycle: .learned, repeatCount: 2)
+        let repeatsHigh = harness.makeCard(word: "repeats", translation: "повторы", stack: second, lifecycle: .learned, repeatCount: 7)
+        repeatsLow.learningState?.totalGrades = 5
+        repeatsHigh.learningState?.totalGrades = 5
+
+        let gradedEarly = harness.makeCard(word: "graded", translation: "оценено", stack: first, lifecycle: .learned, repeatCount: 3)
+        let gradedLate = harness.makeCard(word: "graded", translation: "оценено", stack: second, lifecycle: .learned, repeatCount: 3)
+        gradedEarly.learningState?.totalGrades = 5
+        gradedLate.learningState?.totalGrades = 5
+        gradedEarly.learningState?.lastGradedAt = now.addingTimeInterval(-3_600)
+        gradedLate.learningState?.lastGradedAt = now.addingTimeInterval(-1_800)
+
+        let older = harness.makeCard(
+            word: "created",
+            translation: "создано",
+            stack: first,
+            createdAt: now.addingTimeInterval(-200)
+        )
+        let newer = harness.makeCard(
+            word: "created",
+            translation: "создано",
+            stack: second,
+            createdAt: now.addingTimeInterval(-100)
+        )
+        older.sourceExample = "older wins"
+        newer.sourceExample = "newer loses"
+        try harness.save()
+
+        let result = try requireMerge([first.id, second.id], name: "Merged", deleteOriginals: false)
+        let merged = cards(in: result.stack)
+
+        XCTAssertEqual(merged.first(where: { $0.word == "grades" })?.learningState?.totalGrades, 9)
+        XCTAssertEqual(merged.first(where: { $0.word == "repeats" })?.learningState?.repeatCount, 7)
+        XCTAssertEqual(
+            merged.first(where: { $0.word == "graded" })?.learningState?.lastGradedAt,
+            now.addingTimeInterval(-1_800)
+        )
+        XCTAssertEqual(merged.first(where: { $0.word == "created" })?.sourceExample, "older wins")
     }
 
     func testMergeFillsMissingFieldsUnionsTagsAndKeepsDifficult() throws {
@@ -228,6 +330,82 @@ final class StackMergeTests: XCTestCase {
         XCTAssertEqual(card.translation, "cat")
         XCTAssertEqual(card.sourceExample, "Кошка сидела.")
         XCTAssertEqual(card.translatedExample, "The cat sat.")
+    }
+
+    func testMergeDoesNotCopyWordSpecificFieldsFromOppositeDirectionDuplicate() throws {
+        let first = harness.makeStack(name: "First", isDefault: false)
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        harness.makeCard(
+            word: "кошка",
+            translation: "cat",
+            stack: first,
+            lifecycle: .learned,
+            repeatCount: 4
+        )
+        let loser = harness.makeCard(word: "cat", translation: "кошка", stack: second)
+        loser.phonetic = "kæt"
+        loser.partOfSpeech = "noun"
+        try harness.save()
+
+        let result = try requireMerge([first.id, second.id], name: "Merged", deleteOriginals: false)
+        let card = try XCTUnwrap(cards(in: result.stack).first)
+
+        XCTAssertNil(card.phonetic)
+        XCTAssertNil(card.partOfSpeech)
+    }
+
+    func testMergeTreatsBlankFieldsAsMissing() throws {
+        let first = harness.makeStack(name: "First", isDefault: false)
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        let winner = harness.makeCard(
+            word: "cat",
+            translation: "кошка",
+            stack: first,
+            lifecycle: .learned,
+            repeatCount: 4
+        )
+        winner.sourceExample = "   "
+        winner.translatedExample = ""
+        winner.phonetic = " "
+        winner.partOfSpeech = ""
+        let loser = harness.makeCard(word: "cat", translation: "кошка", stack: second)
+        loser.sourceExample = "The cat sat."
+        loser.translatedExample = "Кошка сидела."
+        loser.phonetic = "kæt"
+        loser.partOfSpeech = "noun"
+        try harness.save()
+
+        let result = try requireMerge([first.id, second.id], name: "Merged", deleteOriginals: false)
+        let card = try XCTUnwrap(cards(in: result.stack).first)
+
+        XCTAssertEqual(card.sourceExample, "The cat sat.")
+        XCTAssertEqual(card.translatedExample, "Кошка сидела.")
+        XCTAssertEqual(card.phonetic, "kæt")
+        XCTAssertEqual(card.partOfSpeech, "noun")
+    }
+
+    func testMergeDeduplicatesTagsCaseInsensitively() throws {
+        let first = harness.makeStack(name: "First", isDefault: false)
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        harness.makeCard(
+            word: "cat",
+            translation: "кошка",
+            stack: first,
+            lifecycle: .learned,
+            repeatCount: 4,
+            tags: ["Travel"]
+        )
+        harness.makeCard(word: "cat", translation: "кошка", stack: second, tags: ["travel", "B1"])
+        try harness.save()
+
+        let result = try requireMerge([first.id, second.id], name: "Merged", deleteOriginals: false)
+        let card = try XCTUnwrap(cards(in: result.stack).first)
+
+        XCTAssertEqual(card.tags.count, 2)
+        XCTAssertEqual(
+            Set(card.tags.map { SearchNormalizer.normalize($0.name) }),
+            ["travel", "b1"]
+        )
     }
 
     func testMergeKeepsWinnerFieldsWhenDuplicatesDisagree() throws {
@@ -321,6 +499,57 @@ final class StackMergeTests: XCTestCase {
 
         _ = try requireMerge([first.id, second.id], name: "Merged", deleteOriginals: false)
         XCTAssertEqual(harness.preferences.preferences.widgetWordSets.first?.cardIDs, [card.id])
+    }
+
+    func testKeepOriginalsSelectsMergedStackAndLeavesScopeReferencesAlone() throws {
+        let first = harness.makeStack(name: "First", isDefault: false)
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        let unrelated = harness.makeStack(name: "Unrelated", isDefault: false)
+        harness.makeCard(word: "cat", translation: "кошка", stack: first)
+        harness.makeCard(word: "dog", translation: "собака", stack: second)
+        harness.preferences.preferences.selectedStackID = unrelated.id
+        harness.preferences.preferences.widgetDefaults.stackID = first.id
+        harness.preferences.preferences.reminders.stackID = second.id
+        try harness.save()
+
+        let result = try requireMerge([first.id, second.id], name: "Merged", deleteOriginals: false)
+
+        XCTAssertEqual(harness.preferences.preferences.selectedStackID, result.stack.id)
+        XCTAssertEqual(harness.preferences.preferences.widgetDefaults.stackID, first.id)
+        XCTAssertEqual(harness.preferences.preferences.reminders.stackID, second.id)
+    }
+
+    func testMergeCopiesCardsWithMissingLearningState() throws {
+        let first = harness.makeStack(name: "First", isDefault: false)
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        let card = harness.makeCard(word: "cat", translation: "кошка", stack: first, lifecycle: .learned, repeatCount: 4)
+        card.learningState = nil
+        harness.makeCard(word: "dog", translation: "собака", stack: second)
+        try harness.save()
+
+        let result = try requireMerge([first.id, second.id], name: "Merged", deleteOriginals: false)
+        let copy = try XCTUnwrap(cards(in: result.stack).first(where: { $0.word == "cat" }))
+
+        XCTAssertEqual(copy.learningState?.lifecycle, .new)
+        XCTAssertEqual(copy.learningState?.repeatCount, 0)
+    }
+
+    func testMergePublishesUpdatedWidgetSnapshot() throws {
+        let first = harness.makeStack(name: "First", isDefault: false)
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        harness.makeCard(word: "cat", translation: "кошка", stack: first)
+        harness.makeCard(word: "cat", translation: "кошка", stack: second)
+        harness.makeCard(word: "dog", translation: "собака", stack: second)
+        try harness.save()
+
+        let result = try requireMerge([first.id, second.id], name: "Merged", deleteOriginals: true)
+        let snapshot = try XCTUnwrap(harness.snapshotStore.load())
+        let stackSnapshot = try XCTUnwrap(snapshot.stacks.first(where: { $0.id == result.stack.id }))
+
+        XCTAssertEqual(stackSnapshot.name, "Merged")
+        XCTAssertEqual(stackSnapshot.savedCount, 2)
+        XCTAssertEqual(Set(snapshot.stacks.map(\.id)).contains(first.id), false)
+        XCTAssertEqual(Set(snapshot.stacks.map(\.id)).contains(second.id), false)
     }
 
     // MARK: Delete originals
@@ -432,6 +661,72 @@ final class StackMergeTests: XCTestCase {
         XCTAssertEqual(copy.learningState?.repeatCount, 6)
     }
 
+    func testDeleteOriginalsProtectsDefaultLoserWhenOtherStackWins() throws {
+        let myWords = harness.makeStack(name: "My words", isDefault: true)
+        let other = harness.makeStack(name: "Other", isDefault: false)
+        let defaultCard = harness.makeCard(word: "cat", translation: "кошка", stack: myWords)
+        let otherCard = harness.makeCard(
+            word: "cat",
+            translation: "кошка",
+            stack: other,
+            lifecycle: .learned,
+            repeatCount: 5
+        )
+        try harness.save()
+
+        let result = try requireMerge([myWords.id, other.id], name: "Merged", deleteOriginals: true)
+        let mergedCard = try XCTUnwrap(cards(in: result.stack).first)
+
+        XCTAssertNotNil(harness.library.stack(id: myWords.id))
+        XCTAssertNil(harness.library.stack(id: other.id))
+        XCTAssertEqual(myWords.cards.map(\.id), [defaultCard.id])
+        XCTAssertEqual(mergedCard.id, otherCard.id)
+        XCTAssertEqual(mergedCard.learningState?.repeatCount, 5)
+    }
+
+    func testDeleteOriginalsMovesLoserEventsToCopiedDefaultWinner() throws {
+        let myWords = harness.makeStack(name: "My words", isDefault: true)
+        let other = harness.makeStack(name: "Other", isDefault: false)
+        let defaultCard = harness.makeCard(
+            word: "cat",
+            translation: "кошка",
+            stack: myWords,
+            lifecycle: .learned,
+            repeatCount: 6
+        )
+        let loser = harness.makeCard(word: "cat", translation: "кошка", stack: other)
+        harness.addEvent(to: defaultCard, grade: .good, at: harness.clock.now.addingTimeInterval(-120))
+        harness.addEvent(to: loser, grade: .good, at: harness.clock.now)
+        try harness.save()
+
+        let result = try requireMerge([myWords.id, other.id], name: "Merged", deleteOriginals: true)
+        let copy = try XCTUnwrap(cards(in: result.stack).first)
+        let events = try harness.context.fetch(FetchDescriptor<ReviewEvent>())
+
+        XCTAssertEqual(defaultCard.reviewEvents.count, 1)
+        XCTAssertEqual(copy.reviewEvents.count, 1)
+        XCTAssertEqual(Set(events.map(\.cardID)), [defaultCard.id, copy.id])
+    }
+
+    func testDeleteOriginalsProtectsDefaultCardsWhenSeveralStacksAreSelected() throws {
+        let myWords = harness.makeStack(name: "My words", isDefault: true)
+        let first = harness.makeStack(name: "First", isDefault: false)
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        let defaultCard = harness.makeCard(word: "cat", translation: "кошка", stack: myWords)
+        harness.makeCard(word: "cat", translation: "кошка", stack: first, lifecycle: .learned, repeatCount: 3)
+        harness.makeCard(word: "dog", translation: "собака", stack: second)
+        try harness.save()
+
+        let result = try requireMerge([myWords.id, first.id, second.id], name: "Merged", deleteOriginals: true)
+
+        XCTAssertNotNil(harness.library.stack(id: myWords.id))
+        XCTAssertNil(harness.library.stack(id: first.id))
+        XCTAssertNil(harness.library.stack(id: second.id))
+        XCTAssertEqual(myWords.cards.map(\.id), [defaultCard.id])
+        XCTAssertEqual(result.removedStackCount, 2)
+        XCTAssertEqual(cards(in: result.stack).count, 2)
+    }
+
     // MARK: Preferences and integrations
 
     func testDeleteOriginalsRepointsStackReferencesAndRemapsWidgetSets() throws {
@@ -478,6 +773,22 @@ final class StackMergeTests: XCTestCase {
         XCTAssertEqual(harness.preferences.preferences.widgetDefaults.stackID, myWords.id)
         XCTAssertEqual(harness.preferences.preferences.reminders.stackID, myWords.id)
         XCTAssertNotEqual(result.stack.id, myWords.id)
+    }
+
+    func testDeleteOriginalsLeavesUnrelatedScopeReferencesAlone() throws {
+        let first = harness.makeStack(name: "First", isDefault: false)
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        let unrelated = harness.makeStack(name: "Unrelated", isDefault: false)
+        harness.makeCard(word: "cat", translation: "кошка", stack: first)
+        harness.makeCard(word: "dog", translation: "собака", stack: second)
+        harness.preferences.preferences.widgetDefaults.stackID = unrelated.id
+        harness.preferences.preferences.reminders.stackID = unrelated.id
+        try harness.save()
+
+        _ = try requireMerge([first.id, second.id], name: "Merged", deleteOriginals: true)
+
+        XCTAssertEqual(harness.preferences.preferences.widgetDefaults.stackID, unrelated.id)
+        XCTAssertEqual(harness.preferences.preferences.reminders.stackID, unrelated.id)
     }
 
     func testDeleteOriginalsDoesNotRemapWidgetSetsForDefaultCardsThatStay() throws {
