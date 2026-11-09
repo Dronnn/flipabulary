@@ -440,7 +440,7 @@ struct ReviewView: View {
                 Spacer()
                 Text("\(state.repeatCount) / \(config.rules.correctThreshold) repeats")
                     .font(AppFont.font(10.5, .medium))
-                    .foregroundStyle(AppColor.textSecondary)
+                    .foregroundStyle(AppColor.textPrimary)
                     .monospacedDigit()
             }
             .padding(.horizontal, 18)

@@ -176,6 +176,19 @@ struct SettingsView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
+                    SectionHeader(title: "Help")
+                    GroupedSurface {
+                        SettingsRow(
+                            title: "Show onboarding again",
+                            detail: "Replay the welcome, word sets, learning, and widget setup."
+                        ) {
+                            app.onboarding.presentAgain()
+                        }
+                        .accessibilityIdentifier("settings.onboarding")
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
                     SectionHeader(title: "Support")
                     GroupedSurface {
                         SettingsRow(

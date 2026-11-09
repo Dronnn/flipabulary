@@ -64,6 +64,7 @@ struct RootView: View {
 
     var body: some View {
         @Bindable var router = app.router
+        @Bindable var onboarding = app.onboarding
         NavigationStack(path: $router.path) {
             WordsView()
                 .navigationDestination(for: AppRoute.self) { route in
@@ -95,6 +96,10 @@ struct RootView: View {
                 router.reviewLaunch = nil
             }
             .environment(app)
+        }
+        .fullScreenCover(isPresented: $onboarding.isPresented) {
+            OnboardingView()
+                .environment(app)
         }
         .overlay(alignment: .bottom) {
             if let toast = router.toast {

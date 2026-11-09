@@ -17,6 +17,7 @@ final class AppEnvironment {
     let purchasing: SupportPurchasing
     let router: AppRouter
     let notificationInbox: NotificationInbox
+    let onboarding: OnboardingStore
     let storageError: String?
 
     private(set) var didBootstrap = false
@@ -52,6 +53,7 @@ final class AppEnvironment {
         #endif
         router = AppRouter()
         notificationInbox = .shared
+        onboarding = OnboardingStore()
 
         let seed = SeedService.prepare(context: modelContext, preferences: preferences)
         #if DEBUG

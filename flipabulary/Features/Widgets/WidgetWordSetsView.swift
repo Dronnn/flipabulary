@@ -19,12 +19,17 @@ struct WidgetWordSetEditorView: View {
         return trimmed.isEmpty ? "Word set" : trimmed
     }
 
-    private var selectedRows: [WidgetWordSetRow] {
+    private var selectedRows: [WidgetWordSetDisplayRow] {
         let cards = app.maintenance.cards()
         let lookup = Dictionary(uniqueKeysWithValues: cards.map { ($0.id, $0) })
         return cardIDs.compactMap { id in
             guard let card = lookup[id] else { return nil }
-            return WidgetWordSetRow(card: card, stackName: card.stack?.name ?? "My words")
+            return WidgetWordSetDisplayRow(
+                id: card.id,
+                word: card.word,
+                translation: card.translation,
+                stackName: card.stack?.name ?? "My words"
+            )
         }
     }
 
@@ -184,25 +189,25 @@ private struct WidgetPickerEntry: Identifiable {
     }
 }
 
-private struct WidgetWordSetRow: Identifiable {
-    let card: VocabularyCard
+struct WidgetWordSetDisplayRow: Identifiable {
+    let id: UUID
+    let word: String
+    let translation: String
     let stackName: String
-
-    var id: UUID { card.id }
 }
 
-private struct WidgetWordSetRowView: View {
-    let row: WidgetWordSetRow
+struct WidgetWordSetRowView: View {
+    let row: WidgetWordSetDisplayRow
 
     var body: some View {
         HStack(spacing: 12) {
-            InitialTile(word: row.card.word, id: row.card.id, size: 36)
+            InitialTile(word: row.word, id: row.id, size: 36)
             VStack(alignment: .leading, spacing: 2) {
-                Text(row.card.word)
+                Text(row.word)
                     .font(AppFont.font(15, .semibold))
                     .foregroundStyle(AppColor.textPrimary)
                     .lineLimit(1)
-                Text(row.card.translation)
+                Text(row.translation)
                     .font(AppFont.font(12, .regular))
                     .foregroundStyle(AppColor.textSecondary)
                     .lineLimit(1)
