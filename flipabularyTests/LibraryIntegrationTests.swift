@@ -208,6 +208,29 @@ final class LibraryIntegrationTests: XCTestCase {
         XCTAssertTrue(try harness.context.fetch(FetchDescriptor<VocabularyCard>()).isEmpty)
     }
 
+    func testStacksCanBeReorderedAndNewStacksAppearFirst() throws {
+        let first = harness.makeStack(name: "First", isDefault: true)
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        let third = harness.makeStack(name: "Third", isDefault: false)
+        try harness.save()
+
+        switch harness.library.reorderStacks([third.id, first.id, second.id]) {
+        case .success:
+            break
+        case .failure(let error):
+            XCTFail("Reorder failed: \(error)")
+        }
+        XCTAssertEqual(harness.library.stacks().map(\.name), ["Third", "First", "Second"])
+
+        switch harness.library.createStack(named: "New") {
+        case .success:
+            break
+        case .failure(let error):
+            XCTFail("Create failed: \(error)")
+        }
+        XCTAssertEqual(harness.library.stacks().map(\.name), ["New", "Third", "First", "Second"])
+    }
+
     func testStackDeletionChoices() throws {
         let myWords = harness.makeStack(name: "My words", isDefault: true)
         let move = harness.makeStack(name: "Move", isDefault: false)

@@ -190,7 +190,9 @@ final class LibraryService {
         return await Task.detached(priority: .userInitiated) {
             let context = ModelContext(container)
             let stacks = (try? context.fetch(
-                FetchDescriptor<VocabularyStack>(sortBy: [SortDescriptor(\.createdAt)])
+                FetchDescriptor<VocabularyStack>(
+                    sortBy: [SortDescriptor(\.sortOrder), SortDescriptor(\.createdAt)]
+                )
             )) ?? []
             var cardDescriptor = FetchDescriptor<VocabularyCard>()
             cardDescriptor.relationshipKeyPathsForPrefetching = [\.stack, \.learningState, \.tags]
@@ -473,7 +475,8 @@ final class LibraryService {
         if stacks().contains(where: { SearchNormalizer.normalize($0.name) == normalized }) {
             return .failure(.invalidName("A stack with this name already exists."))
         }
-        let stack = VocabularyStack(name: name, createdAt: clock.now)
+        let sortOrder = (stacks().map(\.sortOrder).min() ?? 0) - 1
+        let stack = VocabularyStack(name: name, createdAt: clock.now, sortOrder: sortOrder)
         modelContext.insert(stack)
         do {
             try modelContext.save()
@@ -500,6 +503,26 @@ final class LibraryService {
         } catch {
             modelContext.rollback()
             return .failure(.storage("The stack could not be renamed. \(error.localizedDescription)"))
+        }
+        maintenance.publishSnapshot()
+        return .success(())
+    }
+
+    func reorderStacks(_ orderedIDs: [UUID]) -> Result<Void, LibraryWriteError> {
+        let allStacks = stacks()
+        let stacksByID = Dictionary(uniqueKeysWithValues: allStacks.map { ($0.id, $0) })
+        guard orderedIDs.count == allStacks.count,
+              Set(orderedIDs) == Set(stacksByID.keys) else {
+            return .failure(.storage("The stack order changed. Try again."))
+        }
+        for (index, id) in orderedIDs.enumerated() {
+            stacksByID[id]?.sortOrder = index
+        }
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.rollback()
+            return .failure(.storage("The stack order could not be saved. \(error.localizedDescription)"))
         }
         maintenance.publishSnapshot()
         return .success(())

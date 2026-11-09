@@ -198,13 +198,13 @@ final class FlipabularyUITests: XCTestCase {
     }
 
     @MainActor
-    func testWordsScopeOpensStackPicker() throws {
+    func testWordsScopeMenuSwitchesStack() throws {
         let app = launch()
         XCTAssertTrue(app.buttons["words.due"].waitForExistence(timeout: 5))
         app.buttons["words.due"].tap()
-        XCTAssertTrue(app.navigationBars["Choose stack"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.buttons["words.scope.all"].waitForExistence(timeout: 3))
-        app.buttons["words.scope.all"].tap()
+        let allStacks = app.buttons["All stacks"]
+        XCTAssertTrue(allStacks.waitForExistence(timeout: 3))
+        allStacks.tap()
         XCTAssertTrue(app.staticTexts["Words"].waitForExistence(timeout: 5))
     }
 

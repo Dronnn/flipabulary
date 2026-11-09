@@ -45,7 +45,9 @@ final class MaintenanceService {
     }
 
     func stacks() -> [VocabularyStack] {
-        (try? modelContext.fetch(FetchDescriptor<VocabularyStack>(sortBy: [SortDescriptor(\.createdAt)]))) ?? []
+        (try? modelContext.fetch(FetchDescriptor<VocabularyStack>(
+            sortBy: [SortDescriptor(\.sortOrder), SortDescriptor(\.createdAt)]
+        ))) ?? []
     }
 
     func records() -> [DailyAdmissionRecord] {

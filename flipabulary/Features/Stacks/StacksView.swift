@@ -3,6 +3,11 @@ import SwiftData
 
 struct StacksView: View {
     @Environment(AppEnvironment.self) private var app
+    @Environment(\.editMode) private var editMode
+    @Query(sort: [
+        SortDescriptor(\VocabularyStack.sortOrder),
+        SortDescriptor(\VocabularyStack.createdAt)
+    ]) private var stacks: [VocabularyStack]
 
     @State private var showCreateAlert = false
     @State private var newStackName = ""
@@ -11,9 +16,9 @@ struct StacksView: View {
     @State private var deleteStack: VocabularyStack?
     @State private var error: String?
     private let allStacksTileID = UUID(uuidString: "00000000-0000-0000-0000-0000000000A1")!
+    private var isEditing: Bool { editMode?.wrappedValue.isEditing == true }
 
     var body: some View {
-        let stacks = app.library.stacks()
         let displays = LibraryProjection.stackDisplays(
             stacks: stacks,
             cards: app.maintenance.cardsForList(),
@@ -25,78 +30,112 @@ struct StacksView: View {
         let displaysByID = Dictionary(displays.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         let allSaved = displays.reduce(0) { $0 + $1.savedCount }
         let allDue = displays.reduce(0) { $0 + $1.dueCount }
-        return ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+        return List {
+            Section {
                 Text("Stacks keep words and their practice settings together.")
                     .font(AppFont.body())
                     .foregroundStyle(AppColor.textSecondary)
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+            }
 
-                GroupedSurface {
-                    Button {
-                        select(nil)
-                    } label: {
-                        stackRow(
-                            name: "All stacks",
-                            saved: allSaved,
-                            due: allDue,
-                            isSelected: app.preferences.preferences.selectedStackID == nil,
-                            tileID: allStacksTileID
-                        )
+            Section {
+                Button {
+                    select(nil)
+                } label: {
+                    stackRow(
+                        name: "All stacks",
+                        saved: allSaved,
+                        due: allDue,
+                        isSelected: app.preferences.preferences.selectedStackID == nil,
+                        tileID: allStacksTileID
+                    )
+                }
+                .buttonStyle(.plain)
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(AppColor.surface)
+                .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] + 16 }
+
+                ForEach(stacks, id: \.id) { stack in
+                    HStack(spacing: 0) {
+                        Button {
+                            select(stack.id)
+                        } label: {
+                            stackRow(
+                                name: stack.name,
+                                saved: displaysByID[stack.id]?.savedCount ?? 0,
+                                due: displaysByID[stack.id]?.dueCount ?? 0,
+                                isSelected: app.preferences.preferences.selectedStackID == stack.id,
+                                isDefault: stack.isDefault,
+                                tileID: stack.id
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        Button {
+                            app.router.push(.stackSettings(stack.id))
+                        } label: {
+                            Image(systemName: "slider.horizontal.3")
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(AppColor.textSecondary)
+                                .frame(width: 44, height: 44)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Settings for \(stack.name)")
+                        .disabled(isEditing)
+                        Menu {
+                            Button("Rename") {
+                                renameStack = stack
+                                renameText = stack.name
+                            }
+                            Button("Settings") { app.router.push(.stackSettings(stack.id)) }
+                            Divider()
+                            Button("Delete", role: .destructive) { deleteStack = stack }
+                                .disabled(stack.isDefault)
+                        } label: {
+                            Image(systemName: "ellipsis")
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(AppColor.textMuted)
+                                .frame(width: 36, height: 44)
+                        }
+                        .disabled(isEditing)
                     }
-                    .buttonStyle(.plain)
-                    SettingsDivider(inset: 16)
-                    ForEach(Array(stacks.enumerated()), id: \.element.id) { index, stack in
-                        HStack(spacing: 0) {
-                            Button {
-                                select(stack.id)
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(AppColor.surface)
+                    .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] + 16 }
+                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                        Button {
+                            renameStack = stack
+                            renameText = stack.name
+                        } label: {
+                            Label("Rename", systemImage: "pencil")
+                        }
+                        .tint(AppColor.accent)
+                        Button {
+                            app.router.push(.stackSettings(stack.id))
+                        } label: {
+                            Label("Settings", systemImage: "slider.horizontal.3")
+                        }
+                        .tint(AppColor.accentStrong)
+                    }
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        if !stack.isDefault {
+                            Button(role: .destructive) {
+                                deleteStack = stack
                             } label: {
-                                stackRow(
-                                    name: stack.name,
-                                    saved: displaysByID[stack.id]?.savedCount ?? 0,
-                                    due: displaysByID[stack.id]?.dueCount ?? 0,
-                                    isSelected: app.preferences.preferences.selectedStackID == stack.id,
-                                    isDefault: stack.isDefault,
-                                    tileID: stack.id
-                                )
-                            }
-                            .buttonStyle(.plain)
-                            Button {
-                                app.router.push(.stackSettings(stack.id))
-                            } label: {
-                                Image(systemName: "slider.horizontal.3")
-                                    .font(.system(size: 15, weight: .semibold))
-                                    .foregroundStyle(AppColor.textSecondary)
-                                    .frame(width: 44, height: 44)
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel("Settings for \(stack.name)")
-                            Menu {
-                                Button("Rename") {
-                                    renameStack = stack
-                                    renameText = stack.name
-                                }
-                                Button("Settings") { app.router.push(.stackSettings(stack.id)) }
-                                Divider()
-                                Button("Delete", role: .destructive) { deleteStack = stack }
-                                    .disabled(stack.isDefault)
-                            } label: {
-                                Image(systemName: "ellipsis")
-                                    .font(.system(size: 15, weight: .semibold))
-                                    .foregroundStyle(AppColor.textMuted)
-                                    .frame(width: 36, height: 44)
+                                Label("Delete", systemImage: "trash")
                             }
                         }
-                        if index < stacks.count - 1 { SettingsDivider(inset: 16) }
                     }
                 }
+                .onMove(perform: moveStacks)
+            }
 
-                if let error { InlineMessage(text: error) }
-
+            Section {
                 Button {
                     newStackName = ""
                     showCreateAlert = true
                 } label: {
-                    HStack {
+                    HStack(spacing: 8) {
                         Image(systemName: "plus")
                         Text("New stack")
                     }
@@ -104,17 +143,32 @@ struct StacksView: View {
                     .foregroundStyle(AppColor.accentStrong)
                     .frame(maxWidth: .infinity)
                     .frame(height: 48)
-                    .background(AppColor.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(AppColor.divider, lineWidth: 1))
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .listRowBackground(AppColor.surface)
+                .disabled(isEditing)
                 .accessibilityIdentifier("stacks.add")
             }
-            .padding(20)
+
+            if let error {
+                Section {
+                    InlineMessage(text: error)
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                }
+            }
         }
-        .pageBackground()
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background(AppColor.page)
         .navigationTitle("Stacks")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                EditButton()
+            }
+        }
         .alert("New stack", isPresented: $showCreateAlert) {
             TextField("Stack name", text: $newStackName)
             Button("Create") { createStack() }
@@ -190,8 +244,20 @@ struct StacksView: View {
     }
 
     private func select(_ id: UUID?) {
+        guard !isEditing else { return }
         app.preferences.preferences.selectedStackID = id
         app.router.popToRoot()
+    }
+
+    private func moveStacks(from source: IndexSet, to destination: Int) {
+        var orderedIDs = stacks.map(\.id)
+        orderedIDs.move(fromOffsets: source, toOffset: destination)
+        switch app.library.reorderStacks(orderedIDs) {
+        case .success:
+            error = nil
+        case .failure(let error):
+            self.error = error.localizedDescription
+        }
     }
 
     private func createStack() {

@@ -18,6 +18,7 @@ extension LibraryService {
         var usedStacks = Set<String>()
         var newStacks: [VocabularyStack] = []
         let importDate = clock.now
+        let topSortOrder = (stacks().map(\.sortOrder).min() ?? 0) - 1
 
         func normalized(_ value: String) -> String {
             SearchNormalizer.normalize(value)
@@ -43,7 +44,11 @@ extension LibraryService {
                 candidate = String("\(name) \(suffix)".prefix(60))
                 suffix += 1
             }
-            let stack = VocabularyStack(name: candidate, createdAt: importDate)
+            let stack = VocabularyStack(
+                name: candidate,
+                createdAt: importDate,
+                sortOrder: topSortOrder - newStacks.count
+            )
             modelContext.insert(stack)
             newStacks.append(stack)
             stackCache[normalized(candidate)] = stack

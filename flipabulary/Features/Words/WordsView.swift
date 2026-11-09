@@ -6,13 +6,15 @@ import Combine
 struct WordsView: View {
     @Environment(AppEnvironment.self) private var app
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Query(sort: \VocabularyStack.createdAt) private var stacks: [VocabularyStack]
+    @Query(sort: [
+        SortDescriptor(\VocabularyStack.sortOrder),
+        SortDescriptor(\VocabularyStack.createdAt)
+    ]) private var stacks: [VocabularyStack]
     @Query private var records: [DailyAdmissionRecord]
 
     @State private var searchText = ""
     @State private var now = Date()
     @State private var pendingEndSession: ReviewSession?
-    @State private var isScopePickerPresented = false
     @State private var listIndex = CardListIndex()
     @State private var dueCountCache = 0
     @State private var indexNeedsRefresh = true
@@ -62,10 +64,6 @@ struct WordsView: View {
         }
         .pageBackground()
         .toolbar(.hidden, for: .navigationBar)
-        .sheet(isPresented: $isScopePickerPresented) {
-            WordsStackPickerView()
-                .environment(app)
-        }
         .confirmationDialog(
             "End unfinished session?",
             isPresented: Binding(
@@ -216,8 +214,32 @@ struct WordsView: View {
                     .font(AppFont.largeTitle())
                     .foregroundStyle(AppColor.textPrimary)
                     .accessibilityAddTraits(.isHeader)
-                Button {
-                    isScopePickerPresented = true
+                Menu {
+                    Button {
+                        selectScope(nil)
+                    } label: {
+                        if preferences.selectedStackID == nil {
+                            Label("All stacks", systemImage: "checkmark")
+                        } else {
+                            Text("All stacks")
+                        }
+                    }
+                    .accessibilityIdentifier("words.scope.all")
+
+                    Divider()
+
+                    ForEach(stacks, id: \.id) { stack in
+                        Button {
+                            selectScope(stack.id)
+                        } label: {
+                            if preferences.selectedStackID == stack.id {
+                                Label(stack.name, systemImage: "checkmark")
+                            } else {
+                                Text(stack.name)
+                            }
+                        }
+                        .accessibilityIdentifier("words.scope.\(stack.id.uuidString)")
+                    }
                 } label: {
                     VStack(alignment: .leading, spacing: 3) {
                         HStack(spacing: 5) {
@@ -562,6 +584,10 @@ struct WordsView: View {
 
     // MARK: Actions
 
+    private func selectScope(_ id: UUID?) {
+        app.preferences.preferences.selectedStackID = id
+    }
+
     private func select(_ filter: CardFilter) {
         app.preferences.preferences.filter = filter
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
@@ -628,98 +654,5 @@ struct ReviewScopePickerView: View {
                 }
             }
         }
-    }
-}
-
-struct WordsStackPickerView: View {
-    @Environment(AppEnvironment.self) private var app
-    @Environment(\.dismiss) private var dismiss
-
-    private var stacks: [VocabularyStack] { app.library.stacks() }
-    private let allStacksTileID = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
-
-    var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 14) {
-                    GroupedSurface {
-                        row(
-                            title: Text("All stacks"),
-                            tileWord: "All stacks",
-                            count: stacks.reduce(0) { $0 + $1.cards.count },
-                            isSelected: app.preferences.preferences.selectedStackID == nil,
-                            tileID: allStacksTileID,
-                            identifier: "words.scope.all"
-                        ) {
-                            select(nil)
-                        }
-
-                        if !stacks.isEmpty { SettingsDivider(inset: 68) }
-
-                        ForEach(Array(stacks.enumerated()), id: \.element.id) { index, stack in
-                            row(
-                                title: Text(stack.name),
-                                tileWord: stack.name,
-                                count: stack.cards.count,
-                                isSelected: app.preferences.preferences.selectedStackID == stack.id,
-                                tileID: stack.id,
-                                identifier: "words.scope.\(stack.id.uuidString)"
-                            ) {
-                                select(stack.id)
-                            }
-                            if index < stacks.count - 1 { SettingsDivider(inset: 68) }
-                        }
-                    }
-                }
-                .padding(20)
-            }
-            .pageBackground()
-            .navigationTitle("Choose stack")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Cancel") { dismiss() }
-                }
-            }
-        }
-    }
-
-    private func row(
-        title: Text,
-        tileWord: String,
-        count: Int,
-        isSelected: Bool,
-        tileID: UUID,
-        identifier: String,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
-                InitialTile(word: tileWord, id: tileID, size: 40)
-                VStack(alignment: .leading, spacing: 2) {
-                    title
-                        .font(AppFont.fieldValue())
-                        .foregroundStyle(AppColor.textPrimary)
-                        .lineLimit(1)
-                    Text("\(count) words")
-                        .font(AppFont.caption())
-                        .foregroundStyle(AppColor.textSecondary)
-                }
-                Spacer()
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(isSelected ? AppColor.accentStrong : AppColor.textMuted)
-            }
-            .padding(.horizontal, 16)
-            .frame(height: 64)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier(identifier)
-    }
-
-    private func select(_ id: UUID?) {
-        app.preferences.preferences.selectedStackID = id
-        dismiss()
     }
 }

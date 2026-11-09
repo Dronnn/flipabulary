@@ -9,6 +9,7 @@ final class VocabularyStack {
     var name: String
     var isDefault: Bool
     var createdAt: Date
+    var sortOrder: Int = 0
     var updatedAt: Date
     var cardsPerSession: Int
     var newCardsPerDay: Int
@@ -26,6 +27,7 @@ final class VocabularyStack {
         name: String,
         isDefault: Bool = false,
         createdAt: Date = Date(),
+        sortOrder: Int = 0,
         cardsPerSession: Int = 20,
         newCardsPerDay: Int = 10,
         shuffleOrder: Bool = true,
@@ -37,6 +39,7 @@ final class VocabularyStack {
         self.name = name
         self.isDefault = isDefault
         self.createdAt = createdAt
+        self.sortOrder = sortOrder
         self.updatedAt = createdAt
         self.cardsPerSession = cardsPerSession
         self.newCardsPerDay = newCardsPerDay
