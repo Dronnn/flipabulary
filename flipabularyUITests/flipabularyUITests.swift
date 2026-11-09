@@ -414,6 +414,19 @@ final class FlipabularyUITests: XCTestCase {
     }
 
     @MainActor
+    func testLearningRulesExposeDecayControls() throws {
+        let app = launch()
+        openSettings(app)
+        app.buttons["settings.rules"].tap()
+        XCTAssertTrue(app.navigationBars["Learning rules"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.switches["rules.autoDecrease"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.switches["rules.resetOnMistake"].exists)
+        XCTAssertTrue(app.otherElements["rules.returnBelow"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Auto-decrease"].exists)
+        XCTAssertTrue(app.staticTexts["Return when below"].exists)
+    }
+
+    @MainActor
     func testStackCreationReachableFromMoreMenu() throws {
         let app = launch()
         app.buttons["words.more"].tap()
