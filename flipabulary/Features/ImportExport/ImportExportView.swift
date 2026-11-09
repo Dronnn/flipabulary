@@ -91,8 +91,10 @@ struct ImportExportView: View {
         ) { result in
             switch result {
             case .success:
+                app.haptics.success()
                 app.router.showToast(app.localized("Exported."))
             case .failure:
+                app.haptics.error()
                 errorMessage = app.localized("Export failed.")
             }
         }
@@ -587,9 +589,11 @@ struct ImportPreviewView: View {
         )
         switch result {
         case .success(let summary):
+            app.haptics.success()
             onImported(summary)
             dismiss()
         case .failure(let error):
+            app.haptics.error()
             errorMessage = error.localizedDescription
         }
         isImporting = false

@@ -807,6 +807,7 @@ struct CardEditorView: View {
         switch app.library.setDifficult(cardID: cardID, isDifficult: difficult) {
         case .success:
             generalError = nil
+            app.haptics.selection()
             app.router.showToast(difficult ? "Word marked as difficult." : "Word removed from Difficult.")
             refreshWordStatistics()
         case .failure(let error):
@@ -819,6 +820,7 @@ struct CardEditorView: View {
         switch app.library.setFullyLearned(cardID: cardID, mastered: mastered) {
         case .success:
             generalError = nil
+            app.haptics.selection()
             app.router.showToast(mastered ? "Word marked as fully learned." : "Word returned to learning.")
             refreshWordStatistics()
         case .failure(let error):
@@ -839,6 +841,7 @@ struct CardEditorView: View {
         validation = app.library.validate(draft, excluding: existingCard?.id)
         generalError = nil
         guard validation.isValid else {
+            app.haptics.error()
             focusFirstInvalid()
             return
         }
@@ -846,6 +849,7 @@ struct CardEditorView: View {
             duplicateCard = duplicate
             duplicateStackName = duplicate.stack?.name ?? "My words"
             showDuplicateWarning = true
+            app.haptics.warning()
             return
         }
 
@@ -858,6 +862,7 @@ struct CardEditorView: View {
             existingCard = card
             initialDraft = draft
             onSaved?(card)
+            app.haptics.success()
             if addAnother && !wasEditing {
                 keepOrganizationAndClear()
             } else {
@@ -915,6 +920,7 @@ struct CardEditorView: View {
         guard let existingCard else { return }
         switch app.library.deleteCard(existingCard) {
         case .success:
+            app.haptics.warning()
             dismiss()
             app.router.showToast("Word deleted.")
         case .failure(let error):

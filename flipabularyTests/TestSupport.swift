@@ -75,6 +75,29 @@ final class FakeSupportPurchasing: SupportPurchasing {
 }
 
 @MainActor
+final class FakeHapticEngine: HapticEngine {
+    enum Call: Equatable {
+        case selection
+        case impact(HapticImpact, CGFloat)
+        case notification(HapticNotification)
+    }
+
+    var calls: [Call] = []
+
+    func selectionChanged() {
+        calls.append(.selection)
+    }
+
+    func impactOccurred(_ style: HapticImpact, intensity: CGFloat) {
+        calls.append(.impact(style, intensity))
+    }
+
+    func notificationOccurred(_ type: HapticNotification) {
+        calls.append(.notification(type))
+    }
+}
+
+@MainActor
 final class TestHarness {
     let container: ModelContainer
     let context: ModelContext

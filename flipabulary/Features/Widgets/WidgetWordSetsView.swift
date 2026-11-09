@@ -148,6 +148,7 @@ struct WidgetWordSetEditorView: View {
     }
 
     private func deleteSet() {
+        app.haptics.warning()
         var preferences = app.preferences.preferences
         preferences.widgetWordSets.removeAll { $0.id == setID }
         if preferences.widgetDefaults.wordSetID == setID {

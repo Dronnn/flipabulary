@@ -123,6 +123,7 @@ struct ReviewView: View {
         ) {
             Button("End session", role: .destructive) {
                 guard let session else { return }
+                app.haptics.warning()
                 _ = app.review.endSession(session)
                 ratingLocked = false
             }
@@ -360,6 +361,7 @@ struct ReviewView: View {
             } else {
                 HStack(spacing: 16) {
                     Button {
+                        app.haptics.impact(.rigid)
                         rate(session, grade: .again)
                     } label: {
                         VStack(spacing: 2) {
@@ -380,6 +382,7 @@ struct ReviewView: View {
                     .accessibilityIdentifier("review.again")
 
                     Button {
+                        app.haptics.impact(.medium)
                         rate(session, grade: .good)
                     } label: {
                         VStack(spacing: 2) {
@@ -552,7 +555,7 @@ struct ReviewView: View {
                 let crossed = abs(value.translation.width) >= swipeThreshold
                 if crossed && !didCrossSwipeThreshold {
                     didCrossSwipeThreshold = true
-                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                    app.haptics.impact(value.translation.width > 0 ? .medium : .rigid)
                 } else if !crossed {
                     didCrossSwipeThreshold = false
                 }
@@ -587,7 +590,6 @@ struct ReviewView: View {
         isThrowing = true
         didCrossSwipeThreshold = false
         let direction: CGFloat = grade == .good ? 1 : -1
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         withAnimation(.easeOut(duration: 0.28)) {
             dragOffset = CGSize(width: direction * 900, height: dragOffset.height)
         }
@@ -847,6 +849,7 @@ struct ReviewView: View {
     private func flip(_ session: ReviewSession) {
         guard !ratingLocked, !isThrowing else { return }
         guard session.status == .active, session.currentPresentationID != nil else { return }
+        app.haptics.impact(.light, intensity: 0.7)
         let target = !session.showingBack
         withAnimation(.easeInOut(duration: 0.46)) {
             _ = app.review.setShowingBack(session, showing: target)
@@ -871,6 +874,7 @@ struct ReviewView: View {
             UIAccessibility.post(notification: .announcement, argument: app.localized(grade == .good ? "Good saved" : "Again saved"))
         case .completed:
             card = nil
+            app.haptics.success()
             UIAccessibility.post(notification: .announcement, argument: app.localized("Session complete"))
         case .waiting:
             card = nil

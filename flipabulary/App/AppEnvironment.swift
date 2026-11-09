@@ -9,6 +9,7 @@ final class AppEnvironment {
     let container: ModelContainer
     let modelContext: ModelContext
     let preferences: PreferencesStore
+    let haptics: HapticsService
     let maintenance: MaintenanceService
     let library: LibraryService
     let review: ReviewService
@@ -32,6 +33,7 @@ final class AppEnvironment {
         let resetPreferences = false
         #endif
         preferences = PreferencesStore(reset: resetPreferences)
+        haptics = HapticsService(preferences: preferences)
         maintenance = MaintenanceService(modelContext: modelContext, preferences: preferences)
         library = LibraryService(modelContext: modelContext, preferences: preferences, maintenance: maintenance)
         review = ReviewService(

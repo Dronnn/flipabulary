@@ -511,12 +511,14 @@ struct WordsView: View {
         guard let model = app.library.card(id: card.id) else { return }
         switch app.library.deleteCard(model) {
         case .success:
+            app.haptics.warning()
             refreshTask?.cancel()
             listIndex = listIndex.removing(cardID: card.id)
             indexNeedsRefresh = false
             refreshDueCount()
             app.router.showToast("Word deleted.")
         case .failure(let error):
+            app.haptics.error()
             app.router.showToast(error.localizedDescription)
         }
     }
@@ -585,10 +587,12 @@ struct WordsView: View {
     // MARK: Actions
 
     private func selectScope(_ id: UUID?) {
+        app.haptics.selection()
         app.preferences.preferences.selectedStackID = id
     }
 
     private func select(_ filter: CardFilter) {
+        app.haptics.selection()
         app.preferences.preferences.filter = filter
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }

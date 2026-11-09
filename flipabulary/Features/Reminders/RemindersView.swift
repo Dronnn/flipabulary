@@ -38,6 +38,7 @@ struct RemindersView: View {
                                 set: { newValue in
                                     guard !isWorking else { return }
                                     isWorking = true
+                                    app.haptics.selection()
                                     Task {
                                         await app.reminders.setEnabled(newValue)
                                         isWorking = false
@@ -200,6 +201,7 @@ struct RemindersView: View {
                             isOn: Binding(
                                 get: { prefs.soundEnabled },
                                 set: { value in
+                                    app.haptics.selection()
                                     var updated = prefs
                                     updated.soundEnabled = value
                                     update(updated)
@@ -289,6 +291,7 @@ struct RemindersView: View {
     }
 
     private func toggleWeekday(_ weekday: Int) {
+        app.haptics.selection()
         var updated = prefs
         if updated.weekdays.contains(weekday) {
             updated.weekdays.remove(weekday)
@@ -312,6 +315,7 @@ struct RemindersView: View {
     }
 
     private func addTime() {
+        app.haptics.selection()
         var updated = prefs
         var times = updated.allTimes
         let last = times.last ?? ReminderTime(hour: 20, minute: 0)
@@ -324,6 +328,7 @@ struct RemindersView: View {
     }
 
     private func removeTime(_ id: UUID) {
+        app.haptics.selection()
         var updated = prefs
         var times = updated.allTimes
         guard times.count > 1 else { return }
@@ -335,6 +340,7 @@ struct RemindersView: View {
     }
 
     private func updateScope(_ id: UUID?) {
+        app.haptics.selection()
         var updated = prefs
         updated.stackID = id
         update(updated)

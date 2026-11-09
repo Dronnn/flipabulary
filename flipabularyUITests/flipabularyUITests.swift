@@ -38,6 +38,11 @@ final class FlipabularyUITests: XCTestCase {
     }
 
     @MainActor
+    private func stackRow(_ app: XCUIApplication, name: String) -> XCUIElement {
+        app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", name)).firstMatch
+    }
+
+    @MainActor
     func testEmptyStateAndAddWordFlow() throws {
         let app = launch(demo: false)
         XCTAssertTrue(app.staticTexts["Your word list is empty"].waitForExistence(timeout: 5))
@@ -305,6 +310,69 @@ final class FlipabularyUITests: XCTestCase {
             XCTAssertTrue(app.buttons["support.donate"].exists)
             XCTAssertTrue(app.buttons["support.amount.100"].exists)
         }
+    }
+
+    @MainActor
+    func testStackMergeFlowDeletesOriginalsAndKeepsMyWords() throws {
+        let app = launch()
+        app.buttons["words.more"].tap()
+        app.buttons["Stacks"].tap()
+        XCTAssertTrue(app.navigationBars["Stacks"].waitForExistence(timeout: 3))
+
+        for name in ["Merge A", "Merge B"] {
+            app.buttons["stacks.add"].tap()
+            let field = app.alerts.textFields.firstMatch
+            XCTAssertTrue(field.waitForExistence(timeout: 2))
+            field.typeText(name)
+            app.alerts.buttons["Create"].tap()
+            XCTAssertTrue(stackRow(app, name: name).waitForExistence(timeout: 3))
+        }
+
+        app.buttons["stacks.merge"].tap()
+        let mergeAction = app.buttons["stacks.merge.action"]
+        XCTAssertTrue(mergeAction.waitForExistence(timeout: 3))
+        XCTAssertFalse(mergeAction.isEnabled)
+
+        let rowA = stackRow(app, name: "Merge A")
+        let rowB = stackRow(app, name: "Merge B")
+        XCTAssertTrue(rowA.waitForExistence(timeout: 3))
+        rowA.tap()
+        XCTAssertFalse(mergeAction.isEnabled)
+        rowB.tap()
+        XCTAssertTrue(mergeAction.isEnabled)
+
+        mergeAction.tap()
+        let nameField = app.alerts.textFields.firstMatch
+        XCTAssertTrue(nameField.waitForExistence(timeout: 3))
+        XCTAssertEqual(nameField.value as? String, "Merged stack")
+        app.alerts.buttons["Continue"].tap()
+
+        let deleteOriginals = app.buttons["Delete originals"]
+        XCTAssertTrue(deleteOriginals.waitForExistence(timeout: 3))
+        deleteOriginals.tap()
+
+        XCTAssertTrue(stackRow(app, name: "Merged stack").waitForExistence(timeout: 5))
+        XCTAssertFalse(stackRow(app, name: "Merge A").waitForExistence(timeout: 2))
+        XCTAssertFalse(stackRow(app, name: "Merge B").waitForExistence(timeout: 2))
+        XCTAssertTrue(stackRow(app, name: "My words").exists)
+    }
+
+    @MainActor
+    func testHapticsToggleIsAvailableAndPersists() throws {
+        let app = launch()
+        openSettings(app)
+        let haptics = app.switches["settings.haptics"]
+        XCTAssertTrue(haptics.waitForExistence(timeout: 3))
+        XCTAssertEqual(haptics.value as? String, "1")
+        haptics.tap()
+        XCTAssertEqual(haptics.value as? String, "0")
+        app.terminate()
+
+        let relaunched = launch(demo: false, resetPreferences: false)
+        openSettings(relaunched)
+        let persisted = relaunched.switches["settings.haptics"]
+        XCTAssertTrue(persisted.waitForExistence(timeout: 3))
+        XCTAssertEqual(persisted.value as? String, "0")
     }
 
     @MainActor

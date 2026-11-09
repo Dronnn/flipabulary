@@ -144,6 +144,7 @@ struct AppPreferences: Codable, Equatable, Sendable {
     var reminders: ReminderPreferences
     var language: AppLanguage?
     var widgetWordSets: [WidgetWordSet]
+    var hapticsEnabled: Bool
 
     init(
         schemaVersion: Int,
@@ -154,7 +155,8 @@ struct AppPreferences: Codable, Equatable, Sendable {
         widgetDefaults: WidgetDefaults,
         reminders: ReminderPreferences,
         language: AppLanguage?,
-        widgetWordSets: [WidgetWordSet] = []
+        widgetWordSets: [WidgetWordSet] = [],
+        hapticsEnabled: Bool = true
     ) {
         self.schemaVersion = schemaVersion
         self.appearance = appearance
@@ -165,6 +167,7 @@ struct AppPreferences: Codable, Equatable, Sendable {
         self.reminders = reminders
         self.language = language
         self.widgetWordSets = widgetWordSets
+        self.hapticsEnabled = hapticsEnabled
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -177,6 +180,7 @@ struct AppPreferences: Codable, Equatable, Sendable {
         case reminders
         case language
         case widgetWordSets
+        case hapticsEnabled
     }
 
     init(from decoder: Decoder) throws {
@@ -190,6 +194,7 @@ struct AppPreferences: Codable, Equatable, Sendable {
         reminders = try container.decode(ReminderPreferences.self, forKey: .reminders)
         language = try container.decodeIfPresent(AppLanguage.self, forKey: .language)
         widgetWordSets = try container.decodeIfPresent([WidgetWordSet].self, forKey: .widgetWordSets) ?? []
+        hapticsEnabled = try container.decodeIfPresent(Bool.self, forKey: .hapticsEnabled) ?? true
     }
 
     static let `default` = AppPreferences(

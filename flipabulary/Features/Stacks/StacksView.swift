@@ -15,8 +15,15 @@ struct StacksView: View {
     @State private var renameText = ""
     @State private var deleteStack: VocabularyStack?
     @State private var error: String?
+    @State private var isMergeMode = false
+    @State private var mergeSelection: [UUID] = []
+    @State private var showMergeNameAlert = false
+    @State private var mergeName = ""
+    @State private var pendingMergeName: String?
+    @State private var showMergeDeletePrompt = false
     private let allStacksTileID = UUID(uuidString: "00000000-0000-0000-0000-0000000000A1")!
     private var isEditing: Bool { editMode?.wrappedValue.isEditing == true }
+    private var canMerge: Bool { mergeSelection.count >= 2 }
 
     var body: some View {
         let displays = LibraryProjection.stackDisplays(
@@ -32,7 +39,13 @@ struct StacksView: View {
         let allDue = displays.reduce(0) { $0 + $1.dueCount }
         return List {
             Section {
-                Text("Stacks keep words and their practice settings together.")
+                Text(
+                    LocalizedStringKey(
+                        isMergeMode
+                            ? "Select two or more stacks. Words that match in either direction are merged."
+                            : "Stacks keep words and their practice settings together."
+                    )
+                )
                     .font(AppFont.body())
                     .foregroundStyle(AppColor.textSecondary)
                     .listRowBackground(Color.clear)
@@ -40,26 +53,32 @@ struct StacksView: View {
             }
 
             Section {
-                Button {
-                    select(nil)
-                } label: {
-                    stackRow(
-                        name: "All stacks",
-                        saved: allSaved,
-                        due: allDue,
-                        isSelected: app.preferences.preferences.selectedStackID == nil,
-                        tileID: allStacksTileID
-                    )
+                if !isMergeMode {
+                    Button {
+                        select(nil)
+                    } label: {
+                        stackRow(
+                            name: "All stacks",
+                            saved: allSaved,
+                            due: allDue,
+                            isSelected: app.preferences.preferences.selectedStackID == nil,
+                            tileID: allStacksTileID
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(AppColor.surface)
+                    .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] + 16 }
                 }
-                .buttonStyle(.plain)
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(AppColor.surface)
-                .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] + 16 }
 
                 ForEach(stacks, id: \.id) { stack in
                     HStack(spacing: 0) {
                         Button {
-                            select(stack.id)
+                            if isMergeMode {
+                                toggleMergeSelection(stack.id)
+                            } else {
+                                select(stack.id)
+                            }
                         } label: {
                             stackRow(
                                 name: stack.name,
@@ -67,58 +86,63 @@ struct StacksView: View {
                                 due: displaysByID[stack.id]?.dueCount ?? 0,
                                 isSelected: app.preferences.preferences.selectedStackID == stack.id,
                                 isDefault: stack.isDefault,
-                                tileID: stack.id
+                                tileID: stack.id,
+                                mergeSelected: isMergeMode ? mergeSelection.contains(stack.id) : nil
                             )
                         }
                         .buttonStyle(.plain)
-                        Button {
-                            app.router.push(.stackSettings(stack.id))
-                        } label: {
-                            Image(systemName: "slider.horizontal.3")
-                                .font(.system(size: 15, weight: .semibold))
-                                .foregroundStyle(AppColor.textSecondary)
-                                .frame(width: 44, height: 44)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("Settings for \(stack.name)")
-                        .disabled(isEditing)
-                        Menu {
-                            Button("Rename") {
-                                renameStack = stack
-                                renameText = stack.name
+                        if !isMergeMode {
+                            Button {
+                                app.router.push(.stackSettings(stack.id))
+                            } label: {
+                                Image(systemName: "slider.horizontal.3")
+                                    .font(.system(size: 15, weight: .semibold))
+                                    .foregroundStyle(AppColor.textSecondary)
+                                    .frame(width: 44, height: 44)
                             }
-                            Button("Settings") { app.router.push(.stackSettings(stack.id)) }
-                            Divider()
-                            Button("Delete", role: .destructive) { deleteStack = stack }
-                                .disabled(stack.isDefault)
-                        } label: {
-                            Image(systemName: "ellipsis")
-                                .font(.system(size: 15, weight: .semibold))
-                                .foregroundStyle(AppColor.textMuted)
-                                .frame(width: 36, height: 44)
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Settings for \(stack.name)")
+                            .disabled(isEditing)
+                            Menu {
+                                Button("Rename") {
+                                    renameStack = stack
+                                    renameText = stack.name
+                                }
+                                Button("Settings") { app.router.push(.stackSettings(stack.id)) }
+                                Divider()
+                                Button("Delete", role: .destructive) { deleteStack = stack }
+                                    .disabled(stack.isDefault)
+                            } label: {
+                                Image(systemName: "ellipsis")
+                                    .font(.system(size: 15, weight: .semibold))
+                                    .foregroundStyle(AppColor.textMuted)
+                                    .frame(width: 36, height: 44)
+                            }
+                            .disabled(isEditing)
                         }
-                        .disabled(isEditing)
                     }
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(AppColor.surface)
                     .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] + 16 }
                     .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                        Button {
-                            renameStack = stack
-                            renameText = stack.name
-                        } label: {
-                            Label("Rename", systemImage: "pencil")
+                        if !isMergeMode {
+                            Button {
+                                renameStack = stack
+                                renameText = stack.name
+                            } label: {
+                                Label("Rename", systemImage: "pencil")
+                            }
+                            .tint(AppColor.accent)
+                            Button {
+                                app.router.push(.stackSettings(stack.id))
+                            } label: {
+                                Label("Settings", systemImage: "slider.horizontal.3")
+                            }
+                            .tint(AppColor.accentStrong)
                         }
-                        .tint(AppColor.accent)
-                        Button {
-                            app.router.push(.stackSettings(stack.id))
-                        } label: {
-                            Label("Settings", systemImage: "slider.horizontal.3")
-                        }
-                        .tint(AppColor.accentStrong)
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        if !stack.isDefault {
+                        if !isMergeMode && !stack.isDefault {
                             Button(role: .destructive) {
                                 deleteStack = stack
                             } label: {
@@ -128,27 +152,50 @@ struct StacksView: View {
                     }
                 }
                 .onMove(perform: moveStacks)
+                .moveDisabled(isMergeMode)
             }
 
-            Section {
-                Button {
-                    newStackName = ""
-                    showCreateAlert = true
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "plus")
-                        Text("New stack")
+            if !isMergeMode {
+                Section {
+                    Button {
+                        newStackName = ""
+                        showCreateAlert = true
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "plus")
+                            Text("New stack")
+                        }
+                        .font(AppFont.font(15, .semibold))
+                        .foregroundStyle(AppColor.accentStrong)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 48)
+                        .contentShape(Rectangle())
                     }
-                    .font(AppFont.font(15, .semibold))
-                    .foregroundStyle(AppColor.accentStrong)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 48)
-                    .contentShape(Rectangle())
+                    .buttonStyle(.plain)
+                    .listRowBackground(AppColor.surface)
+                    .disabled(isEditing)
+                    .accessibilityIdentifier("stacks.add")
                 }
-                .buttonStyle(.plain)
-                .listRowBackground(AppColor.surface)
-                .disabled(isEditing)
-                .accessibilityIdentifier("stacks.add")
+
+                Section {
+                    Button {
+                        beginMergeMode()
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "arrow.triangle.merge")
+                            Text("Merge stacks")
+                        }
+                        .font(AppFont.font(15, .semibold))
+                        .foregroundStyle(stacks.count >= 2 ? AppColor.accentStrong : AppColor.textMuted)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 48)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .listRowBackground(AppColor.surface)
+                    .disabled(stacks.count < 2 || isEditing)
+                    .accessibilityIdentifier("stacks.merge")
+                }
             }
 
             if let error {
@@ -162,11 +209,18 @@ struct StacksView: View {
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
         .background(AppColor.page)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if isMergeMode {
+                mergeBar
+            }
+        }
         .navigationTitle("Stacks")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                EditButton()
+            if !isMergeMode {
+                ToolbarItem(placement: .topBarTrailing) {
+                    EditButton()
+                }
             }
         }
         .alert("New stack", isPresented: $showCreateAlert) {
@@ -175,6 +229,24 @@ struct StacksView: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("Give the stack a short name.")
+        }
+        .alert("Merge stacks", isPresented: $showMergeNameAlert) {
+            TextField("Stack name", text: $mergeName)
+            Button("Continue") { continueMerge() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Choose a name for the merged stack.")
+        }
+        .confirmationDialog(
+            "Keep original stacks?",
+            isPresented: $showMergeDeletePrompt,
+            titleVisibility: .visible
+        ) {
+            Button("Delete originals", role: .destructive) { performMerge(deleteOriginals: true) }
+            Button("Keep originals") { performMerge(deleteOriginals: false) }
+            Button("Cancel", role: .cancel) { pendingMergeName = nil }
+        } message: {
+            Text("The merged stack keeps one copy of matching words. My words is never deleted.")
         }
         .alert("Rename stack", isPresented: Binding(
             get: { renameStack != nil },
@@ -200,15 +272,63 @@ struct StacksView: View {
         }
     }
 
+    private var mergeBar: some View {
+        HStack(spacing: 12) {
+            Button("Cancel") {
+                endMergeMode()
+            }
+            .font(AppFont.font(14, .semibold))
+            .foregroundStyle(AppColor.textSecondary)
+            .frame(minHeight: 44)
+            .accessibilityIdentifier("stacks.merge.cancel")
+
+            Spacer(minLength: 8)
+
+            Text("\(mergeSelection.count) selected")
+                .font(AppFont.caption())
+                .foregroundStyle(AppColor.textSecondary)
+                .monospacedDigit()
+
+            Button {
+                beginMergeNamePrompt()
+            } label: {
+                Text("Merge")
+                    .font(AppFont.font(14, .semibold))
+                    .foregroundStyle(canMerge ? AppColor.onAccent : AppColor.textMuted)
+                    .padding(.horizontal, 18)
+                    .frame(height: 40)
+                    .background(Capsule().fill(canMerge ? AppColor.accentStrong : AppColor.surface))
+                    .overlay(
+                        Capsule().stroke(canMerge ? Color.clear : AppColor.divider, lineWidth: 1)
+                    )
+            }
+            .buttonStyle(.plain)
+            .disabled(!canMerge)
+            .accessibilityIdentifier("stacks.merge.action")
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 10)
+        .background(AppColor.page)
+        .overlay(alignment: .top) {
+            Rectangle().fill(AppColor.divider).frame(height: 1)
+        }
+    }
+
     private func stackRow(
         name: String,
         saved: Int,
         due: Int,
         isSelected: Bool,
         isDefault: Bool = false,
-        tileID: UUID
+        tileID: UUID,
+        mergeSelected: Bool? = nil
     ) -> some View {
         HStack(spacing: 12) {
+            if let mergeSelected {
+                Image(systemName: mergeSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 21, weight: .semibold))
+                    .foregroundStyle(mergeSelected ? AppColor.accentStrong : AppColor.textMuted)
+            }
             InitialTile(word: name, id: tileID, size: 40)
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
@@ -230,7 +350,7 @@ struct StacksView: View {
                     .foregroundStyle(AppColor.textSecondary)
             }
             Spacer()
-            if isSelected {
+            if isSelected && mergeSelected == nil {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(AppColor.accentStrong)
             }
@@ -240,13 +360,87 @@ struct StacksView: View {
         .contentShape(Rectangle())
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(name), \(saved) saved, \(due) due")
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityAddTraits(isSelected && mergeSelected == nil ? .isSelected : [])
     }
 
     private func select(_ id: UUID?) {
         guard !isEditing else { return }
+        app.haptics.selection()
         app.preferences.preferences.selectedStackID = id
         app.router.popToRoot()
+    }
+
+    private func beginMergeMode() {
+        guard stacks.count >= 2, !isEditing else { return }
+        isMergeMode = true
+        mergeSelection = []
+        error = nil
+        app.haptics.selection()
+    }
+
+    private func endMergeMode() {
+        isMergeMode = false
+        mergeSelection = []
+        pendingMergeName = nil
+        showMergeDeletePrompt = false
+    }
+
+    private func toggleMergeSelection(_ id: UUID) {
+        if let index = mergeSelection.firstIndex(of: id) {
+            mergeSelection.remove(at: index)
+        } else {
+            mergeSelection.append(id)
+        }
+        app.haptics.selection()
+    }
+
+    private func beginMergeNamePrompt() {
+        guard canMerge else { return }
+        mergeName = suggestedMergeName()
+        showMergeNameAlert = true
+    }
+
+    private func suggestedMergeName() -> String {
+        let base = "Merged stack"
+        let existing = Set(stacks.map { SearchNormalizer.normalize($0.name) })
+        if !existing.contains(SearchNormalizer.normalize(base)) {
+            return base
+        }
+        var index = 2
+        while existing.contains(SearchNormalizer.normalize("\(base) \(index)")) {
+            index += 1
+        }
+        return "\(base) \(index)"
+    }
+
+    private func continueMerge() {
+        let name = mergeName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty else {
+            app.router.showToast("Enter a stack name.")
+            return
+        }
+        pendingMergeName = name
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(450))
+            guard pendingMergeName != nil else { return }
+            showMergeDeletePrompt = true
+        }
+    }
+
+    private func performMerge(deleteOriginals: Bool) {
+        guard let name = pendingMergeName else { return }
+        switch app.library.mergeStacks(mergeSelection, named: name, deleteOriginals: deleteOriginals) {
+        case .success(let result):
+            app.preferences.preferences.selectedStackID = result.stack.id
+            app.haptics.success()
+            endMergeMode()
+            error = nil
+            app.router.showToast("Stacks merged.")
+        case .failure(let error):
+            self.error = error.localizedDescription
+            app.haptics.error()
+            pendingMergeName = nil
+        }
     }
 
     private func moveStacks(from source: IndexSet, to destination: Int) {
@@ -254,6 +448,7 @@ struct StacksView: View {
         orderedIDs.move(fromOffsets: source, toOffset: destination)
         switch app.library.reorderStacks(orderedIDs) {
         case .success:
+            app.haptics.selection()
             error = nil
         case .failure(let error):
             self.error = error.localizedDescription
@@ -264,6 +459,7 @@ struct StacksView: View {
         switch app.library.createStack(named: newStackName) {
         case .success(let stack):
             app.preferences.preferences.selectedStackID = stack.id
+            app.haptics.success()
             error = nil
         case .failure(let error):
             self.error = error.localizedDescription
@@ -275,6 +471,7 @@ struct StacksView: View {
         switch app.library.renameStack(stack, to: renameText) {
         case .success:
             renameStack = nil
+            app.haptics.success()
             error = nil
         case .failure(let error):
             self.error = error.localizedDescription
@@ -286,6 +483,7 @@ struct StacksView: View {
         switch app.library.deleteStack(stack, mode: mode) {
         case .success:
             deleteStack = nil
+            app.haptics.warning()
             error = nil
             if app.router.path.last == .stackSettings(stack.id) {
                 app.router.path.removeLast()
@@ -528,6 +726,7 @@ struct StackSettingsView: View {
             HStack(spacing: 4) {
                 ForEach(CardPresentationOrder.allCases) { mode in
                     Button {
+                        app.haptics.selection()
                         stack.presentationMode = mode
                         persist(stack)
                     } label: {
@@ -785,6 +984,7 @@ struct StepsEditorView: View {
         stack.steps = intervals
         switch app.library.saveStackSettings(stack) {
         case .success:
+            app.haptics.success()
             dismiss()
         case .failure(let error):
             self.error = error.localizedDescription

@@ -51,6 +51,28 @@ final class PreferencesAndRoutingTests: XCTestCase {
         XCTAssertEqual(store.preferences, .default)
     }
 
+    func testHapticsPreferenceRoundTrips() {
+        let store = PreferencesStore(defaults: defaults)
+        XCTAssertTrue(store.preferences.hapticsEnabled)
+
+        store.preferences.hapticsEnabled = false
+        let reloaded = PreferencesStore(defaults: defaults)
+        XCTAssertFalse(reloaded.preferences.hapticsEnabled)
+
+        reloaded.preferences.hapticsEnabled = true
+        XCTAssertTrue(PreferencesStore(defaults: defaults).preferences.hapticsEnabled)
+    }
+
+    func testOldPreferencesWithoutHapticsKeyStayEnabled() throws {
+        let encoded = try JSONEncoder().encode(AppPreferences.default)
+        var object = try XCTUnwrap(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
+        object.removeValue(forKey: "hapticsEnabled")
+        let oldData = try JSONSerialization.data(withJSONObject: object)
+
+        let decoded = try JSONDecoder().decode(AppPreferences.self, from: oldData)
+        XCTAssertTrue(decoded.hapticsEnabled)
+    }
+
     func testReminderWeekdayAndTimeText() {
         var prefs = ReminderPreferences.default
         prefs.weekdays = [2, 3, 4, 5, 6]

@@ -23,6 +23,7 @@ struct SettingsView: View {
             ForEach(AppLanguage.allCases) { language in
                 Button {
                     app.preferences.preferences.language = language
+                    app.haptics.selection()
                     app.maintenance.publishSnapshot()
                 } label: {
                     if language == selectedLanguage {
@@ -87,7 +88,12 @@ struct SettingsView: View {
                             AppearanceSelector(
                                 selection: Binding(
                                     get: { app.preferences.preferences.appearance },
-                                    set: { app.preferences.preferences.appearance = $0 }
+                                    set: { newValue in
+                                        if app.preferences.preferences.appearance != newValue {
+                                            app.haptics.selection()
+                                        }
+                                        app.preferences.preferences.appearance = newValue
+                                    }
                                 )
                             )
                             Text("Choose Light, Dark, or follow the system setting.")
@@ -97,6 +103,27 @@ struct SettingsView: View {
                         .padding(16)
                         SettingsDivider(inset: 16)
                         languageMenu
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    SectionHeader(title: "Feedback")
+                    GroupedSurface {
+                        SettingsToggleRow(
+                            title: "Haptics",
+                            detail: "Vibrate for swipes, ratings, and important actions.",
+                            isOn: Binding(
+                                get: { app.preferences.preferences.hapticsEnabled },
+                                set: { newValue in
+                                    let wasEnabled = app.preferences.preferences.hapticsEnabled
+                                    app.preferences.preferences.hapticsEnabled = newValue
+                                    if newValue && !wasEnabled {
+                                        app.haptics.selection()
+                                    }
+                                }
+                            ),
+                            accessibilityIdentifier: "settings.haptics"
+                        )
                     }
                 }
 

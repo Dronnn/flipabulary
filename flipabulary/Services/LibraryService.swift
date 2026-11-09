@@ -447,7 +447,7 @@ final class LibraryService {
         return tag
     }
 
-    private func resolveTags(_ names: [String]) -> [VocabularyTag] {
+    func resolveTags(_ names: [String]) -> [VocabularyTag] {
         guard !names.isEmpty else { return [] }
         var cache: [String: VocabularyTag] = [:]
         for tag in tags() {
