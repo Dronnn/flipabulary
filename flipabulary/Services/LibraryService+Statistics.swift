@@ -51,9 +51,7 @@ extension LibraryService {
 
             let state = card.learningState
             let rules = card.stack?.effectiveRules(global: globalRules) ?? globalRules
-            let mastered = state?.lifecycle == .learned
-                && (state?.appliedMilestones.count ?? 0) >= LearningEngine.decayMilestones.count
-                && state?.nextDueAt == nil
+            let mastered = state?.snapshot.isFullyMastered ?? false
             let automaticDifficult = events.prefix(5).filter { $0.grade == .again }.count >= 2
             return WordStatistics(
                 cardID: card.id,
@@ -177,8 +175,7 @@ extension LibraryService {
                 let state = card.learningState
                 if state?.lifecycle == .learned {
                     stats.learned += 1
-                    if (state?.appliedMilestones.count ?? 0) >= LearningEngine.decayMilestones.count,
-                       state?.nextDueAt == nil {
+                    if state?.snapshot.isFullyMastered == true {
                         stats.mastered += 1
                     }
                 }
@@ -234,9 +231,7 @@ extension LibraryService {
             }
             let mastered = cards.reduce(0) { total, card in
                 guard let state = card.learningState,
-                      state.lifecycle == .learned,
-                      state.appliedMilestones.count >= LearningEngine.decayMilestones.count,
-                      state.nextDueAt == nil else { return total }
+                      state.snapshot.isFullyMastered else { return total }
                 return total + 1
             }
             let days = dayPoints.values.sorted { $0.date < $1.date }
@@ -259,44 +254,11 @@ extension LibraryService {
     }
 
     func setCorrectStreak(cardID: UUID, value: Int) -> Result<Void, LibraryWriteError> {
-        guard let card = card(id: cardID), let stack = card.stack else {
+        guard let card = card(id: cardID) else {
             return .failure(.missingStack)
         }
-        let rules = stack.effectiveRules(global: preferences.preferences.rules)
-        let state: CardLearningState
-        if let existing = card.learningState {
-            state = existing
-        } else {
-            let created = CardLearningState(card: card)
-            modelContext.insert(created)
-            card.learningState = created
-            state = created
-        }
-
-        let count = min(max(value, 0), 100)
-        state.repeatCount = count
-        if count >= rules.correctThreshold {
-            if state.lifecycle != .learned {
-                state.lifecycle = .learned
-                state.learnedAnchor = clock.now
-                state.appliedMilestones = []
-                state.nextDueAt = LearningEngine.milestoneDate(
-                    index: 0,
-                    anchor: clock.now,
-                    calendar: maintenance.calendar
-                )
-            }
-            state.mistakeReturn = false
-        } else if state.lifecycle == .learned {
-            state.lifecycle = .learning
-            state.learnedAnchor = nil
-            state.appliedMilestones = []
-            state.nextDueAt = clock.now
-            state.mistakeReturn = false
-        } else if state.lifecycle == .new, count > 0 {
-            state.lifecycle = .learning
-            state.nextDueAt = clock.now
-        }
+        guard let state = card.learningState else { return .failure(.missingStack) }
+        state.repeatCount = min(max(value, 0), 100)
         card.updatedAt = clock.now
         do {
             try modelContext.save()
@@ -342,17 +304,17 @@ extension LibraryService {
         if mastered {
             state.repeatCount = max(state.repeatCount, rules.correctThreshold)
             state.lifecycle = .learned
+            state.stepIndex = rules.steps.count
+            state.reviewStageIndex = LearningEngine.decayMilestones.count
             state.learnedAnchor = state.learnedAnchor ?? clock.now
             state.appliedMilestones = Set(LearningEngine.decayMilestones.map(\.index))
             state.nextDueAt = nil
             state.mistakeReturn = false
         } else {
-            state.repeatCount = min(state.repeatCount, max(0, rules.correctThreshold - 1))
-            state.lifecycle = .learning
-            state.learnedAnchor = nil
-            state.appliedMilestones = []
-            state.nextDueAt = clock.now
-            state.mistakeReturn = false
+            var reset = LearningSnapshot.fresh
+            reset.lifecycle = .learning
+            reset.nextDueAt = clock.now.addingTimeInterval(rules.stepInterval(at: 0))
+            state.apply(reset, rulesVersion: rules.version)
         }
         card.updatedAt = clock.now
         do {

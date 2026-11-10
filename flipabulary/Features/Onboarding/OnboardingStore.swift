@@ -151,21 +151,16 @@ enum OnboardingLearningDemoPhase: Equatable, Sendable {
 }
 
 struct OnboardingLearningDemo: Equatable, Sendable {
-    let threshold: Int
-
-    private(set) var repeatCount = 0
+    private(set) var snapshot = LearningSnapshot.fresh
+    private(set) var simulatedDate = Date(timeIntervalSince1970: 0)
     private(set) var phase: OnboardingLearningDemoPhase = .prompt
     private(set) var lastGrade: ReviewGrade?
 
-    init(threshold: Int = 5) {
-        self.threshold = max(1, threshold)
-    }
-
+    var threshold: Int { LearningRules.default.correctThreshold }
+    var repeatCount: Int { snapshot.repeatCount }
     var isRevealed: Bool { phase != .prompt }
-
     var canRate: Bool { phase == .revealed }
-
-    var isLearned: Bool { phase == .learned }
+    var isLearned: Bool { snapshot.isFullyMastered }
 
     mutating func reveal() {
         guard phase == .prompt else { return }
@@ -173,23 +168,14 @@ struct OnboardingLearningDemo: Equatable, Sendable {
     }
 
     mutating func rate(_ grade: ReviewGrade) {
-        guard phase == .revealed else { return }
+        guard canRate else { return }
         lastGrade = grade
-
-        switch grade {
-        case .good:
-            repeatCount = min(threshold, repeatCount + 1)
-            if repeatCount >= threshold {
-                phase = .learned
-            }
-        case .again:
-            repeatCount = 0
-        }
+        simulatedDate = snapshot.nextDueAt ?? simulatedDate
+        snapshot = LearningEngine.grade(snapshot, grade: grade, rules: .default, at: simulatedDate).after
+        if isLearned { phase = .learned }
     }
 
     mutating func tryAgain() {
-        repeatCount = 0
-        lastGrade = nil
-        phase = .prompt
+        self = OnboardingLearningDemo()
     }
 }

@@ -17,7 +17,6 @@ final class VocabularyStack {
     var translationFirst: Bool
     var presentationModeRaw: String?
     var stepsData: Data?
-    var customRulesData: Data?
 
     @Relationship(deleteRule: .cascade, inverse: \VocabularyCard.stack)
     var cards: [VocabularyCard] = []
@@ -47,7 +46,6 @@ final class VocabularyStack {
         self.translationFirst = translationFirst
         self.presentationModeRaw = (presentationMode ?? (translationFirst ? .backFirst : .frontFirst)).rawValue
         self.stepsData = try? JSONEncoder().encode(steps)
-        self.customRulesData = nil
     }
 
     var steps: [TimeInterval] {
@@ -74,19 +72,10 @@ final class VocabularyStack {
         }
     }
 
-    var customRules: LearningRules? {
-        get {
-            guard let data = customRulesData else { return nil }
-            return try? JSONDecoder().decode(LearningRules.self, from: data)
-        }
-        set {
-            customRulesData = newValue.flatMap { try? JSONEncoder().encode($0.normalized) }
-            updatedAt = Date()
-        }
-    }
-
     func effectiveRules(global: LearningRules) -> LearningRules {
-        (customRules ?? global).normalized
+        var rules = global
+        rules.steps = steps
+        return rules.normalized
     }
 
     func makeSessionConfig(globalRules: LearningRules, seed: UInt64) -> SessionConfig {
@@ -192,6 +181,7 @@ final class CardLearningState {
     var repeatCount: Int
     var lifecycleRaw: String
     var stepIndex: Int
+    var reviewStageIndex: Int = 0
     var nextDueAt: Date?
     var lastGradedAt: Date?
     var learnedAnchor: Date?
@@ -207,6 +197,7 @@ final class CardLearningState {
         repeatCount: Int = 0,
         lifecycle: CardLifecycle = .new,
         stepIndex: Int = 0,
+        reviewStageIndex: Int = 0,
         nextDueAt: Date? = nil,
         lastGradedAt: Date? = nil,
         learnedAnchor: Date? = nil,
@@ -220,6 +211,7 @@ final class CardLearningState {
         self.repeatCount = repeatCount
         self.lifecycleRaw = lifecycle.rawValue
         self.stepIndex = stepIndex
+        self.reviewStageIndex = reviewStageIndex
         self.nextDueAt = nextDueAt
         self.lastGradedAt = lastGradedAt
         self.learnedAnchor = learnedAnchor
@@ -255,7 +247,8 @@ final class CardLearningState {
             lastGradedAt: lastGradedAt,
             learnedAnchor: learnedAnchor,
             appliedMilestones: appliedMilestones,
-            mistakeReturn: mistakeReturn
+            mistakeReturn: mistakeReturn,
+            reviewStageIndex: reviewStageIndex
         )
     }
 
@@ -263,6 +256,7 @@ final class CardLearningState {
         repeatCount = snapshot.repeatCount
         lifecycle = snapshot.lifecycle
         stepIndex = snapshot.stepIndex
+        reviewStageIndex = snapshot.reviewStageIndex
         nextDueAt = snapshot.nextDueAt
         lastGradedAt = snapshot.lastGradedAt
         learnedAnchor = snapshot.learnedAnchor

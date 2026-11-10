@@ -90,6 +90,17 @@ final class ImportExportTests: XCTestCase {
         XCTAssertEqual(plan.decks[0].cards[0].translation, "quote \"x\"")
     }
 
+    func testCSVWriterAndParserPreserveCRLFRowsAndQuotedMultilineFields() throws {
+        let rows = [
+            ["Word", "Translation", "Example"],
+            ["café, \"noir\"", "кофе", "First line\r\nSecond line"],
+            ["旅行", "travel", "Line one\nLine two"]
+        ]
+        let table = CSVParser.parse(CSVWriter.write(rows: rows))
+        XCTAssertEqual(table.delimiter, .comma)
+        XCTAssertEqual(table.rows, rows)
+    }
+
     @MainActor
     func testImportCreatesStacksAndSkipsDuplicates() throws {
         let harness = try TestHarness()
@@ -168,6 +179,33 @@ final class ImportExportTests: XCTestCase {
         XCTAssertTrue(text.contains("\"a,b\""))
         XCTAssertTrue(text.contains("\"quote \"\"x\"\"\""))
         XCTAssertTrue(text.contains("\"Hello, world\""))
+    }
+
+    @MainActor
+    func testCSVRoundTripPreservesEveryVocabularyField() throws {
+        let harness = try TestHarness()
+        defer { harness.finish() }
+        let stack = harness.makeStack(name: "Unicode")
+        let card = harness.makeCard(word: "café, \"noir\"", translation: "кофе ☕️", stack: stack, tags: ["旅行", "B1"])
+        card.sourceExample = "Un café, s'il vous plaît.\nIl dit \"merci\"."
+        card.translatedExample = "Чашку кофе, пожалуйста.\nОн сказал \"спасибо\"."
+        card.phonetic = "/kafe/"
+        card.partOfSpeech = "noun"
+        try harness.save()
+
+        let plan = try ImportExportService.parseCSV(data: ImportExportService.exportCSV(stack: stack), fileName: "roundtrip.csv")
+        XCTAssertEqual(plan.skippedRows, 0)
+        XCTAssertEqual(plan.totalCards, 1)
+        let imported = try XCTUnwrap(plan.decks.first?.cards.first)
+        XCTAssertEqual(imported, ImportedCard(
+            word: card.word,
+            translation: card.translation,
+            example: card.sourceExample,
+            translatedExample: card.translatedExample,
+            phonetic: card.phonetic,
+            partOfSpeech: card.partOfSpeech,
+            tags: card.tags.map(\.name).sorted()
+        ))
     }
 
     @MainActor

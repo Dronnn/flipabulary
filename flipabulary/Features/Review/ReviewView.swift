@@ -48,6 +48,7 @@ struct ReviewView: View {
     @State private var dragOffset: CGSize = .zero
     @State private var swipeAxis = SwipeAxisLock()
     @State private var isThrowing = false
+    @State private var throwTask: Task<Void, Never>?
     @State private var didCrossSwipeThreshold = false
 
     private let swipeThreshold: CGFloat = 120
@@ -88,6 +89,8 @@ struct ReviewView: View {
             NotificationInbox.shared.activeReviewStackID = session?.stackID
         }
         .onDisappear {
+            throwTask?.cancel()
+            isThrowing = false
             if let session, session.status == .active {
                 app.review.pause(session)
             }
@@ -378,7 +381,7 @@ struct ReviewView: View {
                         .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(AppColor.divider, lineWidth: 1))
                     }
                     .buttonStyle(.plain)
-                    .disabled(ratingLocked)
+                    .disabled(ratingLocked || isThrowing)
                     .accessibilityIdentifier("review.again")
 
                     Button {
@@ -397,7 +400,7 @@ struct ReviewView: View {
                         .background(AppColor.accentStrong, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                     }
                     .buttonStyle(.plain)
-                    .disabled(ratingLocked)
+                    .disabled(ratingLocked || isThrowing)
                     .accessibilityIdentifier("review.good")
                 }
                 .padding(.horizontal, 20)
@@ -587,15 +590,17 @@ struct ReviewView: View {
 
     private func throwCard(_ session: ReviewSession, grade: ReviewGrade) {
         guard !ratingLocked, !isThrowing else { return }
+        guard let presentationID = session.currentPresentationID else { return }
         isThrowing = true
         didCrossSwipeThreshold = false
         let direction: CGFloat = grade == .good ? 1 : -1
         withAnimation(.easeOut(duration: 0.28)) {
             dragOffset = CGSize(width: direction * 900, height: dragOffset.height)
         }
-        Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(260))
-            rate(session, grade: grade, allowUnrevealed: true)
+        throwTask = Task { @MainActor in
+            do { try await Task.sleep(for: .milliseconds(260)) } catch { return }
+            isThrowing = false
+            rate(session, grade: grade, allowUnrevealed: true, expectedPresentationID: presentationID)
             dragOffset = .zero
             isThrowing = false
         }
@@ -863,10 +868,10 @@ struct ReviewView: View {
         }
     }
 
-    private func rate(_ session: ReviewSession, grade: ReviewGrade, allowUnrevealed: Bool = false) {
-        guard !ratingLocked else { return }
+    private func rate(_ session: ReviewSession, grade: ReviewGrade, allowUnrevealed: Bool = false, expectedPresentationID: UUID? = nil) {
+        guard !ratingLocked, !isThrowing else { return }
         ratingLocked = true
-        let result = app.review.grade(session, grade: grade, allowUnrevealed: allowUnrevealed)
+        let result = app.review.grade(session, grade: grade, allowUnrevealed: allowUnrevealed, expectedPresentationID: expectedPresentationID)
         switch result {
         case .advanced:
             card = app.review.currentCard(for: session)

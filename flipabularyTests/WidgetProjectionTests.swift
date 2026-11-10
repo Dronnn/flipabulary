@@ -1,4 +1,5 @@
 import XCTest
+import WidgetKit
 @testable import flipabulary
 
 final class WidgetProjectionTests: XCTestCase {
@@ -289,12 +290,66 @@ final class WidgetProjectionTests: XCTestCase {
         XCTAssertNil(store.load())
     }
 
-    func testPreviousSchemaLoads() throws {
-        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("widget-store-\(UUID())")
-        let store = WidgetSnapshotStore(fileURL: directory.appendingPathComponent("snapshot.json"), defaultsSuiteName: nil)
-        var old = snapshot()
-        old.schemaVersion = 0
-        try store.save(old)
-        XCTAssertEqual(store.load()?.schemaVersion, 0)
+    func testHistoricalSchemaWithoutWordSetsOrLanguageLoads() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("widget-old-\(UUID())")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let url = directory.appendingPathComponent("snapshot.json")
+        let store = WidgetSnapshotStore(fileURL: url, defaultsSuiteName: nil)
+        // Historical schema predates wordSets, defaultWordSetID, and languageCode.
+        let historicalJSON = """
+        {"schemaVersion":1,"generatedAt":"2026-11-07T10:00:00Z","stacks":[],"defaultSort":"dueFirst","defaultShowTranslations":false}
+        """
+        try Data(historicalJSON.utf8).write(to: url)
+        let loaded = try XCTUnwrap(store.load())
+        XCTAssertEqual(loaded.schemaVersion, 1)
+        XCTAssertEqual(loaded.generatedAt, now)
+        XCTAssertEqual(loaded.wordSets, [])
+        XCTAssertNil(loaded.defaultWordSetID)
+        XCTAssertNil(loaded.languageCode)
+        XCTAssertTrue(loaded.stacks.isEmpty)
     }
+    func testTimelineProjectsDueLearnedDecayOnceAndRestoresNextDayNewQuota() throws {
+        let due = now.addingTimeInterval(3600)
+        let learned = WidgetCardSnapshot(id: UUID(), word: "learned", translation: "translation", lifecycle: "learned", repeatCount: 9, threshold: 9, dueAt: due, createdAt: now, decayPending: true)
+        let mastered = WidgetCardSnapshot(id: UUID(), word: "mastered", translation: "translation", lifecycle: "learned", repeatCount: 9, threshold: 9, dueAt: nil, createdAt: now)
+        let fresh = WidgetCardSnapshot(id: UUID(), word: "new", translation: "translation", lifecycle: "new", repeatCount: 0, threshold: 9, dueAt: nil, createdAt: now)
+        var data = WidgetSnapshot.empty
+        data.generatedAt = now
+        let stack = WidgetStackSnapshot(id: UUID(), name: "stack", savedCount: 3, dueCount: 0, learnedCount: 2, learningCount: 0, newCount: 1, cards: [learned, mastered, fresh], nextDueAt: due, newCardsPerDay: 1, remainingNewCards: 0)
+        data.stacks = [stack]
+        data.wordSets = [WidgetWordSetSnapshot(id: UUID(), name: "set", cards: stack.cards, savedCount: 3, dueCount: 0, learnedCount: 2, learningCount: 0, newCount: 1, nextDueAt: due)]
+        XCTAssertEqual(data.projected(at: now, calendar: testCalendar()).stacks[0].dueCount, 0)
+        let atDue = data.projected(at: due, calendar: testCalendar())
+        XCTAssertEqual(atDue.stacks[0].dueCount, 1)
+        XCTAssertEqual(atDue.wordSets[0].dueCount, 1)
+        XCTAssertEqual(atDue.stacks[0].cards[0].repeatCount, 8)
+        XCTAssertEqual(atDue.projected(at: due, calendar: testCalendar()).stacks[0].cards[0].repeatCount, 8)
+        XCTAssertEqual(atDue.summary(stackID: stack.id).nextCard?.id, learned.id)
+        let tomorrow = data.projected(at: now.addingTimeInterval(86400), calendar: testCalendar())
+        XCTAssertEqual(tomorrow.stacks[0].dueCount, 2)
+        XCTAssertEqual(tomorrow.wordSets[0].dueCount, 2)
+        XCTAssertEqual(tomorrow.stacks[0].cards[1].repeatCount, 9)
+    }
+
+    func testTimelineIncludesLaterCardDatesWithinTheSameStack() {
+        let firstDue = now.addingTimeInterval(3600)
+        let secondDue = now.addingTimeInterval(7200)
+        let cards = [firstDue, secondDue].enumerated().map { index, due in
+            WidgetCardSnapshot(id: UUID(), word: "word\(index)", translation: "translation", lifecycle: "learned", repeatCount: 9, threshold: 9, dueAt: due, createdAt: now, decayPending: true)
+        }
+        var data = WidgetSnapshot.empty
+        data.generatedAt = now
+        data.stacks = [WidgetStackSnapshot(id: UUID(), name: "stack", savedCount: 2, dueCount: 0, learnedCount: 2, learningCount: 0, newCount: 0, cards: cards, nextDueAt: firstDue)]
+        let timeline = WidgetData.timeline(snapshot: data, now: now) { date in
+            WidgetData.makeEntry(date: date, snapshot: data)
+        }
+        XCTAssertTrue(timeline.entries.contains { $0.date == firstDue && $0.summary.due == 1 })
+        XCTAssertTrue(timeline.entries.contains { $0.date == secondDue && $0.summary.due == 2 })
+        let laterTimeline = WidgetData.timeline(snapshot: data, now: firstDue.addingTimeInterval(1)) { date in
+            WidgetData.makeEntry(date: date, snapshot: data)
+        }
+        XCTAssertTrue(laterTimeline.entries.contains { $0.date == secondDue && $0.summary.due == 2 })
+    }
+
 }

@@ -103,31 +103,17 @@ enum ReviewSessionStatus: String, Codable, Sendable {
 // MARK: - Rules
 
 struct LearningRules: Codable, Equatable, Sendable {
-    static let minimumThreshold = 1
-    static let maximumThreshold = 20
-
-    var correctThreshold: Int
-    var resetOnMistake: Bool
-    var autoDecrease: Bool
-    var returnBelow: Int
     var steps: [TimeInterval]
     var version: Int
 
-    static let `default` = LearningRules(
-        correctThreshold: 5,
-        resetOnMistake: true,
-        autoDecrease: true,
-        returnBelow: 5,
-        steps: [60, 300, 600, 1_800, 3_600, 10_800, 43_200, 86_400],
-        version: 1
-    )
-
     static let defaultSteps: [TimeInterval] = [60, 300, 600, 1_800, 3_600, 10_800, 43_200, 86_400]
+    static let `default` = LearningRules(steps: defaultSteps, version: 1)
+
+    // Includes the initial answer that schedules the first interval.
+    var correctThreshold: Int { steps.count + 1 }
 
     var normalized: LearningRules {
         var copy = self
-        copy.correctThreshold = min(max(copy.correctThreshold, Self.minimumThreshold), Self.maximumThreshold)
-        copy.returnBelow = min(max(copy.returnBelow, 1), copy.correctThreshold)
         copy.steps = Self.validatedSteps(copy.steps)
         return copy
     }
@@ -149,17 +135,8 @@ struct LearningRules: Codable, Equatable, Sendable {
         return steps[min(max(index, 0), steps.count - 1)]
     }
 
-    var thresholdExplanation: String {
-        "A word becomes Learned after \(correctThreshold) correct \(correctThreshold == 1 ? "answer" : "answers") in a row."
-    }
+    var decaySummary: String { "1d · 3d · 7d · 2w · 1mo" }
 
-    var returnExplanation: String {
-        "A Learned word returns to Learning when fewer than \(returnBelow) repeats remain."
-    }
-
-    var decaySummary: String {
-        "1d · 3d · 7d · 2w · 1mo"
-    }
 }
 
 // MARK: - Session configuration
@@ -194,6 +171,7 @@ struct SessionConfig: Codable, Equatable, Sendable {
         copy.cardsPerSession = min(max(copy.cardsPerSession, 1), 100)
         copy.newCardsPerDay = min(max(copy.newCardsPerDay, 0), 100)
         copy.steps = LearningRules.validatedSteps(copy.steps)
+        copy.rules.steps = copy.steps
         copy.rules = copy.rules.normalized
         return copy
     }
@@ -229,6 +207,9 @@ struct LearningSnapshot: Equatable, Sendable {
     var learnedAnchor: Date?
     var appliedMilestones: Set<Int>
     var mistakeReturn: Bool
+    var reviewStageIndex: Int = 0
+
+    var isFullyMastered: Bool { lifecycle == .learned && reviewStageIndex >= LearningEngine.decayMilestones.count && nextDueAt == nil }
 
     static let fresh = LearningSnapshot(
         repeatCount: 0,

@@ -625,7 +625,7 @@ struct StackSettingsView: View {
                             SettingsRow(
                                 title: "Repeats & decay",
                                 value: rulesSummary(stack),
-                                detail: stack.customRules == nil ? "Using default learning rules." : "Custom rules for this stack.",
+                                detail: "Complete each interval; any mistake restarts learning.",
                                 showsChevron: true
                             ) {
                                 showRulesEditor = true
@@ -642,7 +642,7 @@ struct StackSettingsView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         SectionHeader(title: "Session help")
                         GroupedSurface {
-                            Text("A session admits due Learning cards first, then New cards within the daily limit. Each card appears once, with up to three repeat presentations. Revealing an answer never changes progress; only Again or Good does. Leaving mid-session keeps every completed rating.")
+                            Text("A session admits due Learning and scheduled Learned cards first, then New cards within the daily limit. Each card appears once, with up to three repeat presentations. Revealing an answer never changes progress; only Again or Good does. Leaving mid-session keeps every completed rating.")
                                 .font(AppFont.body())
                                 .foregroundStyle(AppColor.textSecondary)
                                 .fixedSize(horizontal: false, vertical: true)

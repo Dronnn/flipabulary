@@ -106,7 +106,8 @@ enum CSVParser {
                 inQuotes = true
             } else if character == delimiter {
                 endField()
-            } else if character == "\n" {
+            } else if character == "\n" || character == "\r\n" {
+                // Swift treats CRLF as one Character, including CSVWriter's row separator.
                 endRow()
             } else if character == "\r" {
                 let next = text.index(after: index)
@@ -144,7 +145,7 @@ enum CSVWriter {
     }
 
     static func escape(_ value: String) -> String {
-        if value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r") || value.hasPrefix(" ") || value.hasSuffix(" ") {
+        if value.contains(",") || value.contains("\"") || value.contains(where: \.isNewline) || value.hasPrefix(" ") || value.hasSuffix(" ") {
             return "\"" + value.replacingOccurrences(of: "\"", with: "\"\"") + "\""
         }
         return value

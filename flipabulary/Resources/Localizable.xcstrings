@@ -56945,6 +56945,1606 @@
           }
         }
       }
+    },
+    "1d · 3d · 7d · 14d · 1 month" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 T. · 3 T. · 7 T. · 14 T. · 1 Monat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 d · 3 d · 7 d · 14 d · 1 mes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 j · 3 j · 7 j · 14 j · 1 mois"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 hari · 3 hari · 7 hari · 14 hari · 1 bulan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 g · 3 g · 7 g · 14 g · 1 mese"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1日 · 3日 · 7日 · 14日 · 1か月"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1일 · 3일 · 7일 · 14일 · 1개월"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 d · 3 d · 7 d · 14 d · 1 maand"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 dzień · 3 dni · 7 dni · 14 dni · 1 miesiąc"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 d · 3 d · 7 d · 14 d · 1 mês"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 д. · 3 д. · 7 д. · 14 д. · 1 месяц"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 gün · 3 gün · 7 gün · 14 gün · 1 ay"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 д. · 3 д. · 7 д. · 14 д. · 1 місяць"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 ngày · 3 ngày · 7 ngày · 14 ngày · 1 tháng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1天 · 3天 · 7天 · 14天 · 1个月"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1d · 3d · 7d · 14d · 1 month"
+          }
+        }
+      }
+    },
+    "A session admits due Learning and scheduled Learned cards first, then New cards within the daily limit. Each card appears once, with up to three repeat presentations. Revealing an answer never changes progress; only Again or Good does. Leaving mid-session keeps every completed rating." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In einer Sitzung kommen zuerst fällige Karten aus „Lernen“ und geplante Wiederholungen aus „Gelernt“, danach Karten aus „Neu“ bis zum Tageslimit. Jede Karte erscheint einmal und kann bis zu drei weitere Male erscheinen. Das Aufdecken ändert den Fortschritt nicht; nur „Nochmal“ oder „Gut“ tun das. Beim Verlassen bleiben alle abgeschlossenen Bewertungen erhalten."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una sesión incluye primero las tarjetas pendientes de «Aprendiendo» y los repasos programados de «Aprendidas», y luego las tarjetas de «Nuevas» dentro del límite diario. Cada tarjeta aparece una vez y puede repetirse hasta tres veces más. Mostrar la respuesta no cambia el progreso; solo lo hacen «Otra vez» o «Bien». Si sales de la sesión, se conservan todas las valoraciones realizadas."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une session inclut d’abord les cartes à réviser de « En cours » et les révisions prévues de « Appris », puis les cartes de « Nouveaux » dans la limite quotidienne. Chaque carte apparaît une fois et peut être présentée jusqu’à trois fois de plus. Révéler la réponse ne change jamais la progression ; seules les évaluations « Encore » ou « Bien » la changent. Quitter la session conserve toutes les évaluations effectuées."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sesi mendahulukan kartu “Dipelajari” yang jatuh tempo dan ulasan terjadwal kartu “Dikuasai”, lalu kartu “Baru” sesuai batas harian. Setiap kartu tampil sekali dan dapat ditampilkan ulang hingga tiga kali. Membuka jawaban tidak mengubah kemajuan; hanya “Ulangi” atau “Bagus” yang mengubahnya. Keluar di tengah sesi tetap menyimpan semua penilaian yang telah dilakukan."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una sessione include prima le carte da ripassare di «In apprendimento» e i ripassi programmati di «Imparate», poi le carte di «Nuove» entro il limite giornaliero. Ogni carta appare una volta e può essere ripresentata fino a tre volte. Mostrare la risposta non cambia i progressi; solo «Di nuovo» o «Bene» li cambiano. Uscendo dalla sessione si conservano tutte le valutazioni completate."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "セッションでは、期限になった「学習中」のカードと復習予定の「学習済み」のカードを優先し、その後に1日の上限内で「新規」のカードを追加します。各カードは1回表示され、さらに最大3回まで再表示されます。答えを表示しても進捗は変わらず、「もう一度」または「良い」の評価だけで変わります。途中で終了しても、完了した評価はすべて保存されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "세션에서는 기한이 된 “학습 중” 카드와 복습이 예정된 “학습 완료” 카드를 먼저 다룬 뒤 일일 한도 내에서 “새 단어” 카드를 추가합니다. 각 카드는 한 번 표시되고 최대 세 번 더 표시될 수 있습니다. 정답을 공개해도 진도는 바뀌지 않으며 “다시” 또는 “좋아요” 평가만 진도를 바꿉니다. 세션 도중 나가도 완료한 평가는 모두 저장됩니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een sessie begint met kaarten uit ‘Leren’ die aan de beurt zijn en geplande herhalingen uit ‘Geleerd’, gevolgd door kaarten uit ‘Nieuw’ binnen de daglimiet. Elke kaart verschijnt eenmaal en kan tot drie keer opnieuw verschijnen. Het tonen van een antwoord verandert de voortgang niet; alleen ‘Opnieuw’ of ‘Goed’ doet dat. Als je tussentijds stopt, blijven alle afgeronde beoordelingen bewaard."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sesja najpierw obejmuje karty z „W nauce”, których termin nadszedł, i zaplanowane powtórki z „Opanowane”, a następnie karty z „Nowe” w ramach limitu dziennego. Każda karta pojawia się raz i może zostać pokazana ponownie maksymalnie trzy razy. Odsłonięcie odpowiedzi nie zmienia postępów; robią to tylko oceny „Jeszcze raz” lub „Dobrze”. Wyjście w trakcie sesji zachowuje wszystkie wystawione oceny."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uma sessão inclui primeiro os cartões pendentes de “Em aprendizado” e as revisões agendadas de “Aprendidas”, depois os cartões de “Novas” dentro do limite diário. Cada cartão aparece uma vez e pode ser reapresentado até três vezes. Revelar uma resposta nunca altera o progresso; apenas “De novo” ou “Bom” fazem isso. Sair durante a sessão preserva todas as avaliações concluídas."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В сессию сначала попадают карточки «Изучается» с наступившим сроком и запланированные повторения карточек «Выучено», затем карточки «Новое» в пределах дневного лимита. Каждая карточка появляется один раз и может быть показана повторно ещё до трёх раз. Раскрытие ответа не меняет прогресс; его меняют только «Заново» или «Хорошо». При выходе из сессии все выставленные оценки сохраняются."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir oturuma önce “Öğreniliyor” durumundaki zamanı gelmiş kartlar ve “Öğrenildi” durumundaki planlanmış tekrarlar, ardından günlük sınır dahilinde “Yeni” kartları alınır. Her kart bir kez görünür ve en fazla üç kez daha gösterilebilir. Yanıtı açmak ilerlemeyi değiştirmez; yalnızca “Tekrar” veya “İyi” değiştirir. Oturumdan erken çıkmak, tamamlanan tüm değerlendirmeleri korur."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "До сесії спочатку потрапляють картки «Вивчається», час яких настав, і заплановані повторення карток «Вивчено», а потім картки «Нове» у межах денного ліміту. Кожна картка з’являється один раз і може бути показана повторно ще до трьох разів. Розкриття відповіді не змінює прогрес; його змінюють лише «Знову» або «Добре». При виході із сесії всі виставлені оцінки зберігаються."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Một phiên ưu tiên thẻ “Đang học” đã đến hạn và các lần ôn tập theo lịch của thẻ “Đã học”, sau đó thêm thẻ “Mới” trong giới hạn hằng ngày. Mỗi thẻ xuất hiện một lần và có thể xuất hiện lại tối đa ba lần. Hiện đáp án không thay đổi tiến độ; chỉ “Lại” hoặc “Tốt” mới thay đổi tiến độ. Rời phiên giữa chừng vẫn lưu mọi đánh giá đã hoàn thành."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每轮先安排已到期的“学习中”卡片和按计划复习的“已学会”卡片，再在每日限额内加入“新词”卡片。每张卡片显示一次，最多可再重复显示三次。显示答案不会改变进度，只有“重来”或“良好”评分会改变进度。中途退出会保留所有已完成的评分。"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A session admits due Learning and scheduled Learned cards first, then New cards within the daily limit. Each card appears once, with up to three repeat presentations. Revealing an answer never changes progress; only Again or Good does. Leaving mid-session keeps every completed rating."
+          }
+        }
+      }
+    },
+    "Complete each interval; any mistake restarts learning." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schließe jedes Intervall ab; jeder Fehler startet das Lernen neu."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Completa cada intervalo; cualquier error reinicia el aprendizaje."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terminez chaque intervalle ; toute erreur recommence l’apprentissage."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selesaikan setiap interval; kesalahan apa pun memulai ulang pembelajaran."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Completa ogni intervallo; qualsiasi errore riavvia l’apprendimento."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "各間隔を完了してください。間違えると学習をやり直します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "각 간격을 완료하세요. 한 번이라도 틀리면 학습을 다시 시작합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voltooi elk interval; elke fout start het leren opnieuw."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ukończ każdy interwał; każdy błąd rozpoczyna naukę od nowa."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conclua cada intervalo; qualquer erro reinicia a aprendizagem."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пройдите каждый интервал; любая ошибка начинает изучение заново."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Her aralığı tamamlayın; her hata öğrenmeyi yeniden başlatır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пройдіть кожен інтервал; будь-яка помилка починає вивчення заново."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoàn thành từng khoảng; bất kỳ lỗi nào cũng bắt đầu việc học lại từ đầu."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成每个间隔；任何错误都会重新开始学习。"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete each interval; any mistake restarts learning."
+          }
+        }
+      }
+    },
+    "Complete every learning interval before starting long-term reviews. Change learning steps in stack settings." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schließe jedes Lernintervall ab, bevor die langfristigen Wiederholungen beginnen. Du kannst die Lernschritte in den Stapeleinstellungen ändern."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Completa cada intervalo de aprendizaje antes de empezar los repasos a largo plazo. Cambia los pasos en los ajustes del mazo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terminez chaque intervalle d’apprentissage avant de commencer les révisions à long terme. Modifiez les étapes dans les réglages de la pile."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selesaikan setiap interval belajar sebelum memulai ulasan jangka panjang. Ubah tahap belajar di pengaturan tumpukan."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Completa ogni intervallo di apprendimento prima di iniziare i ripassi a lungo termine. Modifica le fasi nelle impostazioni del mazzo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "長期復習を始める前に、すべての学習間隔を完了してください。学習ステップはスタックの設定で変更できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "장기 복습을 시작하기 전에 모든 학습 간격을 완료하세요. 학습 단계는 스택 설정에서 변경할 수 있습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voltooi elk leerinterval voordat je aan de herhalingen op lange termijn begint. Wijzig de leerstappen in de stapelinstellingen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ukończ każdy interwał nauki przed rozpoczęciem powtórek długoterminowych. Etapy nauki możesz zmienić w ustawieniach stosu."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conclua cada intervalo de aprendizagem antes de iniciar as revisões de longo prazo. Altere as etapas nas configurações da pilha."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пройдите все интервалы изучения, прежде чем переходить к долгосрочным повторениям. Изменить этапы можно в настройках стопки."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uzun vadeli tekrarlara başlamadan önce her öğrenme aralığını tamamlayın. Öğrenme adımlarını deste ayarlarından değiştirin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пройдіть усі інтервали вивчення, перш ніж переходити до довгострокових повторень. Змінити етапи можна в налаштуваннях стосу."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoàn thành từng khoảng học trước khi bắt đầu ôn tập dài hạn. Thay đổi các bước học trong cài đặt bộ thẻ."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成每个学习间隔后，才能开始长期复习。可在卡片堆设置中更改学习步骤。"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete every learning interval before starting long-term reviews. Change learning steps in stack settings."
+          }
+        }
+      }
+    },
+    "Complete every learning interval, then continue through the long-term reviews. Any mistake restarts learning." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schließe jedes Lernintervall ab und mache dann mit den langfristigen Wiederholungen weiter. Jeder Fehler startet das Lernen neu."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Completa cada intervalo de aprendizaje y continúa con los repasos a largo plazo. Cualquier error reinicia el aprendizaje."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terminez chaque intervalle d’apprentissage, puis poursuivez les révisions à long terme. Toute erreur recommence l’apprentissage."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selesaikan setiap interval belajar, lalu lanjutkan ulasan jangka panjang. Kesalahan apa pun memulai ulang pembelajaran."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Completa ogni intervallo di apprendimento, poi prosegui con i ripassi a lungo termine. Qualsiasi errore riavvia l’apprendimento."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべての学習間隔を完了してから、長期復習に進みます。間違えると学習を最初からやり直します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 학습 간격을 완료한 뒤 장기 복습을 진행하세요. 한 번이라도 틀리면 학습을 다시 시작합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voltooi elk leerinterval en ga daarna door met de herhalingen op lange termijn. Elke fout start het leren opnieuw."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ukończ każdy interwał nauki, a następnie przejdź do powtórek długoterminowych. Każdy błąd rozpoczyna naukę od nowa."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conclua cada intervalo de aprendizagem e continue com as revisões de longo prazo. Qualquer erro reinicia a aprendizagem."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пройдите все интервалы изучения, затем переходите к долгосрочным повторениям. Любая ошибка начинает изучение заново."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Her öğrenme aralığını tamamlayın, ardından uzun vadeli tekrarlara devam edin. Her hata öğrenmeyi yeniden başlatır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пройдіть усі інтервали вивчення, а потім переходьте до довгострокових повторень. Будь-яка помилка починає вивчення заново."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoàn thành từng khoảng học, rồi tiếp tục ôn tập dài hạn. Bất kỳ lỗi nào cũng bắt đầu việc học lại từ đầu."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成每个学习间隔，然后继续长期复习。任何错误都会重新开始学习。"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete every learning interval, then continue through the long-term reviews. Any mistake restarts learning."
+          }
+        }
+      }
+    },
+    "Demo: each rating advances time to the next scheduled review." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demo: Jede Bewertung stellt die Zeit auf die nächste geplante Wiederholung vor."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demo: cada valoración adelanta el tiempo hasta el próximo repaso programado."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démo : chaque évaluation avance le temps jusqu’à la prochaine révision prévue."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demo: setiap penilaian memajukan waktu ke ulasan terjadwal berikutnya."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demo: ogni valutazione fa avanzare il tempo al prossimo ripasso programmato."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デモ：評価するたびに、次の復習予定時刻まで時間が進みます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "데모: 평가할 때마다 다음 복습 예정 시점으로 시간이 이동합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demo: elke beoordeling zet de tijd vooruit naar de volgende geplande herhaling."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demo: każda ocena przesuwa czas do następnej zaplanowanej powtórki."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demo: cada avaliação avança o tempo até a próxima revisão agendada."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Демо: каждая оценка переводит время к следующему запланированному повторению."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demo: her değerlendirme zamanı sonraki planlanmış tekrara ilerletir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Демо: кожна оцінка переводить час до наступного запланованого повторення."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bản demo: mỗi lần đánh giá sẽ chuyển thời gian đến lần ôn tập được lên lịch tiếp theo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "演示：每次评分都会将时间推进到下一次计划复习。"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demo: each rating advances time to the next scheduled review."
+          }
+        }
+      }
+    },
+    "Each interval starts after the previous correct answer. When a long-term review becomes due, the repeat count decreases by one, once." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jedes Intervall beginnt nach der vorherigen richtigen Antwort. Sobald eine langfristige Wiederholung fällig wird, sinkt der Wiederholungszähler einmalig um eins."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada intervalo empieza después de la respuesta correcta anterior. Cuando vence un repaso a largo plazo, el contador de repeticiones disminuye en uno, una sola vez."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chaque intervalle commence après la réponse correcte précédente. Lorsqu’une révision à long terme arrive à échéance, le compteur de répétitions diminue d’une unité, une seule fois."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setiap interval dimulai setelah jawaban benar sebelumnya. Saat ulasan jangka panjang jatuh tempo, jumlah pengulangan berkurang satu, hanya sekali."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ogni intervallo inizia dopo la risposta corretta precedente. Quando un ripasso a lungo termine diventa dovuto, il contatore delle ripetizioni diminuisce di uno, una sola volta."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "各間隔は直前の正解から始まります。長期復習の期限になると、反復回数が一度だけ1減ります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "각 간격은 이전 정답 이후부터 시작됩니다. 장기 복습 시점이 되면 반복 횟수가 한 번만 1 줄어듭니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elk interval begint na het vorige juiste antwoord. Zodra een herhaling op lange termijn aan de beurt is, daalt de herhalingsteller eenmalig met één."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Każdy interwał zaczyna się po poprzedniej poprawnej odpowiedzi. Gdy nadchodzi termin powtórki długoterminowej, licznik powtórzeń zmniejsza się o jeden, tylko raz."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada intervalo começa após a resposta correta anterior. Quando chega a hora de uma revisão de longo prazo, o contador de repetições diminui em um, uma única vez."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Каждый интервал отсчитывается от предыдущего правильного ответа. Когда наступает срок долгосрочного повторения, счётчик повторений уменьшается на единицу, только один раз."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Her aralık önceki doğru yanıttan sonra başlar. Uzun vadeli bir tekrarın zamanı geldiğinde tekrar sayısı yalnızca bir kez bir azalır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кожен інтервал відраховується від попередньої правильної відповіді. Коли настає час довгострокового повторення, лічильник повторень зменшується на одиницю, лише один раз."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mỗi khoảng bắt đầu sau câu trả lời đúng trước đó. Khi một lần ôn tập dài hạn đến hạn, số lần lặp giảm một, chỉ một lần duy nhất."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每个间隔都从上一次正确回答后开始计算。长期复习到期时，重复次数减一，且只减一次。"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Each interval starts after the previous correct answer. When a long-term review becomes due, the repeat count decreases by one, once."
+          }
+        }
+      }
+    },
+    "Editing the repeat count changes only the counter, not the learning stage." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Bearbeiten des Wiederholungszählers ändert nur den Zähler, nicht die Lernphase."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar el contador de repeticiones solo cambia el contador, no la etapa de aprendizaje."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifier le compteur de répétitions ne change que le compteur, pas l’étape d’apprentissage."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mengedit jumlah pengulangan hanya mengubah jumlahnya, bukan tahap belajar."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modificare il contatore delle ripetizioni cambia solo il contatore, non la fase di apprendimento."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反復回数を編集しても、変わるのは回数だけで、学習段階は変わりません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "반복 횟수를 수정해도 횟수만 바뀌며 학습 단계는 바뀌지 않습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het wijzigen van de herhalingsteller verandert alleen de teller, niet de leerfase."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edycja licznika powtórzeń zmienia tylko licznik, a nie etap nauki."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar o contador de repetições altera apenas o contador, não a etapa de aprendizagem."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Редактирование счётчика повторений меняет только счётчик, а не этап изучения."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tekrar sayısını düzenlemek yalnızca sayacı değiştirir, öğrenme aşamasını değiştirmez."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Редагування лічильника повторень змінює лише лічильник, а не етап вивчення."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chỉnh sửa số lần lặp chỉ thay đổi bộ đếm, không thay đổi giai đoạn học."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "编辑重复次数只会更改计数，不会改变学习阶段。"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editing the repeat count changes only the counter, not the learning stage."
+          }
+        }
+      }
+    },
+    "Good advances to the next interval. Again at any stage restarts learning from the first interval." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Gut“ führt zum nächsten Intervall. „Nochmal“ startet das Lernen in jeder Phase beim ersten Intervall neu."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Bien» avanza al siguiente intervalo. «Otra vez» reinicia el aprendizaje desde el primer intervalo en cualquier etapa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "« Bien » passe à l’intervalle suivant. « Encore » recommence l’apprentissage au premier intervalle, quelle que soit l’étape."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“Bagus” melanjutkan ke interval berikutnya. “Ulangi” pada tahap mana pun memulai ulang belajar dari interval pertama."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Bene» passa all’intervallo successivo. «Di nuovo» in qualsiasi fase riavvia l’apprendimento dal primo intervallo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「良い」で次の間隔に進みます。どの段階でも「もう一度」を選ぶと、最初の間隔から学習をやり直します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“좋아요”를 선택하면 다음 간격으로 진행합니다. 어느 단계에서든 “다시”을 선택하면 첫 번째 간격부터 학습을 다시 시작합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘Goed’ gaat naar het volgende interval. ‘Opnieuw’ begint in elke fase opnieuw bij het eerste leerinterval."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Dobrze” przechodzi do następnego interwału. „Jeszcze raz” na dowolnym etapie rozpoczyna naukę od pierwszego interwału."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“Bom” avança para o próximo intervalo. “De novo” em qualquer etapa reinicia a aprendizagem a partir do primeiro intervalo."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Хорошо» переводит к следующему интервалу. «Заново» на любом этапе начинает изучение заново, с первого интервала."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“İyi” sonraki aralığa geçer. Herhangi bir aşamada “Tekrar” öğrenmeyi ilk aralıktan yeniden başlatır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Добре» переводить до наступного інтервалу. «Знову» на будь-якому етапі починає вивчення заново, з першого інтервалу."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“Tốt” chuyển sang khoảng tiếp theo. “Lại” ở bất kỳ giai đoạn nào đều bắt đầu học lại từ khoảng đầu tiên."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择“良好”进入下一个间隔。在任何阶段选择“重来”都会从第一个间隔重新开始学习。"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Good advances to the next interval. Again at any stage restarts learning from the first interval."
+          }
+        }
+      }
+    },
+    "LONG-TERM REVIEW" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LANGFRISTIGE WIEDERHOLUNG"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "REPASO A LARGO PLAZO"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RÉVISION À LONG TERME"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ULASAN JANGKA PANJANG"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RIPASSO A LUNGO TERMINE"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "長期復習"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "장기 복습"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HERHALING OP LANGE TERMIJN"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "POWTÓRKA DŁUGOTERMINOWA"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "REVISÃO DE LONGO PRAZO"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ДОЛГОСРОЧНОЕ ПОВТОРЕНИЕ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "UZUN VADELİ TEKRAR"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ДОВГОСТРОКОВЕ ПОВТОРЕННЯ"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ÔN TẬP DÀI HẠN"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "长期复习"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LONG-TERM REVIEW"
+          }
+        }
+      }
+    },
+    "Learning complete. No more scheduled reviews." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lernen abgeschlossen. Keine weiteren geplanten Wiederholungen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aprendizaje completado. No quedan repasos programados."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apprentissage terminé. Plus aucune révision prévue."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pembelajaran selesai. Tidak ada lagi ulasan terjadwal."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apprendimento completato. Nessun altro ripasso programmato."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "学習が完了しました。今後の復習予定はありません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "학습이 완료되었습니다. 더 이상 예정된 복습이 없습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leren voltooid. Geen geplande herhalingen meer."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nauka ukończona. Nie ma kolejnych zaplanowanych powtórek."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aprendizagem concluída. Não há mais revisões agendadas."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Изучение завершено. Запланированных повторений больше нет."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öğrenme tamamlandı. Başka planlanmış tekrar yok."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вивчення завершено. Запланованих повторень більше немає."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đã học xong. Không còn lần ôn tập nào được lên lịch."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "学习已完成。不再安排后续复习。"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Learning complete. No more scheduled reviews."
+          }
+        }
+      }
+    },
+    "Learning intervals and long-term reviews." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lernintervalle und langfristige Wiederholungen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intervalos de aprendizaje y repasos a largo plazo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intervalles d’apprentissage et révisions à long terme."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interval belajar dan ulasan jangka panjang."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intervalli di apprendimento e ripassi a lungo termine."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "学習間隔と長期復習。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "학습 간격과 장기 복습."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leerintervallen en herhalingen op lange termijn."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interwały nauki i powtórki długoterminowe."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intervalos de aprendizagem e revisões de longo prazo."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Интервалы изучения и долгосрочные повторения."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öğrenme aralıkları ve uzun vadeli tekrarlar."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Інтервали вивчення та довгострокові повторення."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Khoảng học và ôn tập dài hạn."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "学习间隔和长期复习。"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Learning intervals and long-term reviews."
+          }
+        }
+      }
+    },
+    "Learning steps" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lernschritte"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pasos de aprendizaje"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Étapes d’apprentissage"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tahap belajar"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fasi di apprendimento"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "学習ステップ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "학습 단계"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leerstappen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etapy nauki"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etapas de aprendizagem"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Этапы изучения"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öğrenme adımları"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Етапи вивчення"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Các bước học"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "学习步骤"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Learning steps"
+          }
+        }
+      }
+    },
+    "Long-term intervals are 1 day, 3 days, 7 days, 14 days, and 1 month after each correct answer. A correct final monthly review completes learning." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die langfristigen Intervalle betragen nach der jeweils vorherigen richtigen Antwort 1 Tag, 3 Tage, 7 Tage, 14 Tage und 1 Monat. Eine richtige Antwort bei der abschließenden Monatswiederholung beendet das Lernen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los intervalos a largo plazo son de 1 día, 3 días, 7 días, 14 días y 1 mes, cada uno desde la respuesta correcta anterior. Una respuesta correcta en el repaso mensual final completa el aprendizaje."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les intervalles à long terme sont de 1 jour, 3 jours, 7 jours, 14 jours et 1 mois, chacun après la réponse correcte précédente. Une réponse correcte à la dernière révision mensuelle termine l’apprentissage."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interval jangka panjang adalah 1 hari, 3 hari, 7 hari, 14 hari, dan 1 bulan, masing-masing setelah jawaban benar sebelumnya. Jawaban benar pada ulasan bulanan terakhir menyelesaikan pembelajaran."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli intervalli a lungo termine sono di 1 giorno, 3 giorni, 7 giorni, 14 giorni e 1 mese, ciascuno dalla risposta corretta precedente. Una risposta corretta al ripasso mensile finale completa l’apprendimento."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "長期復習の間隔は、直前の正解から順に1日、3日、7日、14日、1か月です。最後の1か月後の復習で正解すると学習完了です。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "장기 복습 간격은 이전 정답 이후부터 차례로 1일, 3일, 7일, 14일, 1개월입니다. 마지막 한 달 간격의 복습에서 정답을 맞히면 학습이 완료됩니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De intervallen op lange termijn zijn 1 dag, 3 dagen, 7 dagen, 14 dagen en 1 maand, elk na het vorige juiste antwoord. Een juist antwoord op de laatste maandelijkse herhaling voltooit het leren."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interwały długoterminowe wynoszą kolejno 1 dzień, 3 dni, 7 dni, 14 dni i 1 miesiąc od poprzedniej poprawnej odpowiedzi. Poprawna odpowiedź podczas ostatniej powtórki po miesiącu kończy naukę."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os intervalos de longo prazo são de 1 dia, 3 dias, 7 dias, 14 dias e 1 mês, cada um após a resposta correta anterior. Uma resposta correta na revisão mensal final conclui a aprendizagem."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Долгосрочные интервалы: 1 день, 3 дня, 7 дней, 14 дней и 1 месяц, каждый от предыдущего правильного ответа. Правильный ответ на последнем повторении через месяц завершает изучение."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uzun vadeli aralıklar, her biri önceki doğru yanıttan itibaren 1 gün, 3 gün, 7 gün, 14 gün ve 1 aydır. Son bir aylık tekrarda doğru yanıt vermek öğrenmeyi tamamlar."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Довгострокові інтервали: 1 день, 3 дні, 7 днів, 14 днів і 1 місяць, кожен від попередньої правильної відповіді. Правильна відповідь на останньому повторенні через місяць завершує вивчення."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Các khoảng ôn tập dài hạn lần lượt là 1 ngày, 3 ngày, 7 ngày, 14 ngày và 1 tháng, mỗi khoảng tính từ câu trả lời đúng trước đó. Trả lời đúng ở lần ôn tập cuối sau một tháng sẽ hoàn thành việc học."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "长期复习间隔依次为1天、3天、7天、14天和1个月，每个间隔都从上一次正确回答后计算。最后一次间隔一个月的复习回答正确后，学习即完成。"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Long-term intervals are 1 day, 3 days, 7 days, 14 days, and 1 month after each correct answer. A correct final monthly review completes learning."
+          }
+        }
+      }
+    },
+    "Long-term reviews" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Langfristige Wiederholungen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repasos a largo plazo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Révisions à long terme"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ulasan jangka panjang"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ripassi a lungo termine"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "長期復習"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "장기 복습"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herhalingen op lange termijn"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Powtórki długoterminowe"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revisões de longo prazo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Долгосрочные повторения"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uzun vadeli tekrarlar"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Довгострокові повторення"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ôn tập dài hạn"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "长期复习"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Long-term reviews"
+          }
+        }
+      }
+    },
+    "Overdue words stay due until answered. Early practice does not skip an interval. A correct final monthly review completes learning." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Überfällige Wörter bleiben bis zur Antwort fällig. Frühes Üben überspringt kein Intervall. Eine richtige Antwort bei der abschließenden Monatswiederholung beendet das Lernen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las palabras vencidas siguen pendientes hasta que respondas. Practicar antes de tiempo no permite saltarse intervalos. Una respuesta correcta en el repaso mensual final completa el aprendizaje."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mots en retard restent à réviser jusqu’à votre réponse. S’entraîner en avance ne permet pas de sauter un intervalle. Une réponse correcte à la dernière révision mensuelle termine l’apprentissage."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kata yang terlambat diulas tetap menunggu hingga dijawab. Berlatih lebih awal tidak melewati interval. Jawaban benar pada ulasan bulanan terakhir menyelesaikan pembelajaran."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le parole in ritardo restano da ripassare finché non rispondi. Esercitarsi in anticipo non salta un intervallo. Una risposta corretta al ripasso mensile finale completa l’apprendimento."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "期限を過ぎた単語は、回答するまで復習待ちのままです。早めに練習しても間隔は飛ばせません。最後の1か月後の復習で正解すると学習完了です。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기한이 지난 단어는 답할 때까지 복습 대상으로 남습니다. 미리 연습해도 간격을 건너뛰지 않습니다. 마지막 한 달 간격의 복습에서 정답을 맞히면 학습이 완료됩니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Woorden die te laat zijn, blijven aan de beurt totdat je antwoordt. Vroeg oefenen slaat geen interval over. Een juist antwoord op de laatste maandelijkse herhaling voltooit het leren."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zaległe słowa czekają na powtórkę aż do odpowiedzi. Wcześniejsze ćwiczenie nie pomija interwału. Poprawna odpowiedź podczas ostatniej powtórki po miesiącu kończy naukę."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As palavras atrasadas continuam pendentes até você responder. Praticar antes da hora não pula um intervalo. Uma resposta correta na revisão mensal final conclui a aprendizagem."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Просроченные слова остаются к повторению до ответа. Досрочная практика не позволяет пропустить интервал. Правильный ответ на последнем повторении через месяц завершает изучение."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gecikmiş kelimeler yanıtlanana kadar bekler. Erken alıştırma bir aralığı atlatmaz. Son bir aylık tekrarda doğru yanıt vermek öğrenmeyi tamamlar."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прострочені слова залишаються до повторення, доки ви не відповісте. Дострокова практика не дає пропустити інтервал. Правильна відповідь на останньому повторенні через місяць завершує вивчення."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Từ quá hạn vẫn chờ ôn tập cho đến khi bạn trả lời. Luyện tập sớm không bỏ qua khoảng nào. Trả lời đúng ở lần ôn tập cuối sau một tháng sẽ hoàn thành việc học."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "逾期单词会一直保持待复习状态，直到回答。提前练习不会跳过间隔。最后一次间隔一个月的复习回答正确后，学习即完成。"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Overdue words stay due until answered. Early practice does not skip an interval. A correct final monthly review completes learning."
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

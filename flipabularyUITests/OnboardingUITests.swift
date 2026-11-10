@@ -79,7 +79,7 @@ final class OnboardingUITests: XCTestCase {
         app.buttons["onboarding.demo.reveal"].tap()
         XCTAssertTrue(app.buttons["onboarding.demo.good"].waitForExistence(timeout: 3))
         app.buttons["onboarding.demo.good"].tap()
-        XCTAssertTrue(app.staticTexts["Good. 1 of 5 repeats."].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Good. 1 of 9 repeats."].waitForExistence(timeout: 3))
 
         tapNext(app)
         XCTAssertTrue(app.staticTexts["You're ready"].waitForExistence(timeout: 3))
@@ -128,7 +128,7 @@ final class OnboardingUITests: XCTestCase {
         let end = start.withOffset(CGVector(dx: 220, dy: 0))
         start.press(forDuration: 0.05, thenDragTo: end)
 
-        XCTAssertTrue(app.staticTexts["Good. 1 of 5 repeats."].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Good. 1 of 9 repeats."].waitForExistence(timeout: 3))
     }
 
     @MainActor

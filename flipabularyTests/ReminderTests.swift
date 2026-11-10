@@ -56,20 +56,6 @@ final class ReminderSchedulerTests: XCTestCase {
         ReminderCardWork(lifecycle: .new, repeatCount: 0, nextDueAt: nil, learnedAnchor: nil, appliedMilestones: [])
     }
 
-    private func rules(
-        auto: Bool = true,
-        returnBelow: Int = 5
-    ) -> LearningRules {
-        LearningRules(
-            correctThreshold: 5,
-            resetOnMistake: true,
-            autoDecrease: auto,
-            returnBelow: returnBelow,
-            steps: LearningRules.defaultSteps,
-            version: 1
-        )
-    }
-
     func testSevenDayRollingScheduleOnePerDay() {
         let now = harness.clock.now
         let requests = ReminderScheduler.desiredRequests(
@@ -159,72 +145,57 @@ final class ReminderSchedulerTests: XCTestCase {
         XCTAssertTrue(requests.isEmpty)
     }
 
-    func testLearnedDecayCreatesWork() {
+    func testScheduledLearnedReviewBecomesWorkExactlyWhenDue() {
+        let due = harness.clock.now.addingTimeInterval(86_400)
         let learned = ReminderCardWork(
             lifecycle: .learned,
-            repeatCount: 5,
-            nextDueAt: harness.clock.now.addingTimeInterval(86_400),
-            learnedAnchor: harness.clock.now.addingTimeInterval(-86_400 * 3),
+            repeatCount: 9,
+            nextDueAt: due,
+            learnedAnchor: harness.clock.now,
             appliedMilestones: []
         )
-        XCTAssertTrue(
-            ReminderScheduler.hasWork(
-                scopeID: nil,
-                at: harness.clock.now.addingTimeInterval(86_400),
-                isToday: false,
-                work: work(cards: [learned], newPerDay: 0),
-                calendar: calendar
+        let snapshot = work(cards: [learned], newPerDay: 0)
+        for (date, expected) in [(due.addingTimeInterval(-1), false), (due, true), (due.addingTimeInterval(40 * 86_400), true)] {
+            XCTAssertEqual(
+                ReminderScheduler.hasWork(scopeID: nil, at: date, isToday: false, work: snapshot, calendar: calendar),
+                expected
             )
-        )
+        }
     }
 
-    func testLearnedDecayDoesNotCreateWorkWhenDisabled() {
-        let learned = ReminderCardWork(
+    func testMasteredCardWithoutDueDateNeverCreatesWork() {
+        let mastered = ReminderCardWork(
             lifecycle: .learned,
-            repeatCount: 5,
-            nextDueAt: harness.clock.now.addingTimeInterval(86_400),
-            learnedAnchor: harness.clock.now.addingTimeInterval(-86_400 * 3),
-            appliedMilestones: []
+            repeatCount: 9,
+            nextDueAt: nil,
+            learnedAnchor: harness.clock.now,
+            appliedMilestones: Set(LearningEngine.decayMilestones.map(\.index))
         )
-        XCTAssertFalse(
-            ReminderScheduler.hasWork(
-                scopeID: nil,
-                at: harness.clock.now.addingTimeInterval(86_400 * 10),
-                isToday: false,
-                work: work(cards: [learned], newPerDay: 0, rules: rules(auto: false)),
-                calendar: calendar
-            )
-        )
+        XCTAssertFalse(ReminderScheduler.hasWork(
+            scopeID: nil,
+            at: harness.clock.now.addingTimeInterval(365 * 86_400),
+            isToday: false,
+            work: work(cards: [mastered], newPerDay: 0),
+            calendar: calendar
+        ))
     }
 
-    func testLearnedDecayWithLowReturnThresholdWaitsForTheCrossingMilestone() {
-        let learned = ReminderCardWork(
+    func testProcessedDueMilestoneRemainsReminderWorkUntilAnswered() {
+        let overdue = ReminderCardWork(
             lifecycle: .learned,
-            repeatCount: 5,
-            nextDueAt: harness.clock.now.addingTimeInterval(86_400),
-            learnedAnchor: harness.clock.now.addingTimeInterval(-86_400 * 3),
-            appliedMilestones: []
+            repeatCount: 8,
+            nextDueAt: harness.clock.now.addingTimeInterval(-86_400),
+            learnedAnchor: harness.clock.now.addingTimeInterval(-2 * 86_400),
+            appliedMilestones: [0]
         )
-        let work = work(cards: [learned], newPerDay: 0, rules: rules(returnBelow: 1))
-
-        XCTAssertFalse(
-            ReminderScheduler.hasWork(
-                scopeID: nil,
-                at: harness.clock.now.addingTimeInterval(86_400),
-                isToday: false,
-                work: work,
-                calendar: calendar
-            )
+        let requests = ReminderScheduler.desiredRequests(
+            preferences: prefs(),
+            authorization: .authorized,
+            work: work(cards: [overdue], newPerDay: 0),
+            now: harness.clock.now,
+            calendar: calendar
         )
-        XCTAssertTrue(
-            ReminderScheduler.hasWork(
-                scopeID: nil,
-                at: harness.clock.now.addingTimeInterval(86_400 * 40),
-                isToday: false,
-                work: work,
-                calendar: calendar
-            )
-        )
+        XCTAssertEqual(requests.count, 7)
     }
 
     func testPermissionStates() {
@@ -307,7 +278,7 @@ final class ReminderSchedulerTests: XCTestCase {
         XCTAssertNil(harness.reminders.nextScheduledAt)
     }
 
-    func testServiceSchedulesReminderForDecayingLearnedCard() async {
+    func testServiceSchedulesReminderStartingOnLearnedDueDay() async {
         let stack = harness.makeStack(newCardsPerDay: 0)
         let card = harness.makeCard(
             word: "learned",
@@ -316,15 +287,17 @@ final class ReminderSchedulerTests: XCTestCase {
             repeatCount: 5,
             nextDueAt: harness.clock.now.addingTimeInterval(86_400)
         )
-        card.learningState?.learnedAnchor = harness.clock.now.addingTimeInterval(-86_400 * 2)
+        card.learningState?.learnedAnchor = harness.clock.now
         card.learningState?.appliedMilestones = []
         try? harness.save()
         harness.preferences.preferences.reminders = prefs()
 
         await harness.reminders.refreshAndReconcile()
 
-        let owned = harness.notifications.pending.keys.filter { $0.hasPrefix(ReminderRequest.identifierPrefix) }
-        XCTAssertEqual(owned.count, 7)
+        let owned = harness.notifications.pending.values.filter { $0.identifier.hasPrefix(ReminderRequest.identifierPrefix) }
+        XCTAssertEqual(owned.count, 6)
+        XCTAssertEqual(owned.map(\.fireDate).min(), testDate("2026-11-08T20:00:00Z"))
+        XCTAssertFalse(owned.contains { CalendarTools.dayKey(for: $0.fireDate, calendar: calendar) == "2026-11-07" })
     }
 
     func testDeniedPermissionLeavesTruthfulDisabledState() async {
@@ -373,14 +346,6 @@ final class ReminderSchedulerTests: XCTestCase {
 
     func testNoWorkDaysSkipScheduling() async {
         let stack = harness.makeStack(newCardsPerDay: 0)
-        stack.customRules = LearningRules(
-            correctThreshold: 5,
-            resetOnMistake: true,
-            autoDecrease: false,
-            returnBelow: 5,
-            steps: LearningRules.defaultSteps,
-            version: 1
-        )
         let card = harness.makeCard(
             word: "learned",
             stack: stack,

@@ -115,7 +115,7 @@ enum WidgetData {
 
         return FlipWidgetEntry(
             date: date,
-            snapshot: snapshot,
+            snapshot: snapshot.projected(at: date),
             stackID: stackID,
             wordSetID: wordSetID,
             sort: sortOverride ?? .dueFirst,
@@ -132,10 +132,10 @@ enum WidgetData {
         makeEntry: (Date) -> FlipWidgetEntry
     ) -> Timeline<FlipWidgetEntry> {
         var dates: [Date] = [now]
-        let upcoming = (snapshot.stacks.compactMap(\.nextDueAt) + snapshot.wordSets.compactMap(\.nextDueAt))
+        let upcoming = Set(snapshot.stacks.flatMap(\.cards).compactMap(\.dueAt))
             .filter { $0 > now }
             .sorted()
-            .prefix(2)
+            .prefix(48)
         dates.append(contentsOf: upcoming)
         let calendar = Calendar.current
         let midnight = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: now)) ?? now.addingTimeInterval(86_400)

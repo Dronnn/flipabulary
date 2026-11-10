@@ -133,27 +133,8 @@ enum ReminderScheduler {
             }
             for card in stack.cards {
                 switch card.lifecycle {
-                case .learning:
+                case .learning, .learned:
                     if let due = card.nextDueAt, due <= date { return true }
-                case .learned:
-                    guard stack.rules.autoDecrease, let anchor = card.learnedAnchor else { continue }
-                    let snapshot = LearningSnapshot(
-                        repeatCount: card.repeatCount,
-                        lifecycle: .learned,
-                        stepIndex: 0,
-                        nextDueAt: card.nextDueAt,
-                        lastGradedAt: nil,
-                        learnedAnchor: anchor,
-                        appliedMilestones: card.appliedMilestones,
-                        mistakeReturn: false
-                    )
-                    let result = LearningEngine.reconcileDecay(
-                        snapshot,
-                        rules: stack.rules,
-                        at: date,
-                        calendar: calendar
-                    )
-                    if result.after.lifecycle == .learning { return true }
                 case .new:
                     continue
                 }

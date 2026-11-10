@@ -67,7 +67,6 @@ final class MaintenanceService {
     func refresh() {
         let stacks = stacks()
         reconcileDecay(stacks: stacks)
-        promoteWhereRulesRequire(stacks: stacks)
         publishSnapshot(stacks: stacks)
     }
 
@@ -81,7 +80,6 @@ final class MaintenanceService {
         var changed = false
         for stack in stacks {
             let rules = stack.effectiveRules(global: preferences.preferences.rules)
-            guard rules.autoDecrease else { continue }
             for card in stack.cards {
                 guard let state = card.learningState, state.lifecycle == .learned else { continue }
                 let transition = LearningEngine.reconcileDecay(
@@ -94,63 +92,6 @@ final class MaintenanceService {
                     state.apply(transition.after, rulesVersion: rules.version)
                     changed = true
                 }
-            }
-        }
-        if changed {
-            save()
-            publishSnapshot()
-        }
-    }
-
-    func promoteWhereRulesRequire() {
-        promoteWhereRulesRequire(stacks: stacks())
-    }
-
-    private func promoteWhereRulesRequire(stacks: [VocabularyStack]) {
-        var changed = false
-        for stack in stacks {
-            let rules = stack.effectiveRules(global: preferences.preferences.rules)
-            for card in stack.cards {
-                guard let state = card.learningState else { continue }
-                if state.lifecycle == .learning,
-                   !state.mistakeReturn,
-                   state.repeatCount >= rules.correctThreshold {
-                    var snapshot = state.snapshot
-                    snapshot.lifecycle = .learned
-                    snapshot.learnedAnchor = state.lastGradedAt ?? clock.now
-                    snapshot.appliedMilestones = []
-                    snapshot.nextDueAt = LearningEngine.milestoneDate(
-                        index: 0,
-                        anchor: snapshot.learnedAnchor ?? clock.now,
-                        calendar: calendar
-                    )
-                    snapshot.mistakeReturn = false
-                    state.apply(snapshot, rulesVersion: rules.version)
-                    changed = true
-                }
-            }
-        }
-        if changed {
-            save()
-            publishSnapshot()
-        }
-    }
-
-    func reanchorDecay(scopeID: UUID?, includeCustomRules: Bool = false) {
-        let stacks = stacks().filter { stack in
-            if let scopeID { return stack.id == scopeID }
-            return includeCustomRules || stack.customRulesData == nil
-        }
-        let now = clock.now
-        var changed = false
-        for stack in stacks {
-            let rules = stack.effectiveRules(global: preferences.preferences.rules)
-            guard rules.autoDecrease else { continue }
-            for card in stack.cards {
-                guard let state = card.learningState, state.lifecycle == .learned else { continue }
-                let updated = LearningEngine.reanchorForEnabledDecay(state.snapshot, at: now, calendar: calendar)
-                state.apply(updated, rulesVersion: rules.version)
-                changed = true
             }
         }
         if changed {
@@ -259,18 +200,8 @@ final class MaintenanceService {
                     at: now,
                     calendar: calendar
                 ).after
-                if reconciled.lifecycle == .learning,
-                   let due = reconciled.nextDueAt,
-                   due > now {
+                if let due = reconciled.nextDueAt, due > now {
                     earliest = earliest.map { min($0, due) } ?? due
-                } else if reconciled.lifecycle == .learned,
-                          let returnDate = LearningEngine.nextReturnToLearningDate(
-                              reconciled,
-                              rules: rules,
-                              after: now,
-                              calendar: calendar
-                          ) {
-                    earliest = earliest.map { min($0, returnDate) } ?? returnDate
                 }
             }
         }

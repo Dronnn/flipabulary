@@ -208,6 +208,12 @@ final class StackMergeTests: XCTestCase {
             nextDueAt: due
         )
         learned.learningState?.totalGrades = 12
+        learned.learningState?.stepIndex = LearningRules.defaultSteps.count
+        learned.learningState?.reviewStageIndex = 2
+        learned.learningState?.appliedMilestones = [0, 1]
+        learned.learningState?.learnedAnchor = harness.clock.now
+        learned.learningState?.lastGradedAt = harness.clock.now
+        let expectedSnapshot = learned.snapshot
         try harness.save()
 
         let result = try requireMerge([first.id, second.id], name: "Merged", deleteOriginals: false)
@@ -218,8 +224,31 @@ final class StackMergeTests: XCTestCase {
         XCTAssertEqual(card.learningState?.lifecycle, .learned)
         XCTAssertEqual(card.learningState?.repeatCount, 4)
         XCTAssertEqual(card.learningState?.totalGrades, 12)
+        XCTAssertEqual(card.snapshot, expectedSnapshot)
         XCTAssertEqual(card.learningState?.nextDueAt, due)
         XCTAssertEqual(result.duplicateCount, 1)
+    }
+
+    func testMergeKeepsMasteredProgressOverEarlierStageWithMoreAnswers() throws {
+        let first = harness.makeStack(name: "First", isDefault: false)
+        let second = harness.makeStack(name: "Second", isDefault: false)
+        let mastered = harness.makeCard(word: "cat", translation: "кошка", stack: first, lifecycle: .learned, repeatCount: 9)
+        mastered.learningState?.stepIndex = LearningRules.defaultSteps.count
+        mastered.learningState?.reviewStageIndex = LearningEngine.decayMilestones.count
+        mastered.learningState?.appliedMilestones = Set(LearningEngine.decayMilestones.map(\.index))
+        mastered.learningState?.nextDueAt = nil
+        mastered.learningState?.totalGrades = 14
+        let earlier = harness.makeCard(word: "cat", translation: "кошка", stack: second, lifecycle: .learned, repeatCount: 20, nextDueAt: harness.clock.now.addingTimeInterval(86_400))
+        earlier.learningState?.totalGrades = 100
+        earlier.learningState?.reviewStageIndex = 0
+        let expected = mastered.snapshot
+        try harness.save()
+
+        let result = try requireMerge([first.id, second.id], name: "Merged", deleteOriginals: false)
+        let merged = try XCTUnwrap(result.stack.cards.first)
+        XCTAssertEqual(result.stack.cards.count, 1)
+        XCTAssertEqual(merged.snapshot, expected)
+        XCTAssertTrue(merged.snapshot.isFullyMastered)
     }
 
     func testMergeTieBreaksUseGradesThenRepeatsThenLastGradedThenCreation() throws {
@@ -881,7 +910,6 @@ final class StackMergeTests: XCTestCase {
             translationFirst: true,
             steps: [30, 600]
         )
-        first.customRules = LearningRules.default
         let second = harness.makeStack(name: "Second", isDefault: false)
         try harness.save()
 
@@ -893,7 +921,6 @@ final class StackMergeTests: XCTestCase {
         XCTAssertTrue(merged.shuffleOrder)
         XCTAssertEqual(merged.presentationMode, .frontFirst)
         XCTAssertEqual(merged.steps, LearningRules.defaultSteps)
-        XCTAssertNil(merged.customRules)
         XCTAssertEqual(harness.library.stacks().first?.id, merged.id)
         XCTAssertEqual(merged.isDefault, false)
     }

@@ -29,6 +29,7 @@ struct WidgetCardSnapshot: Codable, Hashable, Identifiable, Sendable {
     var threshold: Int
     var dueAt: Date?
     var createdAt: Date
+    var decayPending: Bool? = nil
 }
 
 struct WidgetStackSnapshot: Codable, Hashable, Identifiable, Sendable {
@@ -41,6 +42,8 @@ struct WidgetStackSnapshot: Codable, Hashable, Identifiable, Sendable {
     var newCount: Int
     var cards: [WidgetCardSnapshot]
     var nextDueAt: Date?
+    var newCardsPerDay: Int? = nil
+    var remainingNewCards: Int? = nil
 }
 
 struct WidgetWordSetSnapshot: Codable, Hashable, Identifiable, Sendable {
@@ -107,6 +110,45 @@ struct WidgetSnapshot: Codable, Hashable, Sendable {
             defaultSort: .dueFirst,
             defaultShowTranslations: false
         )
+    }
+
+    /// Project only pending dates; later learning stages always require an answer in the app.
+    func projected(at date: Date, calendar: Calendar = .current) -> WidgetSnapshot {
+        var copy = self
+        let sameDay = calendar.isDate(generatedAt, inSameDayAs: date)
+        copy.stacks = stacks.map { original in
+            var stack = original
+            stack.cards = original.cards.map { card in
+                var card = card
+                if card.decayPending == true, let due = card.dueAt, due <= date {
+                    card.repeatCount = max(0, card.repeatCount - 1)
+                    card.decayPending = false
+                }
+                return card
+            }
+            let allowance = sameDay ? stack.remainingNewCards : stack.newCardsPerDay
+            let newCount = stack.cards.filter { $0.lifecycle == "new" }.count
+            let scheduled = stack.cards.filter { $0.lifecycle != "new" && ($0.dueAt.map { $0 <= date } ?? false) }.count
+            stack.dueCount = scheduled + min(newCount, max(0, allowance ?? newCount))
+            stack.nextDueAt = stack.cards.compactMap(\.dueAt).filter { $0 > date }.min()
+            return stack
+        }
+        let byID = Dictionary(copy.stacks.flatMap(\.cards).map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        copy.wordSets = wordSets.map { original in
+            var set = original
+            set.cards = original.cards.compactMap { byID[$0.id] }
+            let ids = Set(set.cards.map(\.id))
+            set.dueCount = copy.stacks.reduce(0) { total, stack in
+                let cards = stack.cards.filter { ids.contains($0.id) }
+                let newCount = cards.filter { $0.lifecycle == "new" }.count
+                let allowance = sameDay ? stack.remainingNewCards : stack.newCardsPerDay
+                let scheduled = cards.filter { $0.lifecycle != "new" && ($0.dueAt.map { $0 <= date } ?? false) }.count
+                return total + scheduled + min(newCount, max(0, allowance ?? newCount))
+            }
+            set.nextDueAt = set.cards.compactMap(\.dueAt).filter { $0 > date }.min()
+            return set
+        }
+        return copy
     }
 
     var isEmpty: Bool { stacks.allSatisfy(\.cards.isEmpty) }
@@ -299,7 +341,7 @@ struct WidgetSummary: Hashable, Sendable {
 
     var nextCard: WidgetCardSnapshot? {
         cards
-            .filter { $0.lifecycle != "learned" }
+            .filter { $0.lifecycle == "new" || $0.dueAt != nil }
             .sorted {
                 let l = $0.dueAt ?? .distantFuture
                 let r = $1.dueAt ?? .distantFuture
@@ -311,7 +353,7 @@ struct WidgetSummary: Hashable, Sendable {
 
     var upcomingCards: [WidgetCardSnapshot] {
         cards
-            .filter { $0.lifecycle != "learned" }
+            .filter { $0.lifecycle == "new" || $0.dueAt != nil }
             .sorted {
                 let l = $0.dueAt ?? .distantFuture
                 let r = $1.dueAt ?? .distantFuture

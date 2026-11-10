@@ -165,27 +165,20 @@ final class OnboardingTests: XCTestCase {
         XCTAssertEqual(demo.repeatCount, 0)
     }
 
-    func testLearningDemoGoodAnswersReachLearnedAtThreshold() {
-        var demo = OnboardingLearningDemo(threshold: 3)
+    func testLearningDemoSimulatesAllIntervalsUsingTheRealEngine() throws {
+        var demo = OnboardingLearningDemo()
         demo.reveal()
-        XCTAssertTrue(demo.canRate)
-
-        demo.rate(.good)
-        XCTAssertEqual(demo.repeatCount, 1)
-        XCTAssertEqual(demo.lastGrade, .good)
-        XCTAssertFalse(demo.isLearned)
-
-        demo.rate(.good)
-        XCTAssertEqual(demo.repeatCount, 2)
-        XCTAssertFalse(demo.isLearned)
-
-        demo.rate(.good)
-        XCTAssertEqual(demo.repeatCount, 3)
-        XCTAssertTrue(demo.isLearned)
+        for answer in 1...14 {
+            demo.rate(.good)
+            XCTAssertEqual(demo.lastGrade, .good)
+            XCTAssertEqual(demo.isLearned, answer == 14)
+            if answer < 14 { XCTAssertNotNil(demo.snapshot.nextDueAt) }
+        }
         XCTAssertEqual(demo.phase, .learned)
-
+        XCTAssertNil(demo.snapshot.nextDueAt)
+        let final = demo
         demo.rate(.good)
-        XCTAssertEqual(demo.repeatCount, 3)
+        XCTAssertEqual(demo, final)
     }
 
     func testLearningDemoAgainResetsTheStreak() {
@@ -203,9 +196,9 @@ final class OnboardingTests: XCTestCase {
     }
 
     func testLearningDemoTryAgainReturnsToPrompt() {
-        var demo = OnboardingLearningDemo(threshold: 1)
+        var demo = OnboardingLearningDemo()
         demo.reveal()
-        demo.rate(.good)
+        for _ in 0..<14 { demo.rate(.good) }
         XCTAssertTrue(demo.isLearned)
 
         demo.tryAgain()

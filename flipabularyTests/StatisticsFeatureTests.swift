@@ -227,7 +227,7 @@ final class StatisticsFeatureTests: XCTestCase {
         }
     }
 
-    func testLibraryDueCountIncludesDecayedLearnedCard() throws {
+    func testLibraryDueCountIncludesScheduledLearnedCard() throws {
         let stack = harness.makeStack(newCardsPerDay: 0)
         harness.makeCard(
             word: "decay",
@@ -262,7 +262,7 @@ final class StatisticsFeatureTests: XCTestCase {
         )
     }
 
-    func testWordStatisticsReflectsEditedStreak() async throws {
+    func testWordStatisticsCounterEditPreservesStage() async throws {
         let stack = harness.makeStack()
         let card = harness.makeCard(word: "streak", stack: stack)
         try harness.save()
@@ -276,7 +276,8 @@ final class StatisticsFeatureTests: XCTestCase {
         )
         let stats = try XCTUnwrap(loaded)
         XCTAssertEqual(stats.repeatCount, 5)
-        XCTAssertEqual(stats.lifecycle, .learned)
+        XCTAssertEqual(stats.lifecycle, .new)
+        XCTAssertNil(stats.nextDueAt)
     }
 
 
@@ -628,6 +629,7 @@ final class StatisticsFeatureTests: XCTestCase {
         let stack = harness.makeStack()
         let mastered = harness.makeCard(word: "mastered", stack: stack, lifecycle: .learned, repeatCount: 5)
         mastered.learningState?.appliedMilestones = Set(LearningEngine.decayMilestones.map(\.index))
+        mastered.learningState?.reviewStageIndex = LearningEngine.decayMilestones.count
         mastered.learningState?.nextDueAt = nil
         _ = harness.makeCard(word: "learning", stack: stack, lifecycle: .learning, repeatCount: 1)
         try harness.save()
@@ -966,13 +968,15 @@ final class StatisticsFeatureTests: XCTestCase {
         XCTAssertEqual(clearedLoaded?.isDifficult, false)
     }
 
-    func testWordStatisticsMarksFullyMasteredOnlyWhenAllMilestonesApplied() async throws {
+    func testWordStatisticsMasteryRequiresFinalCompletedStageAndNoDueReview() async throws {
         let stack = harness.makeStack()
         let mastered = harness.makeCard(word: "mastered", stack: stack, lifecycle: .learned, repeatCount: 5)
         mastered.learningState?.appliedMilestones = Set(LearningEngine.decayMilestones.map(\.index))
+        mastered.learningState?.reviewStageIndex = LearningEngine.decayMilestones.count
         mastered.learningState?.nextDueAt = nil
         let learned = harness.makeCard(word: "learned", stack: stack, lifecycle: .learned, repeatCount: 5)
-        learned.learningState?.appliedMilestones = [0]
+        learned.learningState?.appliedMilestones = Set(LearningEngine.decayMilestones.map(\.index))
+        learned.learningState?.reviewStageIndex = 4
         learned.learningState?.nextDueAt = harness.clock.now
         try harness.save()
 
@@ -993,14 +997,7 @@ final class StatisticsFeatureTests: XCTestCase {
 
     func testWordStatisticsUsesStackRulesForThreshold() async throws {
         let stack = harness.makeStack()
-        stack.customRules = LearningRules(
-            correctThreshold: 7,
-            resetOnMistake: false,
-            autoDecrease: true,
-            returnBelow: 7,
-            steps: [30, 60],
-            version: 2
-        )
+        stack.steps = [30, 60, 120]
         let card = harness.makeCard(word: "threshold", stack: stack)
         try harness.save()
 
@@ -1011,7 +1008,7 @@ final class StatisticsFeatureTests: XCTestCase {
         )
         let stats = try XCTUnwrap(loaded)
 
-        XCTAssertEqual(stats.threshold, 7)
+        XCTAssertEqual(stats.threshold, 4)
     }
 
     func testWordStatisticsTreatsMissingTimingAsZero() async throws {

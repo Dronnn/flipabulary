@@ -88,20 +88,17 @@ final class ReviewIntegrationTests: XCTestCase {
         XCTAssertNotNil(state.nextDueAt)
     }
 
-    func testEditingStreakMovesBetweenLearningAndLearned() throws {
+    func testEditingCounterDoesNotSkipScheduledIntervals() throws {
         let stack = harness.makeStack()
         let card = dueCard(word: "streak", stack: stack)
-
-        guard case .success = harness.library.setCorrectStreak(cardID: card.id, value: 5) else {
-            return XCTFail("Expected streak update")
-        }
-        XCTAssertEqual(card.learningState?.lifecycle, .learned)
-
-        guard case .success = harness.library.setCorrectStreak(cardID: card.id, value: 2) else {
-            return XCTFail("Expected streak update")
-        }
-        XCTAssertEqual(card.learningState?.lifecycle, .learning)
+        let before = card.snapshot
+        guard case .success = harness.library.setCorrectStreak(cardID: card.id, value: 100) else { return XCTFail("Expected counter update") }
+        XCTAssertEqual(card.snapshot.lifecycle, before.lifecycle)
+        XCTAssertEqual(card.snapshot.stepIndex, before.stepIndex)
+        XCTAssertEqual(card.snapshot.nextDueAt, before.nextDueAt)
+        XCTAssertEqual(card.snapshot.repeatCount, 100)
     }
+
 
     func testStackDirectionIsCapturedBySession() throws {
         let stack = harness.makeStack(translationFirst: false)
@@ -152,7 +149,7 @@ final class ReviewIntegrationTests: XCTestCase {
         let session = try start(stack)
         XCTAssertEqual(session.queue().admittedCardIDs.count, 2)
         XCTAssertEqual(Set(session.queue().presentations.map(\.cardID)).count, 2)
-        XCTAssertEqual(session.config?.rules.correctThreshold, 5)
+        XCTAssertEqual(session.config?.rules.correctThreshold, 9)
 
         let beforeCount = first.learningState?.repeatCount
         let eventsBefore = try harness.context.fetch(FetchDescriptor<ReviewEvent>()).count
@@ -193,65 +190,46 @@ final class ReviewIntegrationTests: XCTestCase {
         XCTAssertEqual(try harness.context.fetch(FetchDescriptor<ReviewEvent>()).count, 0)
     }
 
-    func testDecayedLearnedCardReturnsToLearningAndCanBeRelearned() throws {
+    func testDueLearnedReviewDecaysOnceAndGoodSchedulesThreeDays() throws {
         let stack = harness.makeStack(newCardsPerDay: 0)
-        let card = harness.makeCard(
-            word: "decay",
-            stack: stack,
-            lifecycle: .learned,
-            repeatCount: 5,
-            nextDueAt: harness.clock.now.addingTimeInterval(86_400)
-        )
+        let card = harness.makeCard(word: "decay", stack: stack, lifecycle: .learned, repeatCount: 9, nextDueAt: harness.clock.now.addingTimeInterval(86400))
         try harness.save()
-
-        harness.clock.advance(by: 86_400)
+        harness.clock.advance(by: 86400)
         let session = try start(stack)
-
         XCTAssertEqual(harness.review.currentCard(for: session)?.id, card.id)
-        XCTAssertEqual(card.learningState?.lifecycle, .learning)
-        XCTAssertEqual(card.learningState?.repeatCount, 4)
-        XCTAssertEqual(card.learningState?.nextDueAt, harness.clock.now)
-
+        XCTAssertEqual(card.snapshot.lifecycle, .learned)
+        XCTAssertEqual(card.snapshot.repeatCount, 8)
+        harness.maintenance.refresh()
+        XCTAssertEqual(card.snapshot.repeatCount, 8)
         XCTAssertTrue(harness.review.reveal(session))
         XCTAssertEqual(harness.review.grade(session, grade: .good), .completed)
-        XCTAssertEqual(card.learningState?.lifecycle, .learned)
-        XCTAssertEqual(card.learningState?.repeatCount, 5)
-        XCTAssertEqual(card.learningState?.learnedAnchor, harness.clock.now)
-        XCTAssertEqual(card.learningState?.nextDueAt, harness.clock.now.addingTimeInterval(86_400))
+        XCTAssertEqual(card.snapshot.reviewStageIndex, 1)
+        XCTAssertEqual(card.snapshot.repeatCount, 9)
+        XCTAssertEqual(card.snapshot.nextDueAt, harness.clock.now.addingTimeInterval(86400 * 3))
     }
 
-    func testReanchorDecayStartsFreshScheduleWithoutLosingRepeats() throws {
-        let stack = harness.makeStack(newCardsPerDay: 0)
-        stack.customRules = LearningRules(
-            correctThreshold: 5,
-            resetOnMistake: true,
-            autoDecrease: true,
-            returnBelow: 5,
-            steps: LearningRules.defaultSteps,
-            version: 2
-        )
-        let card = harness.makeCard(
-            word: "reanchor",
-            stack: stack,
-            lifecycle: .learned,
-            repeatCount: 3,
-            nextDueAt: harness.clock.now.addingTimeInterval(86_400)
-        )
-        let state = try XCTUnwrap(card.learningState)
-        state.repeatCount = 3
-        state.learnedAnchor = harness.clock.now.addingTimeInterval(-86_400 * 10)
-        state.appliedMilestones = [0, 1, 2]
-        state.nextDueAt = harness.clock.now.addingTimeInterval(-1)
-        try harness.save()
 
-        harness.maintenance.reanchorDecay(scopeID: stack.id)
-
-        XCTAssertEqual(state.repeatCount, 3)
-        XCTAssertEqual(state.lifecycle, .learned)
-        XCTAssertEqual(state.learnedAnchor, harness.clock.now)
-        XCTAssertTrue(state.appliedMilestones.isEmpty)
-        XCTAssertEqual(state.nextDueAt, harness.clock.now.addingTimeInterval(86_400))
+    func testCustomStackIntervalsActuallyControlGoodAndAgain() throws {
+        let stack = harness.makeStack(steps: [120, 900])
+        let card = harness.makeCard(word: "custom", stack: stack)
+        var session = try start(stack)
+        XCTAssertTrue(harness.review.reveal(session))
+        XCTAssertEqual(harness.review.grade(session, grade: .good), .completed)
+        XCTAssertEqual(card.snapshot.nextDueAt, harness.clock.now.addingTimeInterval(120))
+        harness.clock.advance(by: 120)
+        session = try start(stack)
+        XCTAssertTrue(harness.review.reveal(session))
+        XCTAssertEqual(harness.review.grade(session, grade: .good), .completed)
+        XCTAssertEqual(card.snapshot.nextDueAt, harness.clock.now.addingTimeInterval(900))
+        harness.clock.advance(by: 900)
+        session = try start(stack)
+        XCTAssertTrue(harness.review.reveal(session))
+        XCTAssertEqual(harness.review.grade(session, grade: .again), .waiting(nextRetryAt: harness.clock.now.addingTimeInterval(120)))
+        XCTAssertEqual(card.snapshot.repeatCount, 0)
+        XCTAssertEqual(card.snapshot.stepIndex, 0)
+        XCTAssertEqual(card.snapshot.nextDueAt, harness.clock.now.addingTimeInterval(120))
     }
+
 
     func testSwipeRatingFromFrontDoesNotRequireReveal() throws {
         let stack = harness.makeStack(newCardsPerDay: 0)
@@ -412,14 +390,7 @@ final class ReviewIntegrationTests: XCTestCase {
 
         stack.cardsPerSession = 3
         stack.shuffleOrder = true
-        stack.customRules = LearningRules(
-            correctThreshold: 2,
-            resetOnMistake: false,
-            autoDecrease: true,
-            returnBelow: 2,
-            steps: [30],
-            version: 8
-        )
+        stack.steps = [30]
         try harness.save()
 
         let resumedService = ReviewService(
@@ -434,7 +405,7 @@ final class ReviewIntegrationTests: XCTestCase {
         XCTAssertEqual(resumed.id, session.id)
         XCTAssertEqual(resumed.config?.cardsPerSession, 20)
         XCTAssertEqual(resumed.config?.shuffle, false)
-        XCTAssertEqual(resumed.config?.rules.correctThreshold, 5)
+        XCTAssertEqual(resumed.config?.rules.correctThreshold, 9)
         XCTAssertTrue(resumed.revealed)
         XCTAssertEqual(resumedService.currentCard(for: resumed)?.id, second.id)
     }
@@ -656,6 +627,97 @@ final class ReviewIntegrationTests: XCTestCase {
         XCTAssertEqual(harness.review.elapsedSeconds(session, at: harness.clock.now), 6, accuracy: 0.01)
         XCTAssertEqual(session.activeSeconds, 6, accuracy: 0.01)
     }
+    func testStaleSwipeCallbackCannotGradeNextUnrevealedCard() throws {
+        let stack = harness.makeStack()
+        _ = dueCard(word: "first", stack: stack)
+        let second = dueCard(word: "second", stack: stack, createdAt: harness.clock.now.addingTimeInterval(1))
+        let session = try start(stack)
+        let presentationID = try XCTUnwrap(session.currentPresentationID)
+        XCTAssertTrue(harness.review.reveal(session))
+        XCTAssertEqual(harness.review.grade(session, grade: .good, expectedPresentationID: presentationID), .advanced)
+        let before = second.snapshot
+        XCTAssertEqual(harness.review.grade(session, grade: .good, allowUnrevealed: true, expectedPresentationID: presentationID), .duplicate)
+        XCTAssertEqual(second.snapshot, before)
+        XCTAssertEqual(session.goodCount, 1)
+        XCTAssertEqual(try harness.context.fetch(FetchDescriptor<ReviewEvent>()).count, 1)
+    }
+
+    func testQuotaChangeDoesNotSkipAlreadyAdmittedCards() throws {
+        let stack = harness.makeStack(newCardsPerDay: 2)
+        _ = harness.makeCard(word: "first", stack: stack)
+        _ = harness.makeCard(word: "second", stack: stack)
+        let session = try start(stack)
+        XCTAssertTrue(harness.review.reveal(session))
+        XCTAssertEqual(harness.review.grade(session, grade: .good), .advanced)
+        stack.newCardsPerDay = 0
+        try harness.save()
+        XCTAssertTrue(harness.review.reveal(session))
+        XCTAssertEqual(harness.review.grade(session, grade: .good), .completed)
+        XCTAssertEqual(session.goodCount, 2)
+        XCTAssertEqual(harness.maintenance.consumedNewCardIDs(stackID: stack.id).count, 2)
+    }
+
+    func testColdStartDropsPersistedRunningClocksWithoutCountingDowntime() async throws {
+        let stack = harness.makeStack()
+        _ = dueCard(word: "clock", stack: stack)
+        let session = try start(stack)
+        harness.clock.advance(by: 86400)
+        await harness.review.repairIfNeeded()
+        harness.review.resume(session)
+        harness.clock.advance(by: 3)
+        XCTAssertEqual(harness.review.elapsedSeconds(session, at: harness.clock.now), 3)
+        XCTAssertTrue(harness.review.reveal(session))
+        XCTAssertEqual(harness.review.grade(session, grade: .good), .completed)
+        let event = try XCTUnwrap(harness.context.fetch(FetchDescriptor<ReviewEvent>()).first)
+        XCTAssertEqual(event.frontSeconds, 3)
+        XCTAssertEqual(event.backSeconds, 0)
+    }
+
+    func testEntireSequenceAcrossSessionsUpdatesQueuesWidgetsAndMastery() throws {
+        let stack = harness.makeStack()
+        let card = harness.makeCard(word: "complete", stack: stack)
+        for answer in 0..<14 {
+            let due = card.snapshot.nextDueAt ?? harness.clock.now
+            harness.clock.advance(by: due.timeIntervalSince(harness.clock.now))
+            let session = try start(stack)
+            XCTAssertEqual(harness.review.currentCard(for: session)?.id, card.id)
+            XCTAssertTrue(harness.review.reveal(session))
+            XCTAssertEqual(harness.review.grade(session, grade: .good), .completed)
+            XCTAssertEqual(card.snapshot.isFullyMastered, answer == 13)
+            let snapshot = try XCTUnwrap(harness.snapshotStore.load())
+            XCTAssertEqual(snapshot.stacks.first?.dueCount, 0)
+            if answer < 13 {
+                XCTAssertNotNil(card.snapshot.nextDueAt)
+                guard case .empty = harness.review.requestReview(scopeID: stack.id) else { return XCTFail("Future card must not be admitted") }
+            }
+        }
+        XCTAssertEqual(try harness.context.fetch(FetchDescriptor<ReviewEvent>()).count, 14)
+        XCTAssertEqual(card.snapshot.reviewStageIndex, 5)
+        XCTAssertEqual(card.snapshot.appliedMilestones, [0, 1, 2, 3, 4])
+        harness.clock.advance(by: 86400 * 365)
+        harness.maintenance.refresh()
+        guard case .empty(let next) = harness.review.requestReview(scopeID: stack.id) else { return XCTFail("Mastered card must not return") }
+        XCTAssertNil(next)
+        XCTAssertTrue(card.snapshot.isFullyMastered)
+    }
+
+    func testColdStartPreservesPreviouslySavedStudyTimeButExcludesDowntime() async throws {
+        let stack = harness.makeStack()
+        _ = dueCard(word: "saved-time", stack: stack)
+        let session = try start(stack)
+        harness.clock.advance(by: 5)
+        XCTAssertTrue(harness.review.reveal(session))
+        harness.clock.advance(by: 86400)
+        await harness.review.repairIfNeeded()
+        harness.review.resume(session)
+        harness.clock.advance(by: 2)
+        XCTAssertEqual(harness.review.elapsedSeconds(session, at: harness.clock.now), 7)
+        XCTAssertEqual(harness.review.grade(session, grade: .good), .completed)
+        let event = try XCTUnwrap(harness.context.fetch(FetchDescriptor<ReviewEvent>()).first)
+        XCTAssertEqual(event.frontSeconds, 5)
+        XCTAssertEqual(event.backSeconds, 2)
+    }
+
 }
 
 private extension Result {
@@ -663,4 +725,5 @@ private extension Result {
         if case .success = self { return true }
         return false
     }
+
 }

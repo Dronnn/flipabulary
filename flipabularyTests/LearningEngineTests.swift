@@ -2,493 +2,160 @@ import XCTest
 @testable import flipabulary
 
 final class LearningEngineTests: XCTestCase {
-    private let calendar = testCalendar()
     private let start = testDate("2026-11-07T10:00:00Z")
+    private var calendar: Calendar { testCalendar() }
 
-    private func rules(
-        threshold: Int = 5,
-        reset: Bool = true,
-        auto: Bool = true,
-        returnBelow: Int = 5,
-        steps: [TimeInterval] = [60, 600, 86_400]
-    ) -> LearningRules {
-        LearningRules(
-            correctThreshold: threshold,
-            resetOnMistake: reset,
-            autoDecrease: auto,
-            returnBelow: returnBelow,
-            steps: steps,
-            version: 1
-        )
+    private func good(_ state: LearningSnapshot, at date: Date, rules: LearningRules = .default) -> LearningSnapshot {
+        LearningEngine.grade(state, grade: .good, rules: rules, at: date, calendar: calendar).after
     }
 
-    private func learning(count: Int, step: Int = 1, due: Date? = nil) -> LearningSnapshot {
-        LearningSnapshot(
-            repeatCount: count,
-            lifecycle: .learning,
-            stepIndex: step,
-            nextDueAt: due ?? start,
-            lastGradedAt: start.addingTimeInterval(-60),
-            learnedAnchor: nil,
-            appliedMilestones: [],
-            mistakeReturn: false
-        )
-    }
-
-    private func learned(count: Int = 5, anchor: Date? = nil, applied: Set<Int> = []) -> LearningSnapshot {
-        LearningSnapshot(
-            repeatCount: count,
-            lifecycle: .learned,
-            stepIndex: 0,
-            nextDueAt: start.addingTimeInterval(86_400),
-            lastGradedAt: start.addingTimeInterval(-60),
-            learnedAnchor: anchor ?? start,
-            appliedMilestones: applied,
-            mistakeReturn: false
-        )
-    }
-
-    // MARK: UT-02
-
-    func testNewGoodLearningLearnedTransitionsAndThresholdExactly() {
-        let first = LearningEngine.grade(.fresh, grade: .good, rules: rules(threshold: 3), at: start, calendar: calendar)
-        XCTAssertEqual(first.after.lifecycle, .learning)
-        XCTAssertEqual(first.after.repeatCount, 1)
-        XCTAssertEqual(first.after.stepIndex, 1)
-        XCTAssertEqual(first.after.nextDueAt, start.addingTimeInterval(60))
-
-        let secondTime = start.addingTimeInterval(60)
-        let second = LearningEngine.grade(first.after, grade: .good, rules: rules(threshold: 3), at: secondTime, calendar: calendar)
-        XCTAssertEqual(second.after.repeatCount, 2)
-        XCTAssertEqual(second.after.nextDueAt, secondTime.addingTimeInterval(600))
-
-        let thirdTime = start.addingTimeInterval(660)
-        let third = LearningEngine.grade(second.after, grade: .good, rules: rules(threshold: 3), at: thirdTime, calendar: calendar)
-        XCTAssertTrue(third.becameLearned)
-        XCTAssertEqual(third.after.lifecycle, .learned)
-        XCTAssertEqual(third.after.repeatCount, 3)
-        XCTAssertEqual(third.after.learnedAnchor, thirdTime)
-        XCTAssertEqual(third.after.nextDueAt, thirdTime.addingTimeInterval(86_400))
-    }
-
-    func testNonDefaultThresholdAndCapping() {
-        let state = learning(count: 1, step: 1)
-        let transition = LearningEngine.grade(state, grade: .good, rules: rules(threshold: 2), at: start, calendar: calendar)
-        XCTAssertEqual(transition.after.lifecycle, .learned)
-        XCTAssertEqual(transition.after.repeatCount, 2)
-    }
-
-    func testAgainResetsWhenResetEnabled() {
-        let state = learning(count: 4, step: 4)
-        let transition = LearningEngine.grade(state, grade: .again, rules: rules(reset: true), at: start, calendar: calendar)
-        XCTAssertEqual(transition.after.repeatCount, 0)
-        XCTAssertEqual(transition.after.lifecycle, .learning)
-        XCTAssertEqual(transition.after.stepIndex, 0)
-        XCTAssertEqual(transition.after.nextDueAt, start.addingTimeInterval(60))
-        XCTAssertTrue(transition.after.mistakeReturn)
-        XCTAssertFalse(transition.returnedFromLearned)
-    }
-
-    func testAgainRetainsCountWhenResetDisabled() {
-        let state = learning(count: 4, step: 4)
-        let transition = LearningEngine.grade(state, grade: .again, rules: rules(reset: false), at: start, calendar: calendar)
-        XCTAssertEqual(transition.after.repeatCount, 4)
-        XCTAssertEqual(transition.after.lifecycle, .learning)
-        XCTAssertTrue(transition.after.mistakeReturn)
-    }
-
-    func testLearnedMistakeReturnsToLearningAndGoodRegains() {
-        let mistake = LearningEngine.grade(learned(count: 5), grade: .again, rules: rules(reset: false), at: start, calendar: calendar)
-        XCTAssertTrue(mistake.returnedFromLearned)
-        XCTAssertEqual(mistake.after.lifecycle, .learning)
-        XCTAssertEqual(mistake.after.repeatCount, 5)
-        XCTAssertTrue(mistake.after.mistakeReturn)
-
-        let regained = LearningEngine.grade(mistake.after, grade: .good, rules: rules(reset: false), at: start.addingTimeInterval(60), calendar: calendar)
-        XCTAssertEqual(regained.after.lifecycle, .learned)
-        XCTAssertFalse(regained.after.mistakeReturn)
-        XCTAssertEqual(regained.after.repeatCount, 5)
-    }
-
-    func testGoodOnLearnedReinforcesAnchorWithoutLearningStep() {
-        let state = learned(count: 5, anchor: start.addingTimeInterval(-86_400 * 3), applied: [0, 1])
-        let transition = LearningEngine.grade(state, grade: .good, rules: rules(), at: start, calendar: calendar)
-        XCTAssertEqual(transition.after.lifecycle, .learned)
-        XCTAssertEqual(transition.after.repeatCount, 5)
-        XCTAssertEqual(transition.after.learnedAnchor, start)
-        XCTAssertEqual(transition.after.appliedMilestones, [])
-        XCTAssertEqual(transition.after.nextDueAt, start.addingTimeInterval(86_400))
-    }
-
-    // MARK: UT-03
-
-    func testCustomStepAdvancement() {
-        let custom = rules(threshold: 5, steps: [30, 120, 3_000])
-        var state = LearningSnapshot.fresh
-        var time = start
-        let expected: [TimeInterval] = [30, 120, 3_000, 3_000]
-        for index in 0..<4 {
-            let transition = LearningEngine.grade(state, grade: .good, rules: custom, at: time, calendar: calendar)
-            state = transition.after
-            XCTAssertEqual(state.nextDueAt, time.addingTimeInterval(expected[index]), "step \(index)")
-            time = state.nextDueAt ?? time
+    private func graduate(rules: LearningRules = .default) throws -> LearningSnapshot {
+        var state = good(.fresh, at: start, rules: rules)
+        for (index, interval) in rules.steps.enumerated() {
+            XCTAssertEqual(state.lifecycle, .learning)
+            XCTAssertEqual(state.stepIndex, index)
+            let previous = state.lastGradedAt ?? start
+            let due = try XCTUnwrap(state.nextDueAt)
+            XCTAssertEqual(due.timeIntervalSince(previous), interval, accuracy: 0.001)
+            state = good(state, at: due, rules: rules)
         }
-        XCTAssertEqual(state.lifecycle, .learning)
-        XCTAssertEqual(state.repeatCount, 4)
+        XCTAssertEqual(state.lifecycle, .learned)
+        XCTAssertEqual(state.reviewStageIndex, 0)
+        XCTAssertEqual(state.repeatCount, rules.steps.count + 1)
+        return state
     }
 
-    func testDueBoundaries() {
-        let due = start.addingTimeInterval(60)
-        let state = learning(count: 1, due: due)
-        XCTAssertFalse(LearningEngine.isDue(state, at: due.addingTimeInterval(-0.001)))
-        XCTAssertTrue(LearningEngine.isDue(state, at: due))
-        XCTAssertTrue(LearningEngine.isDue(state, at: due.addingTimeInterval(0.001)))
-        XCTAssertFalse(LearningEngine.isDue(.fresh, at: start.addingTimeInterval(100_000)))
-        XCTAssertFalse(LearningEngine.isDue(learned(), at: start.addingTimeInterval(100_000)))
-        XCTAssertFalse(
-            LearningEngine.isDue(
-                learned(count: 5, applied: [0, 1, 2, 3, 4]),
-                at: start.addingTimeInterval(100_000_000)
-            )
-        )
+    func testEveryDefaultIntervalMustElapseBeforeLongTermReviews() throws {
+        XCTAssertEqual(LearningRules.default.steps, [60, 300, 600, 1800, 3600, 10800, 43200, 86400])
+        let state = try graduate()
+        XCTAssertEqual(state.nextDueAt, calendar.date(byAdding: .day, value: 1, to: try XCTUnwrap(state.lastGradedAt)))
+        XCTAssertFalse(state.isFullyMastered)
     }
 
-    // MARK: UT-04
-
-    func testEachMilestoneBoundarySubtractsExactlyOne() {
-        let reviewRules = rules(threshold: 10, returnBelow: 1)
-        var state = learned(count: 10, anchor: start)
-        let expectedDays = [1, 3, 7, 14]
-
-        for (index, days) in expectedDays.enumerated() {
-            let boundary = calendar.date(byAdding: .day, value: days, to: start)!
-            let justBefore = LearningEngine.reconcileDecay(
-                state,
-                rules: reviewRules,
-                at: boundary.addingTimeInterval(-1),
-                calendar: calendar
-            )
-            XCTAssertEqual(justBefore.after.repeatCount, 10 - index, "day \(days) just before")
-            XCTAssertEqual(justBefore.after, state, "day \(days) just before")
-
-            let reached = LearningEngine.reconcileDecay(state, rules: reviewRules, at: boundary, calendar: calendar)
-            XCTAssertEqual(reached.after.repeatCount, 10 - index - 1, "day \(days)")
-            XCTAssertEqual(reached.after.lifecycle, .learned, "day \(days)")
-            XCTAssertEqual(reached.after.appliedMilestones, Set(0...index), "day \(days)")
-            state = reached.after
+    func testCustomLearningSequences() throws {
+        for steps: [TimeInterval] in [[30], [60, 120, 3600], [86400, 172800]] {
+            _ = try graduate(rules: LearningRules(steps: steps, version: 2))
         }
-
-        let month = calendar.date(byAdding: .month, value: 1, to: start)!
-        let justBeforeMonth = LearningEngine.reconcileDecay(
-            state,
-            rules: reviewRules,
-            at: month.addingTimeInterval(-1),
-            calendar: calendar
-        )
-        XCTAssertEqual(justBeforeMonth.after.repeatCount, 6)
-
-        let monthReached = LearningEngine.reconcileDecay(state, rules: reviewRules, at: month, calendar: calendar)
-        XCTAssertEqual(monthReached.after.repeatCount, 5)
-        XCTAssertEqual(monthReached.after.appliedMilestones, [0, 1, 2, 3, 4])
-        XCTAssertNil(monthReached.after.nextDueAt)
     }
 
-    func testDefaultRulesReturnToLearningAfterFirstDay() {
-        let afterOneDay = start.addingTimeInterval(86_400)
-        let transition = LearningEngine.reconcileDecay(
-            learned(count: 5, anchor: start),
-            rules: rules(threshold: 5, returnBelow: 5),
-            at: afterOneDay,
-            calendar: calendar
-        )
-        XCTAssertEqual(transition.after.repeatCount, 4)
-        XCTAssertEqual(transition.after.lifecycle, .learning)
-        XCTAssertTrue(transition.returnedFromLearned)
-        XCTAssertEqual(transition.after.nextDueAt, afterOneDay)
-        XCTAssertEqual(transition.after.appliedMilestones, [0])
-        XCTAssertTrue(transition.after.mistakeReturn)
+    func testFullLongTermSequenceUsesPreviousAnswerAndCompletesOnlyAfterMonthlyGood() throws {
+        var state = try graduate()
+        for index in 0..<5 {
+            let due = try XCTUnwrap(state.nextDueAt)
+            XCTAssertEqual(state.reviewStageIndex, index)
+            XCTAssertFalse(state.isFullyMastered)
+            XCTAssertFalse(LearningEngine.isDue(state, at: due.addingTimeInterval(-0.001)))
+            XCTAssertTrue(LearningEngine.isDue(state, at: due))
+            let before = state.repeatCount
+            let decayed = LearningEngine.reconcileDecay(state, rules: .default, at: due, calendar: calendar).after
+            XCTAssertEqual(decayed.repeatCount, before - 1)
+            XCTAssertEqual(decayed.nextDueAt, due)
+            XCTAssertEqual(decayed.reviewStageIndex, index)
+            XCTAssertEqual(LearningEngine.reconcileDecay(decayed, rules: .default, at: due, calendar: calendar).after, decayed)
+            // Late answers schedule the next delay from the actual answer, not an old anchor.
+            let answered = due.addingTimeInterval(7200)
+            state = good(decayed, at: answered)
+            XCTAssertEqual(state.reviewStageIndex, index + 1)
+            XCTAssertEqual(state.repeatCount, before)
+            XCTAssertEqual(state.nextDueAt, LearningEngine.milestoneDate(index: index + 1, anchor: answered, calendar: calendar))
+        }
+        XCTAssertTrue(state.isFullyMastered)
+        XCTAssertNil(state.nextDueAt)
+        XCTAssertFalse(LearningEngine.isDue(state, at: start.addingTimeInterval(86400 * 3650)))
     }
 
-    func testReturnBelowIsStrictlyLowerBoundary() {
-        let afterOneDay = start.addingTimeInterval(86_400)
-
-        let equal = LearningEngine.reconcileDecay(
-            learned(count: 5, anchor: start),
-            rules: rules(threshold: 5, returnBelow: 4),
-            at: afterOneDay,
-            calendar: calendar
-        )
-        XCTAssertEqual(equal.after.repeatCount, 4)
-        XCTAssertEqual(equal.after.lifecycle, .learned)
-        XCTAssertFalse(equal.returnedFromLearned)
-
-        let below = LearningEngine.reconcileDecay(
-            learned(count: 5, anchor: start),
-            rules: rules(threshold: 5, returnBelow: 5),
-            at: afterOneDay,
-            calendar: calendar
-        )
-        XCTAssertEqual(below.after.repeatCount, 4)
-        XCTAssertEqual(below.after.lifecycle, .learning)
-        XCTAssertTrue(below.returnedFromLearned)
+    func testAgainAtEveryShortAndLongStageRestartsFirstInterval() throws {
+        var states: [LearningSnapshot] = [.fresh]
+        var state = good(.fresh, at: start)
+        for _ in LearningRules.default.steps {
+            states.append(state)
+            state = good(state, at: try XCTUnwrap(state.nextDueAt))
+        }
+        for _ in 0..<5 {
+            states.append(state)
+            state = good(state, at: try XCTUnwrap(state.nextDueAt))
+        }
+        states.append(state)
+        for original in states {
+            let at = original.nextDueAt ?? start
+            let reset = LearningEngine.grade(original, grade: .again, rules: .default, at: at, calendar: calendar).after
+            XCTAssertEqual(reset.lifecycle, .learning)
+            XCTAssertEqual(reset.repeatCount, 0)
+            XCTAssertEqual(reset.stepIndex, 0)
+            XCTAssertEqual(reset.reviewStageIndex, 0)
+            XCTAssertTrue(reset.appliedMilestones.isEmpty)
+            XCTAssertNil(reset.learnedAnchor)
+            XCTAssertEqual(reset.nextDueAt, at.addingTimeInterval(60))
+            let next = good(reset, at: try XCTUnwrap(reset.nextDueAt))
+            XCTAssertEqual(next.stepIndex, 1)
+            XCTAssertEqual(next.nextDueAt, reset.nextDueAt?.addingTimeInterval(300))
+        }
     }
 
-    func testEachMilestoneOnceWhileStayingLearned() {
-        let state = learned(count: 5, anchor: start)
-        let atTenDays = start.addingTimeInterval(10 * 86_400)
-        let first = LearningEngine.reconcileDecay(state, rules: rules(returnBelow: 1), at: atTenDays, calendar: calendar)
-        XCTAssertEqual(first.after.repeatCount, 2)
-        XCTAssertEqual(first.after.lifecycle, .learned)
-        XCTAssertEqual(first.after.appliedMilestones, [0, 1, 2])
-
-        let second = LearningEngine.reconcileDecay(first.after, rules: rules(returnBelow: 1), at: atTenDays, calendar: calendar)
-        XCTAssertEqual(second.after.repeatCount, 2)
-        XCTAssertEqual(second.after.appliedMilestones, [0, 1, 2])
-        XCTAssertEqual(second.after, first.after)
+    func testEarlyManualGoodDoesNotSkipShortLongOrCompletedStages() throws {
+        var short = good(.fresh, at: start)
+        let due = short.nextDueAt
+        short = good(short, at: start.addingTimeInterval(1))
+        XCTAssertEqual(short.stepIndex, 0)
+        XCTAssertEqual(short.repeatCount, 1)
+        XCTAssertEqual(short.nextDueAt, due)
+        var long = try graduate()
+        let previous = long
+        long = good(long, at: try XCTUnwrap(long.nextDueAt).addingTimeInterval(-1))
+        XCTAssertEqual(long.reviewStageIndex, previous.reviewStageIndex)
+        XCTAssertEqual(long.repeatCount, previous.repeatCount)
+        XCTAssertEqual(long.nextDueAt, previous.nextDueAt)
+        long.reviewStageIndex = 5
+        long.nextDueAt = nil
+        let completed = good(long, at: start.addingTimeInterval(86400 * 365))
+        XCTAssertTrue(completed.isFullyMastered)
+        XCTAssertEqual(completed.repeatCount, long.repeatCount)
     }
 
-    func testLongAbsenceAppliesAllReachedMilestonesEvenAfterReturning() {
-        let state = learned(count: 5, anchor: start)
-        let atTwoMonths = calendar.date(byAdding: .month, value: 2, to: start)!
-        let transition = LearningEngine.reconcileDecay(state, rules: rules(returnBelow: 5), at: atTwoMonths, calendar: calendar)
-        XCTAssertEqual(transition.after.repeatCount, 0)
-        XCTAssertEqual(transition.after.appliedMilestones, [0, 1, 2, 3, 4])
-        XCTAssertEqual(transition.after.lifecycle, .learning)
-        XCTAssertTrue(transition.returnedFromLearned)
+    func testOverdueDecayDoesNotDependOnAppOpeningAndCannotSkipUnansweredStages() throws {
+        let original = try graduate()
+        let due = try XCTUnwrap(original.nextDueAt)
+        let late = due.addingTimeInterval(86400 * 365)
+        let atDue = LearningEngine.reconcileDecay(original, rules: .default, at: due, calendar: calendar).after
+        let openedDaily = LearningEngine.reconcileDecay(atDue, rules: .default, at: late, calendar: calendar).after
+        let openedLate = LearningEngine.reconcileDecay(original, rules: .default, at: late, calendar: calendar).after
+        XCTAssertEqual(openedDaily, openedLate)
+        XCTAssertEqual(openedLate.repeatCount, original.repeatCount - 1)
+        XCTAssertEqual(openedLate.reviewStageIndex, 0)
+        XCTAssertEqual(openedLate.nextDueAt, due)
+        XCTAssertFalse(openedLate.isFullyMastered)
+        XCTAssertEqual(good(openedLate, at: late).nextDueAt, calendar.date(byAdding: .day, value: 3, to: late))
     }
 
-    func testCountClampsAtZero() {
-        let state = learned(count: 1, anchor: start)
-        let atTwoMonths = calendar.date(byAdding: .month, value: 2, to: start)!
-        let transition = LearningEngine.reconcileDecay(state, rules: rules(returnBelow: 1), at: atTwoMonths, calendar: calendar)
-        XCTAssertEqual(transition.after.repeatCount, 0)
-        XCTAssertGreaterThanOrEqual(transition.after.repeatCount, 0)
+    func testGradeAppliesPendingDecayEvenWithoutMaintenance() throws {
+        let state = try graduate()
+        let after = good(state, at: try XCTUnwrap(state.nextDueAt))
+        XCTAssertEqual(after.repeatCount, state.repeatCount)
+        XCTAssertEqual(after.appliedMilestones, [0])
+        XCTAssertEqual(after.reviewStageIndex, 1)
     }
 
-    func testHysteresisAllowsLearnedWithFewerRepeatsThanThreshold() {
-        let state = learned(count: 5, anchor: start)
-        let transition = LearningEngine.reconcileDecay(
-            state,
-            rules: rules(threshold: 5, returnBelow: 3),
-            at: start.addingTimeInterval(86_400),
-            calendar: calendar
-        )
-        XCTAssertEqual(transition.after.repeatCount, 4)
-        XCTAssertEqual(transition.after.lifecycle, .learned)
-        XCTAssertFalse(transition.returnedFromLearned)
+    func testZeroCounterStillRequiresEveryLongReview() throws {
+        var state = try graduate(rules: LearningRules(steps: [60], version: 1))
+        state.repeatCount = 0
+        let decayed = LearningEngine.reconcileDecay(state, rules: .default, at: try XCTUnwrap(state.nextDueAt)).after
+        XCTAssertEqual(decayed.repeatCount, 0)
+        XCTAssertFalse(decayed.isFullyMastered)
+        XCTAssertEqual(good(decayed, at: try XCTUnwrap(decayed.nextDueAt)).reviewStageIndex, 1)
     }
 
-    func testAutoDecreaseOffPreservesProgressAndReanchorAvoidsRetroactiveLoss() {
-        let state = learned(count: 5, anchor: start)
-        let disabled = LearningEngine.reconcileDecay(
-            state,
-            rules: rules(auto: false),
-            at: start.addingTimeInterval(86_400 * 40),
-            calendar: calendar
-        )
-        XCTAssertEqual(disabled.after, state)
-        XCTAssertEqual(disabled.after.repeatCount, 5)
-        XCTAssertEqual(disabled.after.lifecycle, .learned)
-
-        let enableTime = start.addingTimeInterval(86_400 * 40)
-        let reanchored = LearningEngine.reanchorForEnabledDecay(state, at: enableTime, calendar: calendar)
-        XCTAssertEqual(reanchored.learnedAnchor, enableTime)
-        XCTAssertEqual(reanchored.appliedMilestones, [])
-        XCTAssertEqual(reanchored.nextDueAt, enableTime.addingTimeInterval(86_400))
-
-        let justBefore = LearningEngine.reconcileDecay(
-            reanchored,
-            rules: rules(),
-            at: enableTime.addingTimeInterval(86_400 - 1),
-            calendar: calendar
-        )
-        XCTAssertEqual(justBefore.after.repeatCount, 5)
-        XCTAssertEqual(justBefore.after.lifecycle, .learned)
+    func testMonthEndLeapYearAndDSTUseCalendarDelays() throws {
+        XCTAssertEqual(LearningEngine.milestoneDate(index: 4, anchor: testDate("2028-01-31T10:00:00Z"), calendar: calendar), testDate("2028-02-29T10:00:00Z"))
+        XCTAssertEqual(LearningEngine.milestoneDate(index: 4, anchor: testDate("2027-01-31T10:00:00Z"), calendar: calendar), testDate("2027-02-28T10:00:00Z"))
+        let local = testCalendar(timeZone: "America/New_York")
+        let anchor = testDate("2026-03-07T15:00:00Z")
+        XCTAssertEqual(LearningEngine.milestoneDate(index: 0, anchor: anchor, calendar: local), testDate("2026-03-08T14:00:00Z"))
+        XCTAssertNil(LearningEngine.milestoneDate(index: 5, anchor: start, calendar: calendar))
     }
 
-    func testReanchorIgnoresNonLearnedCards() {
-        let state = learning(count: 2)
-        XCTAssertEqual(LearningEngine.reanchorForEnabledDecay(state, at: start, calendar: calendar), state)
-    }
-
-    func testNextReturnToLearningDateFollowsHysteresis() {
-        let defaultRules = rules(threshold: 5, returnBelow: 5)
-        XCTAssertEqual(
-            LearningEngine.nextReturnToLearningDate(learned(count: 5), rules: defaultRules, after: start, calendar: calendar),
-            start.addingTimeInterval(86_400)
-        )
-
-        let lowerReturn = rules(threshold: 5, returnBelow: 3)
-        XCTAssertEqual(
-            LearningEngine.nextReturnToLearningDate(learned(count: 5), rules: lowerReturn, after: start, calendar: calendar),
-            start.addingTimeInterval(86_400 * 7)
-        )
-
-        let noReturn = rules(threshold: 10, returnBelow: 3)
-        XCTAssertNil(
-            LearningEngine.nextReturnToLearningDate(learned(count: 10), rules: noReturn, after: start, calendar: calendar)
-        )
-        XCTAssertNil(
-            LearningEngine.nextReturnToLearningDate(learned(count: 5), rules: rules(auto: false), after: start, calendar: calendar)
-        )
-    }
-
-    func testBackwardClockAppliesNothing() {
-        let state = learned(count: 5, anchor: start)
-        let transition = LearningEngine.reconcileDecay(
-            state,
-            rules: rules(),
-            at: start.addingTimeInterval(-86_400 * 10),
-            calendar: calendar
-        )
-        XCTAssertEqual(transition.after.repeatCount, 5)
-        XCTAssertEqual(transition.after.lifecycle, .learned)
-        XCTAssertEqual(transition.after.appliedMilestones, [])
-    }
-
-    func testAgainOnLearnedReviewReturnsToLearning() {
-        let state = learned(count: 5, anchor: start, applied: [0, 1])
-        let transition = LearningEngine.grade(state, grade: .again, rules: rules(reset: false), at: start, calendar: calendar)
-        XCTAssertTrue(transition.returnedFromLearned)
-        XCTAssertEqual(transition.after.lifecycle, .learning)
-        XCTAssertEqual(transition.after.repeatCount, 5)
-        XCTAssertEqual(transition.after.appliedMilestones, [])
-        XCTAssertNil(transition.after.learnedAnchor)
-        XCTAssertEqual(transition.after.nextDueAt, start.addingTimeInterval(60))
-        XCTAssertTrue(transition.after.mistakeReturn)
-    }
-
-    func testFullyDecayedLearnedCardIsNotDue() {
-        var state = learned(count: 10, anchor: start, applied: [0, 1, 2, 3, 4])
-        state.nextDueAt = nil
-
-        XCTAssertFalse(LearningEngine.isDue(state, at: start.addingTimeInterval(86_400 * 365 * 20)))
-        XCTAssertNil(
-            LearningEngine.nextReturnToLearningDate(
-                state,
-                rules: rules(threshold: 10, returnBelow: 1),
-                after: start,
-                calendar: calendar
-            )
-        )
-    }
-
-    func testGoodOnFullyDecayedLearnedCardReanchorsTheSchedule() {
-        var state = learned(count: 10, anchor: start, applied: [0, 1, 2, 3, 4])
-        state.nextDueAt = nil
-
-        let transition = LearningEngine.grade(state, grade: .good, rules: rules(threshold: 10, returnBelow: 1), at: start, calendar: calendar)
-        XCTAssertEqual(transition.after.lifecycle, .learned)
-        XCTAssertEqual(transition.after.repeatCount, 10)
-        XCTAssertEqual(transition.after.learnedAnchor, start)
-        XCTAssertEqual(transition.after.appliedMilestones, [])
-        XCTAssertEqual(transition.after.nextDueAt, start.addingTimeInterval(86_400))
-    }
-
-    func testReconcileDecayIgnoresNewAndLearningSnapshots() {
-        XCTAssertEqual(
-            LearningEngine.reconcileDecay(.fresh, rules: rules(), at: start, calendar: calendar).after,
-            .fresh
-        )
-        let learningState = learning(count: 2)
-        XCTAssertEqual(
-            LearningEngine.reconcileDecay(learningState, rules: rules(), at: start.addingTimeInterval(86_400 * 90), calendar: calendar).after,
-            learningState
-        )
-    }
-
-    func testReconcileDecayRequiresLearnedAnchor() {
-        var state = learned(count: 5, anchor: start)
-        state.learnedAnchor = nil
-        let transition = LearningEngine.reconcileDecay(
-            state,
-            rules: rules(),
-            at: start.addingTimeInterval(86_400 * 90),
-            calendar: calendar
-        )
-        XCTAssertEqual(transition.after, state)
-    }
-
-    func testStayingLearnedSchedulesTheNextMilestoneFromTheAnchor() {
-        let afterOneDay = start.addingTimeInterval(86_400)
-        let transition = LearningEngine.reconcileDecay(
-            learned(count: 10, anchor: start),
-            rules: rules(threshold: 10, returnBelow: 1),
-            at: afterOneDay,
-            calendar: calendar
-        )
-        XCTAssertEqual(transition.after.lifecycle, .learned)
-        XCTAssertEqual(transition.after.appliedMilestones, [0])
-        XCTAssertEqual(transition.after.nextDueAt, start.addingTimeInterval(3 * 86_400))
-    }
-
-    func testMonthEndDecayAppliesTheMonthMilestoneOnce() {
-        var utcCalendar = testCalendar()
-        utcCalendar.timeZone = TimeZone(identifier: "UTC")!
-        let jan31 = testDate("2024-01-31T12:00:00Z")
-        let feb29 = testDate("2024-02-29T12:00:00Z")
-        let state = learned(count: 5, anchor: jan31, applied: [0, 1, 2, 3])
-
-        let transition = LearningEngine.reconcileDecay(
-            state,
-            rules: rules(threshold: 5, returnBelow: 1),
-            at: feb29,
-            calendar: utcCalendar
-        )
-        XCTAssertEqual(transition.after.repeatCount, 4)
-        XCTAssertEqual(transition.after.appliedMilestones, [0, 1, 2, 3, 4])
-        XCTAssertNil(transition.after.nextDueAt)
-    }
-
-    func testDSTDecayAppliesOneRepeatAtTheNextLocalDay() {
-        var newYork = testCalendar(timeZone: "America/New_York")
-        newYork.timeZone = TimeZone(identifier: "America/New_York")!
-        let beforeDST = testDate("2025-03-08T17:00:00Z") // 12:00 EST
-        let next = LearningEngine.milestoneDate(index: 0, anchor: beforeDST, calendar: newYork)!
-
-        let transition = LearningEngine.reconcileDecay(
-            learned(count: 5, anchor: beforeDST),
-            rules: rules(threshold: 5, returnBelow: 1),
-            at: next,
-            calendar: newYork
-        )
-        XCTAssertEqual(transition.after.repeatCount, 4)
-        XCTAssertEqual(transition.after.appliedMilestones, [0])
-    }
-
-    func testMonthEndAndLeapDayArithmetic() {
-        var leapCalendar = testCalendar()
-        leapCalendar.timeZone = TimeZone(identifier: "UTC")!
-        let jan31 = testDate("2024-01-31T12:00:00Z")
-        let monthEnd = LearningEngine.milestoneDate(index: 4, anchor: jan31, calendar: leapCalendar)
-        XCTAssertEqual(monthEnd, testDate("2024-02-29T12:00:00Z"))
-
-        let feb29 = testDate("2024-02-29T12:00:00Z")
-        let nextDay = LearningEngine.milestoneDate(index: 0, anchor: feb29, calendar: leapCalendar)
-        XCTAssertEqual(nextDay, testDate("2024-03-01T12:00:00Z"))
-    }
-
-    func testDSTDayArithmeticKeepsLocalWallTime() {
-        var newYork = testCalendar(timeZone: "America/New_York")
-        newYork.timeZone = TimeZone(identifier: "America/New_York")!
-        let beforeDST = testDate("2025-03-08T17:00:00Z") // 12:00 EST
-        let next = LearningEngine.milestoneDate(index: 0, anchor: beforeDST, calendar: newYork)!
-        let components = newYork.dateComponents([.hour, .day, .month], from: next)
-        XCTAssertEqual(components.hour, 12)
-        XCTAssertEqual(components.day, 9)
-    }
-
-    func testInvalidRulesNormalizeToSafeValues() {
-        let invalid = LearningRules(
-            correctThreshold: 99,
-            resetOnMistake: true,
-            autoDecrease: true,
-            returnBelow: 100,
-            steps: [-1, 0, 0],
-            version: 1
-        ).normalized
-        XCTAssertEqual(invalid.correctThreshold, 20)
-        XCTAssertEqual(invalid.returnBelow, 20)
-        XCTAssertEqual(invalid.steps, LearningRules.defaultSteps)
+    func testInvalidIntervalsFallBackAndSessionUsesItsCapturedSteps() {
+        for steps in [[], [0], [-1], [60, 60], [120, 60], [Double.infinity], [Double.nan]] {
+            XCTAssertEqual(LearningRules(steps: steps, version: 1).normalized.steps, LearningRules.defaultSteps)
+        }
     }
 }

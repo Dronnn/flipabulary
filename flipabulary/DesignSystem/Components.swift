@@ -378,7 +378,11 @@ struct SettingsRow: View {
     var body: some View {
         Group {
             if let action {
-                Button(action: action) { rowContent }
+                Button(action: action) {
+                    rowContent
+                        .frame(minHeight: 52)
+                        .contentShape(Rectangle())
+                }
                     .buttonStyle(.plain)
             } else {
                 rowContent

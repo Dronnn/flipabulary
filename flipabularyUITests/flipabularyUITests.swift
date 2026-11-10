@@ -414,16 +414,14 @@ final class FlipabularyUITests: XCTestCase {
     }
 
     @MainActor
-    func testLearningRulesExposeDecayControls() throws {
+    func testLearningRulesExplainSequentialReviews() throws {
         let app = launch()
         openSettings(app)
         app.buttons["settings.rules"].tap()
-        XCTAssertTrue(app.navigationBars["Learning rules"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.switches["rules.autoDecrease"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.switches["rules.resetOnMistake"].exists)
-        XCTAssertTrue(app.otherElements["rules.returnBelow"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.staticTexts["Auto-decrease"].exists)
-        XCTAssertTrue(app.staticTexts["Return when below"].exists)
+        XCTAssertTrue(app.staticTexts["Complete every learning interval before starting long-term reviews. Change learning steps in stack settings."].waitForExistence(timeout: 3), app.debugDescription)
+        XCTAssertTrue(app.staticTexts["Good advances to the next interval. Again at any stage restarts learning from the first interval."].exists)
+        app.swipeUp()
+        XCTAssertTrue(app.staticTexts["Editing the repeat count changes only the counter, not the learning stage."].exists)
     }
 
     @MainActor

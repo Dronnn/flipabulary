@@ -204,8 +204,9 @@ struct OnboardingView: View {
         case .wordSets:
             textBlock(eyebrow: "Word sets", title: "A set for every widget", body: "A word set is your own list of words. Each widget can show a different set, and you decide the order.")
         case .learning:
-            textBlock(eyebrow: "How it works", title: "Learn, then keep it", body: "See the answer, then rate yourself. By default, five Good answers in a row make a word Learned.")
-            pageBody("Learned words return at 1 day, 3 days, 7 days, 2 weeks, and 1 month. Skip those reviews and a word loses progress; eventually it returns to Learning.")
+            textBlock(eyebrow: "How it works", title: "Learn, then keep it", body: "Complete every learning interval, then continue through the long-term reviews. Any mistake restarts learning.")
+            pageBody("Demo: each rating advances time to the next scheduled review.")
+            pageBody("Long-term intervals are 1 day, 3 days, 7 days, 14 days, and 1 month after each correct answer. A correct final monthly review completes learning.")
         case .widgets:
             VStack(spacing: 10) {
                 textBlock(eyebrow: "Widgets", title: "Your words on the Home Screen", body: "Add a Flipabulary widget, then choose its word set in Edit Widget. Add another widget and choose a different set.")
@@ -425,7 +426,7 @@ struct OnboardingView: View {
     private var demoActions: some View {
         VStack(spacing: 8) {
             if learningDemo.isLearned {
-                Text("Learned. It will come back tomorrow.")
+                Text("Learning complete. No more scheduled reviews.")
                     .font(AppFont.body())
                     .foregroundStyle(AppColor.textSecondary)
                     .multilineTextAlignment(.center)
@@ -513,7 +514,8 @@ struct OnboardingView: View {
 
     private var demoStateTitle: String {
         if learningDemo.isLearned { return "LEARNED" }
-        if learningDemo.repeatCount > 0 { return "LEARNING" }
+        if learningDemo.snapshot.lifecycle == .learned { return "LONG-TERM REVIEW" }
+        if learningDemo.snapshot.lifecycle == .learning { return "LEARNING" }
         return "NEW CARD"
     }
 

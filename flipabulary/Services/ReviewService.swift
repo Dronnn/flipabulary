@@ -240,11 +240,12 @@ final class ReviewService {
 
     // MARK: Grading
 
-    func grade(_ session: ReviewSession, grade: ReviewGrade, allowUnrevealed: Bool = false) -> ReviewGradeResult {
+    func grade(_ session: ReviewSession, grade: ReviewGrade, allowUnrevealed: Bool = false, expectedPresentationID: UUID? = nil) -> ReviewGradeResult {
         let now = clock.now
         guard session.status == .active else { return .completed }
         guard (session.revealed && session.showingBack) || allowUnrevealed else { return .failure("Show the answer before rating this card.") }
         guard let presentation = session.currentPresentation() else { return .completed }
+        if let expectedPresentationID, presentation.id != expectedPresentationID { return .duplicate }
         if session.committedPresentationIDs.contains(presentation.id) {
             return .duplicate
         }
@@ -254,7 +255,7 @@ final class ReviewService {
         guard let card = library.card(id: presentation.cardID) else {
             return skipCurrent(session, reason: "A deleted card was skipped.")
         }
-        guard let stack = library.stack(id: session.stackID) else {
+        guard library.stack(id: session.stackID) != nil else {
             _ = endSession(session, preserveSummary: true)
             return .completed
         }
@@ -264,7 +265,7 @@ final class ReviewService {
         if session.singleCardID == nil,
            before.lifecycle == .new,
            !dailyRecord.cardIDs.contains(card.id),
-           dailyRecord.cardIDs.count >= stack.newCardsPerDay {
+           dailyRecord.cardIDs.count >= config.newCardsPerDay {
             return skipCurrent(session, reason: "Today's new-card limit is reached. The remaining new cards stay in your library.")
         }
 
@@ -471,6 +472,11 @@ final class ReviewService {
         pauseActive(session, now: clock.now)
         session.lastActiveAt = clock.now
         _ = saveSilently()
+    }
+
+    func recoverAfterRelaunch(_ session: ReviewSession) {
+        // Preserve time known at the last save, but never count process downtime.
+        pauseActive(session, now: min(clock.now, session.lastActiveAt))
     }
 
     func resume(_ session: ReviewSession) {

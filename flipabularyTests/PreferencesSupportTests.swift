@@ -27,14 +27,15 @@ final class PreferencesAndRoutingTests: XCTestCase {
         prefs.widgetDefaults.stackID = stackID
         prefs.reminders.stackID = stackID
         prefs.reminders.enabled = true
-        prefs.rules.correctThreshold = 9
+        prefs.rules.steps = [30, 120, 600]
         prefs.language = .german
         store.preferences = prefs
 
         let reloaded = PreferencesStore(defaults: defaults)
         XCTAssertEqual(reloaded.preferences.appearance, .dark)
         XCTAssertEqual(reloaded.preferences.selectedStackID, stackID)
-        XCTAssertEqual(reloaded.preferences.rules.correctThreshold, 9)
+        XCTAssertEqual(reloaded.preferences.rules.steps, [30, 120, 600])
+        XCTAssertEqual(reloaded.preferences.rules.correctThreshold, 4)
         XCTAssertTrue(reloaded.preferences.reminders.enabled)
         XCTAssertEqual(reloaded.preferences.language, .german)
 

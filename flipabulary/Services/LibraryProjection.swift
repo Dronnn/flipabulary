@@ -291,7 +291,8 @@ enum LibraryProjection {
                         repeatCount: reconciled.repeatCount,
                         threshold: rules.correctThreshold,
                         dueAt: reconciled.nextDueAt,
-                        createdAt: card.createdAt
+                        createdAt: card.createdAt,
+                        decayPending: reconciled.lifecycle == .learned && reconciled.nextDueAt != nil && !reconciled.appliedMilestones.contains(reconciled.reviewStageIndex)
                     )
                 )
             }
@@ -311,7 +312,9 @@ enum LibraryProjection {
                 learningCount: learning,
                 newCount: new,
                 cards: cards,
-                nextDueAt: nextDue
+                nextDueAt: nextDue,
+                newCardsPerDay: stack.newCardsPerDay,
+                remainingNewCards: max(0, stack.newCardsPerDay - (recordsByStack[stack.id]?.cardIDs.count ?? 0))
             )
         }
         let allCards = stackSnapshots.flatMap(\.cards)
@@ -322,7 +325,7 @@ enum LibraryProjection {
                 guard seen.insert(id).inserted else { return nil }
                 return cardsByID[id]
             }
-            let activeCards = cards.filter { $0.lifecycle != "learned" }
+            let activeCards = cards.filter { $0.lifecycle == "new" || $0.dueAt != nil }
             let due = activeCards.filter { card in
                 guard let dueAt = card.dueAt else { return true }
                 return dueAt <= now
@@ -353,7 +356,7 @@ enum LibraryProjection {
             languageCode: preferences.language.flatMap { $0.isSystem ? nil : $0.rawValue },
             wordSets: wordSetSnapshots,
             defaultWordSetID: validDefaultSet
-        )
+        ).projected(at: now, calendar: calendar)
     }
 
     private static func stats(

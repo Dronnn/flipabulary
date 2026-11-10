@@ -260,7 +260,10 @@ final class AppEnvironment {
 
 extension ReviewService {
     func repairIfNeeded() async {
-        guard let session = latestActiveSession() else { return }
-        repair(session)
+        for session in activeSessions() {
+            recoverAfterRelaunch(session)
+            repair(session)
+        }
+        try? modelContext.save()
     }
 }

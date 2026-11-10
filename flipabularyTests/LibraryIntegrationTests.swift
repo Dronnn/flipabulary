@@ -388,4 +388,41 @@ final class LibraryIntegrationTests: XCTestCase {
         XCTAssertEqual(cards[0].tags.first?.name, "旅行")
         XCTAssertEqual(cards[0].learningState?.lifecycle, .new)
     }
+    func testFileBackedStorePreservesCompleteSchedulingSnapshots() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("schedule-store-\(UUID())", isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let configuration = ModelConfiguration(schema: FlipabularySchema.schema, url: directory.appendingPathComponent("library.store"))
+        let now = harness.clock.now
+        let snapshots = [
+            LearningSnapshot(repeatCount: 3, lifecycle: .learning, stepIndex: 2, nextDueAt: now.addingTimeInterval(600), lastGradedAt: now, learnedAnchor: nil, appliedMilestones: [], mistakeReturn: false),
+            LearningSnapshot(repeatCount: 8, lifecycle: .learned, stepIndex: 8, nextDueAt: now.addingTimeInterval(-1), lastGradedAt: now.addingTimeInterval(-7 * 86_400), learnedAnchor: now.addingTimeInterval(-7 * 86_400), appliedMilestones: [0, 1, 2], mistakeReturn: false, reviewStageIndex: 2),
+            LearningSnapshot(repeatCount: 9, lifecycle: .learned, stepIndex: 8, nextDueAt: nil, lastGradedAt: now, learnedAnchor: now, appliedMilestones: [0, 1, 2, 3, 4], mistakeReturn: false, reviewStageIndex: 5)
+        ]
+        let ids = snapshots.map { _ in UUID() }
+        do {
+            let container = try ModelContainer(for: FlipabularySchema.schema, configurations: [configuration])
+            let context = container.mainContext
+            let stack = VocabularyStack(name: "Persisted")
+            context.insert(stack)
+            for (index, snapshot) in snapshots.enumerated() {
+                let card = VocabularyCard(id: ids[index], word: "word \(index)", translation: "translation", stack: stack)
+                context.insert(card)
+                card.learningState?.apply(snapshot, rulesVersion: 7)
+                card.learningState?.totalGrades = 20 + index
+            }
+            try context.save()
+        }
+        let reopened = try ModelContainer(for: FlipabularySchema.schema, configurations: [configuration])
+        let cards = try reopened.mainContext.fetch(FetchDescriptor<VocabularyCard>())
+        XCTAssertEqual(cards.count, 3)
+        for (index, expected) in snapshots.enumerated() {
+            let card = try XCTUnwrap(cards.first { $0.id == ids[index] })
+            XCTAssertEqual(card.snapshot, expected)
+            XCTAssertEqual(card.learningState?.rulesVersion, 7)
+            XCTAssertEqual(card.learningState?.totalGrades, 20 + index)
+            XCTAssertEqual(card.snapshot.isFullyMastered, index == 2)
+        }
+    }
+
 }

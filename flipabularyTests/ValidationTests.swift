@@ -67,15 +67,8 @@ final class ValidationTests: XCTestCase {
     }
 
     func testNumericSettingBounds() {
-        var rules = LearningRules.default
-        rules.correctThreshold = 0
-        rules.returnBelow = 0
-        XCTAssertEqual(rules.normalized.correctThreshold, 1)
-        XCTAssertEqual(rules.normalized.returnBelow, 1)
-
-        rules.correctThreshold = 3
-        rules.returnBelow = 9
-        XCTAssertEqual(rules.normalized.returnBelow, 3)
+        let rules = LearningRules(steps: [30, 120], version: 1)
+        XCTAssertEqual(rules.correctThreshold, 3)
 
         var config = SessionConfig(
             stackID: UUID(),
@@ -90,11 +83,18 @@ final class ValidationTests: XCTestCase {
         XCTAssertEqual(config.cardsPerSession, 1)
         XCTAssertEqual(config.newCardsPerDay, 100)
         XCTAssertEqual(config.steps, LearningRules.defaultSteps)
+        XCTAssertEqual(config.rules.steps, config.steps)
+        XCTAssertEqual(config.rules.correctThreshold, config.steps.count + 1)
 
         config.cardsPerSession = 999
         config.newCardsPerDay = -5
         let normalized = config.normalized()
         XCTAssertEqual(normalized.cardsPerSession, 100)
         XCTAssertEqual(normalized.newCardsPerDay, 0)
+
+        config.steps = [30, 120, 600]
+        let custom = config.normalized()
+        XCTAssertEqual(custom.rules.steps, [30, 120, 600])
+        XCTAssertEqual(custom.rules.correctThreshold, 4)
     }
 }

@@ -178,6 +178,9 @@ private extension LibraryService {
             if lhsRank.lifecycle != rhsRank.lifecycle {
                 return lhsRank.lifecycle > rhsRank.lifecycle
             }
+            if lhsRank.stage != rhsRank.stage {
+                return lhsRank.stage > rhsRank.stage
+            }
             if lhsRank.totalGrades != rhsRank.totalGrades {
                 return lhsRank.totalGrades > rhsRank.totalGrades
             }
@@ -194,7 +197,7 @@ private extension LibraryService {
         }.first
     }
 
-    func progressRank(_ card: VocabularyCard) -> (lifecycle: Int, totalGrades: Int, repeatCount: Int, lastGradedAt: Date) {
+    func progressRank(_ card: VocabularyCard) -> (lifecycle: Int, stage: Int, totalGrades: Int, repeatCount: Int, lastGradedAt: Date) {
         let state = card.learningState
         let lifecycle: Int = switch state?.lifecycle {
         case .learned: 3
@@ -203,6 +206,7 @@ private extension LibraryService {
         }
         return (
             lifecycle: lifecycle,
+            stage: state?.lifecycle == .learned ? (state?.reviewStageIndex ?? 0) : (state?.stepIndex ?? 0),
             totalGrades: state?.totalGrades ?? 0,
             repeatCount: state?.repeatCount ?? 0,
             lastGradedAt: state?.lastGradedAt ?? .distantPast

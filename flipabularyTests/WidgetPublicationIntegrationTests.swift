@@ -113,10 +113,11 @@ final class WidgetPublicationIntegrationTests: XCTestCase {
         XCTAssertEqual(snapshot.defaultStackID, stack.id)
     }
 
-    func testSharedAppGroupSnapshotRoundTrip() throws {
+    func testIsolatedSnapshotStoreRoundTrip() throws {
         let snapshot = WidgetSnapshot.galleryPlaceholder
-        let store = WidgetSnapshotStore.shared
-        defer { store.clear() }
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("widget-roundtrip-\(UUID())")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let store = WidgetSnapshotStore(fileURL: directory.appendingPathComponent("snapshot.json"), defaultsSuiteName: nil)
         try store.save(snapshot)
         XCTAssertEqual(store.load()?.stacks.count, snapshot.stacks.count)
         XCTAssertEqual(store.load()?.schemaVersion, snapshot.schemaVersion)
